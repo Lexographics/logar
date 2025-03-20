@@ -5,6 +5,7 @@ import (
 	"html/template"
 	"math/rand"
 	"net/http"
+	"regexp"
 	"strconv"
 	"strings"
 	"time"
@@ -67,6 +68,13 @@ func (h *Handler) GetLogs(r *http.Request) (model string, logs []Log, lastLogId 
 	)
 	if err != nil {
 		return model, nil, 0, err
+	}
+
+	if filter != "" {
+		replacer := NewCaseInsensitiveReplacer(filter, "[mark]"+filter+"[/mark]")
+		for i, log := range logs {
+			logs[i].Message = replacer.Replace(log.Message)
+		}
 	}
 
 	lastId := uint(0)
@@ -159,9 +167,29 @@ func (h *Handler) LoadTemplate() {
 		"Minus": func(a, b int) int {
 			return a - b
 		},
+		"Escape": func(s string) template.HTML {
+			// Converts all special characters to their entity equivalents
+			// TODO: Replace all at the same time
+			s = strings.Replace(s, "\\u003c", "<", -1)
+			s = strings.Replace(s, "\\u003e", ">", -1)
+			s = strings.Replace(s, "&", "&amp;", -1)
+			s = strings.Replace(s, "<", "&lt;", -1)
+			s = strings.Replace(s, ">", "&gt;", -1)
+			s = strings.Replace(s, "\"", "&quot;", -1)
+			s = strings.Replace(s, "'", "&#39;", -1)
+			s = strings.Replace(s, "\n", "<br>", -1)
+			s = strings.Replace(s, "\t", "&nbsp;&nbsp;&nbsp;&nbsp;", -1)
+			s = strings.Replace(s, " ", "&nbsp;", -1)
+
+			s = strings.Replace(s, "[mark]", "<mark>", -1)
+			s = strings.Replace(s, "[/mark]", "</mark>", -1)
+
+			return template.HTML(s)
+		},
 	})
 
 	template, err := template.Parse(index_html)
+	// template, err := template.ParseFiles("static/index.html")
 	if err != nil {
 		fmt.Printf("load template err: %v\n", err)
 		return
@@ -188,4 +216,20 @@ func (l LogModels) ToRoutes() []Route {
 		routes[i] = Route{Name: m.DisplayName, ID: m.ModelId}
 	}
 	return routes
+}
+
+type CaseInsensitiveReplacer struct {
+	toReplace   *regexp.Regexp
+	replaceWith string
+}
+
+func NewCaseInsensitiveReplacer(toReplace, replaceWith string) *CaseInsensitiveReplacer {
+	return &CaseInsensitiveReplacer{
+		toReplace:   regexp.MustCompile("(?i)" + toReplace),
+		replaceWith: replaceWith,
+	}
+}
+
+func (cir *CaseInsensitiveReplacer) Replace(str string) string {
+	return cir.toReplace.ReplaceAllString(str, cir.replaceWith)
 }
