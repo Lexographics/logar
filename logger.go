@@ -115,6 +115,28 @@ func WithPrintedSeverities(severities ...Severity) ConfigOpt {
 	}
 }
 
+func Combine(opts ...ConfigOpt) ConfigOpt {
+	return func(cfg *LoggerConfig) {
+		for _, opt := range opts {
+			opt(cfg)
+		}
+	}
+}
+
+func If(condition bool, opts ...ConfigOpt) ConfigOpt {
+	if condition {
+		return Combine(opts...)
+	}
+	return func(cfg *LoggerConfig) {}
+}
+
+func IfElse(condition bool, ifOpts ConfigOpt, elseOpts ...ConfigOpt) ConfigOpt {
+	if condition {
+		return ifOpts
+	}
+	return Combine(elseOpts...)
+}
+
 func (l *Logger) Close() error {
 	sqlDB, err := l.db.DB()
 	if err != nil {
