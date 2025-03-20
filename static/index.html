@@ -119,6 +119,18 @@
       --bs-table-bg: #C7D9F0;
       --bs-table-striped-bg: #D9E7F7;
     }
+
+    .table-trace {
+      --bs-table-bg: #6ad4a5;
+      --bs-table-striped-bg: #5ecb9a;
+
+      --bs-table-bg: #e6e6e6;
+      --bs-table-striped-bg: #d9d9d9;
+    }
+
+    mark {
+      background-color: lime;
+    }
   </style>
 </head>
 
@@ -147,6 +159,8 @@
             <option value="2">Info</option>
             <option value="3">Warning</option>
             <option value="4">Error</option>
+            <option value="5">Fatal</option>
+            <option value="6">Trace</option>
           </select>
 
           <button class="btn btn-outline-secondary" type="submit" id="button-addon2">Search</button>
@@ -191,7 +205,7 @@
     <th scope="row">{{.ID}}</th>
     <td>{{.Severity | Severity_String | ToUpper}}</td>
     <td>{{.CreatedAt.Format "2006-01-02 15:04:05.000"}}</td>
-    <td style="text-align: left;">{{.Message}}</td>
+    <td style="text-align: left; word-wrap: break-word; word-break: break-all;">{{Escape .Message}}</td>
     <td>{{.Category}}</td>
 </tr>
   {{end}}

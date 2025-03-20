@@ -22,10 +22,11 @@ const (
 	Severity_Warning
 	Severity_Error
 	Severity_Fatal
+	Severity_Trace
 	Severity_Max
 )
 
-var severityStrings = [...]string{"None", "Log", "Info", "Warn", "Error", "Fatal"}
+var severityStrings = [...]string{"None", "Log", "Info", "Warn", "Error", "Fatal", "Trace"}
 
 func (s Severity) String() string {
 	s.Clamp()

@@ -1,1 +1,4 @@
 /logs.db*
+/tmp
+/app.db
+/todo.md
