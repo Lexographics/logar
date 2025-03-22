@@ -9,6 +9,8 @@ import (
 	"strconv"
 	"strings"
 	"time"
+
+	"github.com/Lexographics/logar/internal/domain/models"
 )
 
 type Route struct {
@@ -18,7 +20,7 @@ type Route struct {
 
 type LogsData struct {
 	Model  string
-	Logs   []Log
+	Logs   []models.Log
 	LastID uint
 }
 
@@ -49,7 +51,7 @@ func NewHandler(logger *Logger) *Handler {
 	return &Handler{logger: logger}
 }
 
-func (h *Handler) GetLogs(r *http.Request) (model string, logs []Log, lastLogId uint, err error) {
+func (h *Handler) GetLogs(r *http.Request) (model string, logs []models.Log, lastLogId uint, err error) {
 	model = r.PathValue("model")
 	if model == "all" {
 		model = ""
@@ -63,7 +65,7 @@ func (h *Handler) GetLogs(r *http.Request) (model string, logs []Log, lastLogId 
 	logs, err = h.logger.GetLogs(
 		WithCursorPagination(cursor, count),
 		WithModel(model),
-		WithSeverity(Severity(severity)),
+		WithSeverity(models.Severity(severity)),
 		WithFilter(filter),
 	)
 	if err != nil {
@@ -155,7 +157,7 @@ func (h *Handler) Index(w http.ResponseWriter, r *http.Request) {
 
 func (h *Handler) LoadTemplate() {
 	template := template.New("logger").Funcs(template.FuncMap{
-		"Severity_String": func(s Severity) string {
+		"Severity_String": func(s models.Severity) string {
 			return s.String()
 		},
 		"ToUpper": func(s string) string {

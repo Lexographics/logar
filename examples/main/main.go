@@ -2,8 +2,11 @@ package main
 
 import (
 	"context"
+	"net/http"
 
 	"github.com/Lexographics/logar"
+	"github.com/Lexographics/logar/proxy"
+	"github.com/Lexographics/logar/proxy/consolelogger"
 	"gorm.io/driver/sqlite"
 	"gorm.io/gorm"
 
@@ -23,12 +26,33 @@ var UserID UserIDType
 var name string = "Example application"
 
 func main() {
+	needAuth := false
+
 	logger, err := logar.New(
 		logar.WithAppName(name),
 		logar.WithDatabase("logs.db"),
 		logar.AddModel("System Logs", "system-logs"),
 		logar.AddModel("User Trace", "user-trace"),
-		logar.WithPrintedSeverities(logar.Severity_Log, logar.Severity_Info, logar.Severity_Warning, logar.Severity_Error, logar.Severity_Fatal, logar.Severity_Trace),
+
+		logar.AddProxy(proxy.NewProxy(
+			consolelogger.New(),
+			proxy.NewFilter(
+				proxy.Not(
+					proxy.IsCategory("db-laog"),
+				),
+			),
+		)),
+
+		logar.If(needAuth,
+			logar.WithAuth(func(r *http.Request) bool {
+				username, password, ok := r.BasicAuth()
+				if ok && username == "admin" && password == "password" {
+					return true
+				}
+
+				return false
+			}),
+		),
 	)
 	if err != nil {
 		panic(err)

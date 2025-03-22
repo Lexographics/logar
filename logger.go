@@ -2,42 +2,43 @@ package logar
 
 import (
 	"encoding/json"
-	"fmt"
 	"net/http"
-	"slices"
 	"strings"
 	"time"
 
+	"github.com/Lexographics/logar/internal/domain/models"
+	"github.com/Lexographics/logar/proxy"
 	"gorm.io/driver/sqlite"
 	"gorm.io/gorm"
 	"gorm.io/gorm/logger"
 )
 
 type Logger struct {
-	db     *gorm.DB
-	config LoggerConfig
+	db      *gorm.DB
+	config  LoggerConfig
+	proxies []proxy.Proxy
 }
 
 type LoggerConfig struct {
-	AppName           string
-	Database          string
-	AutoMigrate       bool
-	RequireAuth       bool
-	AuthFunc          AuthFunc
-	Models            LogModels
-	PrintedSeverities []Severity
+	AppName     string
+	Database    string
+	AutoMigrate bool
+	RequireAuth bool
+	AuthFunc    AuthFunc
+	Models      LogModels
+	Proxies     []proxy.Proxy
 }
 
 func New(opts ...ConfigOpt) (*Logger, error) {
 
 	cfg := LoggerConfig{
-		AppName:           "logger",
-		Database:          "logs.db",
-		AutoMigrate:       true,
-		RequireAuth:       false,
-		AuthFunc:          nil,
-		Models:            LogModels{},
-		PrintedSeverities: []Severity{Severity_Log, Severity_Info, Severity_Warning, Severity_Error, Severity_Fatal, Severity_Trace},
+		AppName:     "logger",
+		Database:    "logs.db",
+		AutoMigrate: true,
+		RequireAuth: false,
+		AuthFunc:    nil,
+		Models:      LogModels{},
+		Proxies:     []proxy.Proxy{},
 	}
 
 	for _, opt := range opts {
@@ -52,15 +53,16 @@ func New(opts ...ConfigOpt) (*Logger, error) {
 	}
 
 	if cfg.AutoMigrate {
-		err = db.AutoMigrate(&Log{})
+		err = db.AutoMigrate(&models.Log{})
 		if err != nil {
 			return nil, err
 		}
 	}
 
 	return &Logger{
-		db:     db,
-		config: cfg,
+		db:      db,
+		config:  cfg,
+		proxies: cfg.Proxies,
 	}, nil
 }
 
@@ -109,9 +111,9 @@ func AddModel(displayName, modelId string) ConfigOpt {
 	}
 }
 
-func WithPrintedSeverities(severities ...Severity) ConfigOpt {
+func AddProxy(proxy proxy.Proxy) ConfigOpt {
 	return func(cfg *LoggerConfig) {
-		cfg.PrintedSeverities = severities
+		cfg.Proxies = append(cfg.Proxies, proxy)
 	}
 }
 
@@ -153,39 +155,45 @@ func (l *Logger) Print(model string, message any, category string, severity Seve
 	}
 
 	now := time.Now()
-	if slices.Contains(l.config.PrintedSeverities, severity) {
-		fmt.Println("["+strings.ToUpper(severity.String())+"]", now.Format(time.DateTime), string(msg))
-	}
-
-	return l.db.Create(&Log{
+	log := models.Log{
 		CreatedAt: now,
 		Model:     model,
 		Message:   string(msg),
 		Category:  category,
 		Severity:  severity,
-	}).Error
+	}
+	err := l.db.Create(&log).Error
+	if err != nil {
+		return err
+	}
+
+	for _, proxy := range l.proxies {
+		proxy.TrySend(log, msg)
+	}
+
+	return nil
 }
 
 func (l *Logger) Log(model string, message any, category string) error {
-	return l.Print(model, message, category, Severity_Log)
+	return l.Print(model, message, category, models.Severity_Log)
 }
 
 func (l *Logger) Info(model string, message any, category string) error {
-	return l.Print(model, message, category, Severity_Info)
+	return l.Print(model, message, category, models.Severity_Info)
 }
 
 func (l *Logger) Warn(model string, message any, category string) error {
-	return l.Print(model, message, category, Severity_Warning)
+	return l.Print(model, message, category, models.Severity_Warning)
 }
 
 func (l *Logger) Error(model string, message any, category string) error {
-	return l.Print(model, message, category, Severity_Error)
+	return l.Print(model, message, category, models.Severity_Error)
 }
 
 func (l *Logger) Fatal(model string, message any, category string) error {
-	return l.Print(model, message, category, Severity_Fatal)
+	return l.Print(model, message, category, models.Severity_Fatal)
 }
 
 func (l *Logger) Trace(model string, message any, category string) error {
-	return l.Print(model, message, category, Severity_Trace)
+	return l.Print(model, message, category, models.Severity_Trace)
 }

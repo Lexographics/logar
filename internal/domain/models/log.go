@@ -1,4 +1,4 @@
-package logar
+package models
 
 import (
 	"time"

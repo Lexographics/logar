@@ -3,6 +3,7 @@ package logar
 import (
 	"time"
 
+	"github.com/Lexographics/logar/internal/domain/models"
 	"gorm.io/gorm"
 )
 
@@ -20,7 +21,7 @@ type QueryOptions struct {
 	Model              string
 	Category           string
 	Filter             string
-	Severity           Severity
+	Severity           models.Severity
 	PaginationStrategy PaginationStrategy
 	Limit              int
 	Page               int
@@ -48,7 +49,7 @@ func WithFilter(filter string) QueryOptFunc {
 	}
 }
 
-func WithSeverity(severity Severity) QueryOptFunc {
+func WithSeverity(severity models.Severity) QueryOptFunc {
 	return func(o *QueryOptions) {
 		o.Severity = severity
 	}
@@ -95,8 +96,8 @@ func WithIDs(ids ...uint) QueryOptFunc {
 	}
 }
 
-func (l *Logger) GetLogs(opts ...QueryOptFunc) ([]Log, error) {
-	var logs []Log
+func (l *Logger) GetLogs(opts ...QueryOptFunc) ([]models.Log, error) {
+	var logs []models.Log
 	query := l.prepareQuery(opts...)
 	err := query.Find(&logs).Error
 	return logs, err
@@ -104,7 +105,7 @@ func (l *Logger) GetLogs(opts ...QueryOptFunc) ([]Log, error) {
 
 func (l *Logger) DeleteLogs(opts ...QueryOptFunc) error {
 	query := l.prepareQuery(opts...)
-	return query.Delete(&Log{}).Error
+	return query.Delete(&models.Log{}).Error
 }
 
 func (l *Logger) prepareQuery(opts ...QueryOptFunc) *gorm.DB {
@@ -112,7 +113,7 @@ func (l *Logger) prepareQuery(opts ...QueryOptFunc) *gorm.DB {
 		Model:              "",
 		Category:           "",
 		Filter:             "",
-		Severity:           Severity_None,
+		Severity:           models.Severity_None,
 		PaginationStrategy: PaginationStatus_None,
 		Limit:              0,
 		Page:               0,
@@ -135,7 +136,7 @@ func (l *Logger) prepareQuery(opts ...QueryOptFunc) *gorm.DB {
 	if options.Filter != "" {
 		query = query.Where("message LIKE ?", "%"+options.Filter+"%")
 	}
-	if options.Severity != Severity_None {
+	if options.Severity != models.Severity_None {
 		query = query.Where("severity = ?", options.Severity)
 	}
 
