@@ -148,10 +148,18 @@ func (l *Logger) Close() error {
 	return sqlDB.Close()
 }
 
-func (l *Logger) Print(model string, message any, category string, severity Severity) error {
-	msg, error := json.MarshalIndent(message, "", "  ")
-	if error != nil {
-		return error
+func (l *Logger) Print(model string, message any, category string, severity models.Severity) error {
+	var msg string
+
+	switch message := message.(type) {
+	case string:
+		msg = message
+	default:
+		msgBytes, err := json.Marshal(message)
+		if err != nil {
+			return err
+		}
+		msg = string(msgBytes)
 	}
 
 	now := time.Now()
