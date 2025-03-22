@@ -2,6 +2,7 @@ package main
 
 import (
 	"context"
+	"encoding/json"
 	"net/http"
 
 	"github.com/Lexographics/logar"
@@ -94,14 +95,31 @@ func main() {
 		status := c.Response().StatusCode()
 		body := c.Response().Body()
 
+		var bodyData map[string]any
+		err := json.Unmarshal(body, &bodyData)
+		if err != nil {
+			bodyData = nil
+		}
+
 		logger.Trace("user-trace", fiber.Map{
 			"requestid": reqid,
 			"status":    status,
 			"user_id":   userid,
-			"body":      string(body),
+			"body":      bodyData,
 		}, "request")
 		return nil
 	}
+
+	app.Use(func(c *fiber.Ctx) error {
+		err := c.Next()
+		if err != nil {
+			logger.Error("system-logs", err, "request")
+			return nil
+		}
+
+		afterLogger(c)
+		return nil
+	})
 
 	app.Get("/", func(c *fiber.Ctx) error {
 		errorText := c.Query("error", "")
@@ -117,8 +135,8 @@ func main() {
 		c.Status(200).JSON(fiber.Map{
 			"message": "Hello, Logar!",
 		})
-		return c.Next()
-	}, afterLogger)
+		return nil
+	})
 
 	logger.Info("system-logs", "App Started", "app-start")
 	err = app.Listen(":3000")
