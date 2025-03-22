@@ -11,6 +11,7 @@ import (
 	"time"
 
 	"github.com/Lexographics/logar/internal/domain/models"
+	"github.com/Lexographics/logar/internal/options/config"
 )
 
 type Route struct {
@@ -145,7 +146,7 @@ func (h *Handler) Index(w http.ResponseWriter, r *http.Request) {
 
 	h.template.ExecuteTemplate(w, "index", IndexData{
 		AppName:      h.logger.config.AppName,
-		Routes:       h.logger.config.Models.ToRoutes(),
+		Routes:       LogModelToRoutes(&h.logger.config.Models),
 		CurrentRoute: model,
 		Logs: LogsData{
 			Model:  model,
@@ -212,9 +213,9 @@ func generateRandomString(n int) string {
 // TODO: Generate random token for each session
 var authToken string = generateRandomString(66)
 
-func (l LogModels) ToRoutes() []Route {
-	routes := make([]Route, len(l))
-	for i, m := range l {
+func LogModelToRoutes(logs *config.LogModels) []Route {
+	routes := make([]Route, len(*logs))
+	for i, m := range *logs {
 		routes[i] = Route{Name: m.DisplayName, ID: m.ModelId}
 	}
 	return routes

@@ -2,11 +2,10 @@ package logar
 
 import (
 	"encoding/json"
-	"net/http"
-	"strings"
 	"time"
 
 	"github.com/Lexographics/logar/internal/domain/models"
+	"github.com/Lexographics/logar/internal/options/config"
 	"github.com/Lexographics/logar/proxy"
 	"gorm.io/driver/sqlite"
 	"gorm.io/gorm"
@@ -15,29 +14,19 @@ import (
 
 type Logger struct {
 	db      *gorm.DB
-	config  LoggerConfig
+	config  config.Config
 	proxies []proxy.Proxy
 }
 
-type LoggerConfig struct {
-	AppName     string
-	Database    string
-	AutoMigrate bool
-	RequireAuth bool
-	AuthFunc    AuthFunc
-	Models      LogModels
-	Proxies     []proxy.Proxy
-}
+func New(opts ...config.ConfigOpt) (*Logger, error) {
 
-func New(opts ...ConfigOpt) (*Logger, error) {
-
-	cfg := LoggerConfig{
+	cfg := config.Config{
 		AppName:     "logger",
 		Database:    "logs.db",
 		AutoMigrate: true,
 		RequireAuth: false,
 		AuthFunc:    nil,
-		Models:      LogModels{},
+		Models:      config.LogModels{},
 		Proxies:     []proxy.Proxy{},
 	}
 
@@ -64,79 +53,6 @@ func New(opts ...ConfigOpt) (*Logger, error) {
 		config:  cfg,
 		proxies: cfg.Proxies,
 	}, nil
-}
-
-type LogModel struct {
-	DisplayName string
-	ModelId     string
-}
-type LogModels []LogModel
-
-type AuthFunc func(r *http.Request) bool
-type ConfigOpt func(*LoggerConfig)
-
-func WithAppName(appName string) ConfigOpt {
-	return func(cfg *LoggerConfig) {
-		cfg.AppName = appName
-	}
-}
-
-func WithDatabase(database string) ConfigOpt {
-	return func(cfg *LoggerConfig) {
-		cfg.Database = database
-	}
-}
-
-func EnableAutoMigrate(cfg *LoggerConfig) {
-	cfg.AutoMigrate = true
-}
-
-func DisableAutoMigrate(cfg *LoggerConfig) {
-	cfg.AutoMigrate = false
-}
-
-func WithAuth(authFunc AuthFunc) ConfigOpt {
-	return func(cfg *LoggerConfig) {
-		cfg.RequireAuth = true
-		cfg.AuthFunc = authFunc
-	}
-}
-
-func AddModel(displayName, modelId string) ConfigOpt {
-	return func(cfg *LoggerConfig) {
-		cfg.Models = append(cfg.Models, LogModel{
-			DisplayName: displayName,
-			ModelId:     modelId,
-		})
-	}
-}
-
-func AddProxy(proxy proxy.Proxy) ConfigOpt {
-	return func(cfg *LoggerConfig) {
-		cfg.Proxies = append(cfg.Proxies, proxy)
-	}
-}
-
-func Combine(opts ...ConfigOpt) ConfigOpt {
-	return func(cfg *LoggerConfig) {
-		for _, opt := range opts {
-			opt(cfg)
-		}
-	}
-}
-
-func If(condition bool, opts ...ConfigOpt) ConfigOpt {
-	if condition {
-		return Combine(opts...)
-	}
-	return func(cfg *LoggerConfig) {}
-}
-
-func IfElse(condition bool, ifOpts ConfigOpt, elseOpts ...ConfigOpt) ConfigOpt {
-	if condition {
-		return ifOpts
-	}
-	return Combine(elseOpts...)
 }
 
 func (l *Logger) Close() error {
@@ -166,7 +82,7 @@ func (l *Logger) Print(model string, message any, category string, severity mode
 	log := models.Log{
 		CreatedAt: now,
 		Model:     model,
-		Message:   string(msg),
+		Message:   msg,
 		Category:  category,
 		Severity:  severity,
 	}

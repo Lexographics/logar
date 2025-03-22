@@ -6,6 +6,7 @@ import (
 	"net/http"
 
 	"github.com/Lexographics/logar"
+	"github.com/Lexographics/logar/internal/options/config"
 	"github.com/Lexographics/logar/proxy"
 	"github.com/Lexographics/logar/proxy/consolelogger"
 	"gorm.io/driver/sqlite"
@@ -30,12 +31,12 @@ func main() {
 	needAuth := false
 
 	logger, err := logar.New(
-		logar.WithAppName(name),
-		logar.WithDatabase("logs.db"),
-		logar.AddModel("System Logs", "system-logs"),
-		logar.AddModel("User Trace", "user-trace"),
+		config.WithAppName(name),
+		config.WithDatabase("logs.db"),
+		config.AddModel("System Logs", "system-logs"),
+		config.AddModel("User Trace", "user-trace"),
 
-		logar.AddProxy(proxy.NewProxy(
+		config.AddProxy(proxy.NewProxy(
 			consolelogger.New(),
 			proxy.NewFilter(
 				proxy.Not(
@@ -44,8 +45,8 @@ func main() {
 			),
 		)),
 
-		logar.If(needAuth,
-			logar.WithAuth(func(r *http.Request) bool {
+		config.If(needAuth,
+			config.WithAuth(func(r *http.Request) bool {
 				username, password, ok := r.BasicAuth()
 				if ok && username == "admin" && password == "password" {
 					return true
