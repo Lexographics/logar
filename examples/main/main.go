@@ -6,6 +6,7 @@ import (
 	"net/http"
 
 	"github.com/Lexographics/logar"
+	"github.com/Lexographics/logar/gormlogger"
 	"github.com/Lexographics/logar/internal/options/config"
 	"github.com/Lexographics/logar/proxy"
 	"github.com/Lexographics/logar/proxy/consolelogger"
@@ -60,7 +61,9 @@ func main() {
 		panic(err)
 	}
 
-	db, err := gorm.Open(sqlite.Open("app.db"))
+	db, err := gorm.Open(sqlite.Open("app.db"), &gorm.Config{
+		Logger: gormlogger.New(logger, "user-trace", "db-log", 1),
+	})
 	if err != nil {
 		panic(err)
 	}
