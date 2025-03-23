@@ -33,13 +33,17 @@ type IndexData struct {
 }
 
 func (l *Logger) ServeHTTP() http.Handler {
+	basePath := "/logger"
 	handler := NewHandler(l)
 
+	router := http.NewServeMux()
+	router.HandleFunc("/auth", handler.Auth)
+	router.HandleFunc("/", handler.AuthMiddleware(handler.Index))
+	router.HandleFunc("/{model}", handler.AuthMiddleware(handler.Index))
+	router.HandleFunc("/{model}/logs", handler.AuthMiddleware(handler.Logs))
+
 	mux := http.NewServeMux()
-	mux.HandleFunc("/logger/auth", handler.Auth)
-	mux.HandleFunc("/logger/", handler.AuthMiddleware(handler.Index))
-	mux.HandleFunc("/logger/{model}", handler.AuthMiddleware(handler.Index))
-	mux.HandleFunc("/logger/{model}/logs", handler.AuthMiddleware(handler.Logs))
+	mux.Handle(basePath+"/", http.StripPrefix(basePath, router))
 	return mux
 }
 
@@ -181,6 +185,7 @@ func (h *Handler) LoadTemplate() {
 			s = strings.Replace(s, "\"", "&quot;", -1)
 			s = strings.Replace(s, "'", "&#39;", -1)
 			s = strings.Replace(s, "\n", "<br>", -1)
+			s = strings.Replace(s, "\\n", "<br>", -1)
 			s = strings.Replace(s, "\t", "&nbsp;&nbsp;&nbsp;&nbsp;", -1)
 			s = strings.Replace(s, " ", "&nbsp;", -1)
 
@@ -222,17 +227,21 @@ func LogModelToRoutes(logs *config.LogModels) []Route {
 }
 
 type CaseInsensitiveReplacer struct {
-	toReplace   *regexp.Regexp
-	replaceWith string
+	toReplace      *regexp.Regexp
+	replaceWith    string
+	originalSearch string
 }
 
 func NewCaseInsensitiveReplacer(toReplace, replaceWith string) *CaseInsensitiveReplacer {
 	return &CaseInsensitiveReplacer{
-		toReplace:   regexp.MustCompile("(?i)" + toReplace),
-		replaceWith: replaceWith,
+		toReplace:      regexp.MustCompile("(?i)(" + regexp.QuoteMeta(toReplace) + ")"),
+		replaceWith:    replaceWith,
+		originalSearch: toReplace,
 	}
 }
 
 func (cir *CaseInsensitiveReplacer) Replace(str string) string {
-	return cir.toReplace.ReplaceAllString(str, cir.replaceWith)
+	return cir.toReplace.ReplaceAllStringFunc(str, func(found string) string {
+		return strings.Replace(cir.replaceWith, cir.originalSearch, found, 1)
+	})
 }
