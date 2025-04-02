@@ -84,6 +84,11 @@ func (h *Handler) GetLogs(r *http.Request) (model string, logs []models.Log, las
 		}
 	}
 
+	urlRegex := regexp.MustCompile(`(https?://[^\s]+)`)
+	for i, log := range logs {
+		logs[i].Message = urlRegex.ReplaceAllString(log.Message, "[url=$1]$1[/url]")
+	}
+
 	lastId := uint(0)
 	if len(logs) > 0 && len(logs) == count {
 		lastId = logs[len(logs)-1].ID
@@ -191,6 +196,9 @@ func (h *Handler) LoadTemplate() {
 
 			s = strings.Replace(s, "[mark]", "<mark>", -1)
 			s = strings.Replace(s, "[/mark]", "</mark>", -1)
+
+			urlPattern := regexp.MustCompile(`\[url=(.*?)\](.*?)\[/url\]`)
+			s = urlPattern.ReplaceAllString(s, `<a href="$1" target="_blank" rel="noopener noreferrer">$2</a>`)
 
 			return template.HTML(s)
 		},
