@@ -1,30 +1,21 @@
 package main
 
 import (
-	"context"
-	"encoding/json"
 	"net/http"
 
 	"github.com/Lexographics/logar"
 	"github.com/Lexographics/logar/gormlogger"
+	"github.com/Lexographics/logar/internal/logfilter"
 	"github.com/Lexographics/logar/internal/options/config"
 	"github.com/Lexographics/logar/proxy"
 	"github.com/Lexographics/logar/proxy/consolelogger"
 	"gorm.io/driver/sqlite"
 	"gorm.io/gorm"
 
-	"github.com/gofiber/fiber/v2"
-	"github.com/gofiber/fiber/v2/middleware/adaptor"
-	"github.com/gofiber/fiber/v2/middleware/requestid"
+	"github.com/google/uuid"
+	"github.com/labstack/echo/v4"
+	"github.com/labstack/echo/v4/middleware"
 )
-
-type RequestIDType struct{}
-
-var RequestID RequestIDType
-
-type UserIDType struct{}
-
-var UserID UserIDType
 
 var name string = "Example application"
 
@@ -39,9 +30,9 @@ func main() {
 
 		config.AddProxy(proxy.NewProxy(
 			consolelogger.New(),
-			proxy.NewFilter(
-				proxy.Not(
-					proxy.IsCategory("db-laog"),
+			logfilter.NewFilter(
+				logfilter.Not(
+					logfilter.IsCategory("db-log"),
 				),
 			),
 		)),
@@ -72,78 +63,90 @@ func main() {
 		panic(err)
 	}
 
-	app := fiber.New()
-	app.Get("/logger/*", adaptor.HTTPHandler(logger.ServeHTTP()))
+	logger.Info("system-logs", "User registered https://example.com", "user-register-telegram")
 
-	app.Use(requestid.New())
-	app.Use(func(c *fiber.Ctx) error {
-		requestid := c.Locals("requestid").(string)
-		c.SetUserContext(context.WithValue(c.UserContext(), RequestID, requestid))
+	app := echo.New()
+	app.Use(middleware.CORS())
+	app.Use(middleware.Recover())
+	app.Use(middleware.RequestIDWithConfig(middleware.RequestIDConfig{
+		Generator: func() string {
+			return uuid.New().String()
+		},
+		RequestIDHandler: func(c echo.Context, requestid string) {
+			c.Set("requestid", requestid)
+		},
+	}))
 
-		userid := 4
-		c.SetUserContext(context.WithValue(c.UserContext(), UserID, userid))
+	app.GET("/logger/*", echo.WrapHandler(logger.ServeHTTP()))
 
-		logger.Trace("user-trace", fiber.Map{
-			"requestid": requestid,
-			"url":       c.Method() + " " + c.Path(),
-			"user_id":   userid,
-		}, "request")
+	app.Use(middleware.RequestIDWithConfig(middleware.RequestIDConfig{
+		Generator: func() string {
+			return uuid.New().String()
+		},
+	}))
 
-		return c.Next()
+	app.Use(func(next echo.HandlerFunc) echo.HandlerFunc {
+		return func(c echo.Context) error {
+			requestid := c.Response().Header().Get(echo.HeaderXRequestID)
+			c.Set("requestid", requestid)
+
+			userid := 4
+			c.Set("userid", userid)
+
+			logger.Trace("user-trace", map[string]interface{}{
+				"requestid": requestid,
+				"url":       c.Request().Method + " " + c.Request().URL.Path,
+				"user_id":   userid,
+			}, "request")
+
+			return next(c)
+		}
 	})
 
-	afterLogger := func(c *fiber.Ctx) error {
-		reqid := c.UserContext().Value(RequestID).(string)
-		userid := c.UserContext().Value(UserID).(int)
+	app.Use(func(next echo.HandlerFunc) echo.HandlerFunc {
+		return func(c echo.Context) error {
+			err := next(c)
+			if err != nil {
+				logger.Error("system-logs", err, "request")
+				return nil
+			}
 
-		status := c.Response().StatusCode()
-		body := c.Response().Body()
+			requestid := c.Get("requestid").(string)
+			userid := c.Get("userid").(int)
 
-		var bodyData map[string]any
-		err := json.Unmarshal(body, &bodyData)
-		if err != nil {
-			bodyData = nil
-		}
+			status := c.Response().Status
 
-		logger.Trace("user-trace", fiber.Map{
-			"requestid": reqid,
-			"status":    status,
-			"user_id":   userid,
-			"body":      bodyData,
-		}, "request")
-		return nil
-	}
+			logger.Trace("user-trace", map[string]interface{}{
+				"requestid": requestid,
+				"status":    status,
+				"user_id":   userid,
+			}, "request")
 
-	app.Use(func(c *fiber.Ctx) error {
-		err := c.Next()
-		if err != nil {
-			logger.Error("system-logs", err, "request")
 			return nil
 		}
-
-		afterLogger(c)
-		return nil
 	})
 
-	app.Get("/", func(c *fiber.Ctx) error {
-		errorText := c.Query("error", "")
+	app.GET("/", func(c echo.Context) error {
+		errorText := c.QueryParam("error")
 
 		if errorText != "" {
-			c.Status(400).JSON(fiber.Map{
+			return c.JSON(http.StatusBadRequest, map[string]interface{}{
 				"message": "An error occurred",
 				"error":   errorText,
 			})
-			return c.Next()
 		}
 
-		c.Status(200).JSON(fiber.Map{
+		return c.JSON(http.StatusOK, map[string]interface{}{
 			"message": "Hello, Logar!",
 		})
-		return nil
 	})
 
-	logger.Info("system-logs", "App Started", "app-start")
-	err = app.Listen(":3000")
+	logger.Info("system-logs", "App Started https://example.com", "app-start")
+	logger.Info("system-logs", "App Started http://example.com", "app-start")
+
+	logger.Info("system-logs", logar.Map{"hello": "this"}, "app-start")
+
+	err = app.Start(":3000")
 	if err != nil {
 		panic(err)
 	}

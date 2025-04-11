@@ -18,8 +18,9 @@ type Logger struct {
 	proxies []proxy.Proxy
 }
 
-func New(opts ...config.ConfigOpt) (*Logger, error) {
+type Map map[string]any
 
+func New(opts ...config.ConfigOpt) (*Logger, error) {
 	cfg := config.Config{
 		AppName:     "logger",
 		Database:    "logs.db",
