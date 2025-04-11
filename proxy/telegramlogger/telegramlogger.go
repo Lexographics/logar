@@ -1,8 +1,8 @@
 package telegramlogger
 
 import (
+	"fmt"
 	"strings"
-	"time"
 
 	"github.com/Lexographics/logar/internal/domain/models"
 )
@@ -24,5 +24,5 @@ type telegramLogger struct {
 }
 
 func (l *telegramLogger) Send(log models.Log, rawMessage string) error {
-	return l.bot.Send("["+strings.ToUpper(log.Severity.String())+"] "+log.CreatedAt.Format(time.RFC3339)+" "+log.Message, l.chatId)
+	return l.bot.Send(fmt.Sprintf("["+strings.ToUpper(log.Severity.String())+"] %s", log.Message), l.chatId)
 }
