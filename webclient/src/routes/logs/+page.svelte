@@ -2,12 +2,13 @@
   import { browser } from "$app/environment";
   import { page } from "$app/stores";
   import BaseView from "$lib/BaseView.svelte";
-  import { getLogs } from "$lib/service/logs";
+  import { getLogs, connectToLogStream } from "$lib/service/logs";
   import { getModels } from "$lib/service/model";
   import Sidebar from "$lib/Sidebar.svelte";
   import { SessionStorage } from "$lib/storage.svelte";
   import moment from "moment";
   import { mount, onMount } from "svelte";
+  import { fade, fly } from 'svelte/transition';
 
   let models = getModels();
 
@@ -52,6 +53,8 @@
   let loading = $state(false);
   let lastCursor = $state(0);
   let hasMore = $state(true);
+  let isStreamConnected = $state(false);
+  let streamCleanup = null;
 
   let currentFilterInput = $state("");
 
@@ -61,6 +64,10 @@
     lastCursor = 0;
     hasMore = true;
     loadMore();
+    if (isStreamConnected) {
+      disconnectLogStream();
+      setupLogStream();
+    }
   }
 
   function handleAddFilter() {
@@ -71,6 +78,10 @@
       lastCursor = 0;
       hasMore = true;
       loadMore();
+      if (isStreamConnected) {
+        disconnectLogStream();
+        setupLogStream();
+      }
     }
   }
 
@@ -95,10 +106,53 @@
     if (data?.Logs?.length > 0) {
       logs = [...logs, ...data.Logs];
       lastCursor = data.Logs[data.Logs.length - 1].ID;
+      
+      if (!isStreamConnected) {
+        setupLogStream();
+      }
     }
 
     loading = false;
   }
+
+  function handleNewLogs(data) {
+    if (data.Logs && data.Logs.length > 0) {
+      logs = [...data.Logs, ...logs];
+    }
+  }
+
+  function setupLogStream() {
+    if (streamCleanup) {
+      streamCleanup();
+    }
+    
+    streamCleanup = connectToLogStream(
+      model, 
+      filters, 
+      handleNewLogs,
+      (error) => console.error("Stream error:", error)
+    );
+    
+    isStreamConnected = true;
+  }
+
+  function disconnectLogStream() {
+    if (streamCleanup) {
+      streamCleanup();
+      streamCleanup = null;
+    }
+    isStreamConnected = false;
+  }
+
+  $effect(() => {
+    model = $page.url.searchParams.get("model") || "";
+    logs = [];
+    loading = false;
+    lastCursor = 0;
+    hasMore = true;
+    
+    disconnectLogStream();
+  });
 
   let observerTarget;
   onMount(() => {
@@ -115,8 +169,10 @@
       observer.observe(observerTarget);
     }
 
-    loadMore();
-    return () => observer.disconnect();
+    return () => {
+      observer.disconnect();
+      disconnectLogStream();
+    };
   });
 
 </script>
@@ -153,23 +209,28 @@
       <thead>
         <tr>
           <th style="text-align: center;">ID</th>
-          <th style="text-align: center;"><i class="fa-solid fa-signal"></i></th
-          >
+          <th style="text-align: center;"><i class="fa-solid fa-signal"></i></th>
           <th style="text-align: center;">Timestamp</th>
           <th style="text-align: left;">Message</th>
           <th style="text-align: center;">Category</th>
         </tr>
       </thead>
       <tbody>
-        {#each logs as log (log.ID)}
-          <tr class="row {getSeverityClass(log.Severity)}">
-            <td style="width: 1%;">{log.ID}</td>
-            <td style="width: 1%;">{getSeverityClass(log.Severity).toUpperCase()}</td>
-            <td style="width: 50ch;">{moment(log.CreatedAt).format("DD-MM-YYYY HH:mm:ss.SSS")}</td>
-            <td style="width: 70%; word-break: break-all;">{log.Message}</td>
-            <td style="width: 1%;">{log.Category}</td>
-          </tr>
-        {/each}
+        {#key [model, JSON.stringify(filters)]}
+          {#each logs as log (log.ID)}
+            <tr
+              class="row {getSeverityClass(log.Severity)}"
+              in:fly={{ x: -50, duration: 300 }}
+              out:fade={{ duration: 200 }}
+            >
+              <td style="width: 1%;">{log.ID}</td>
+              <td style="width: 1%;">{getSeverityClass(log.Severity).toUpperCase()}</td>
+              <td style="width: 50ch;">{moment(log.CreatedAt).format("DD-MM-YYYY HH:mm:ss.SSS")}</td>
+              <td style="width: 70%; word-break: break-all;">{log.Message}</td>
+              <td style="width: 1%;">{log.Category}</td>
+            </tr>
+          {/each}
+        {/key}
       </tbody>
     </table>
 
