@@ -2,9 +2,11 @@ package main
 
 import (
 	"net/http"
+	"strings"
 
 	"github.com/Lexographics/logar"
 	"github.com/Lexographics/logar/gormlogger"
+	"github.com/Lexographics/logar/internal/logarweb"
 	"github.com/Lexographics/logar/internal/logfilter"
 	"github.com/Lexographics/logar/internal/options/config"
 	"github.com/Lexographics/logar/proxy"
@@ -77,19 +79,15 @@ func main() {
 		},
 	}))
 
-	app.GET("/logger/*", echo.WrapHandler(logger.ServeHTTP()))
-
-	app.Use(middleware.RequestIDWithConfig(middleware.RequestIDConfig{
-		Generator: func() string {
-			return uuid.New().String()
-		},
-	}))
+	app.GET("/logger/*", echo.WrapHandler(logarweb.ServeHTTP("/logger", logger)))
 
 	app.Use(func(next echo.HandlerFunc) echo.HandlerFunc {
 		return func(c echo.Context) error {
-			requestid := c.Response().Header().Get(echo.HeaderXRequestID)
-			c.Set("requestid", requestid)
+			if strings.HasPrefix(c.Request().URL.Path, "/logger") {
+				return next(c)
+			}
 
+			requestid := c.Get("requestid").(string)
 			userid := 4
 			c.Set("userid", userid)
 
@@ -99,20 +97,11 @@ func main() {
 				"user_id":   userid,
 			}, "request")
 
-			return next(c)
-		}
-	})
-
-	app.Use(func(next echo.HandlerFunc) echo.HandlerFunc {
-		return func(c echo.Context) error {
 			err := next(c)
 			if err != nil {
-				logger.Error("system-logs", err, "request")
-				return nil
+				logger.Error("user-trace", err, "request")
+				return err
 			}
-
-			requestid := c.Get("requestid").(string)
-			userid := c.Get("userid").(int)
 
 			status := c.Response().Status
 

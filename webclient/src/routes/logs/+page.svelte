@@ -12,10 +12,8 @@
   let models = getModels();
 
   let model = $state("");
-  let query = new SessionStorage("logs-query", {
-    "filters": [],
-  });
-
+  let filters = $state([]);
+  
   $effect(() => {
     model = $page.url.searchParams.get("model") || "";
     logs = [];
@@ -25,7 +23,7 @@
   });
   
   function addMessageFilter(filter) {
-    query.current.filters = [...query.current.filters, {
+    filters = [...filters, {
       type: "message",
       value: filter,
     }];
@@ -58,7 +56,7 @@
   let currentFilterInput = $state("");
 
   function removeFilter(index) {
-    query.current.filters = query.current.filters.filter((_, i) => i !== index);
+    filters = filters.filter((_, i) => i !== index);
     logs = [];
     lastCursor = 0;
     hasMore = true;
@@ -82,7 +80,7 @@
     const modelName = model;
 
     loading = true;
-    const [data, err] = await getLogs(modelName, lastCursor, query.current.filters);
+    const [data, err] = await getLogs(modelName, lastCursor, filters);
 
     if (err) {
       console.error(err);
@@ -139,9 +137,9 @@
     </button>
   </div>
 
-  {#if query.current?.filters?.length || 0 > 0}
+  {#if filters.length || 0 > 0}
     <div class="active-filters">
-      {#each query.current.filters as filter, i}
+      {#each filters as filter, i}
         <div class="filter-tag">
           <span>{filter.value}</span>
           <button class="remove-filter" onclick={() => removeFilter(i)}>×</button>
@@ -166,12 +164,8 @@
         {#each logs as log (log.ID)}
           <tr class="row {getSeverityClass(log.Severity)}">
             <td style="width: 1%;">{log.ID}</td>
-            <td style="width: 1%;"
-              >{getSeverityClass(log.Severity).toUpperCase()}</td
-            >
-            <td style="width: 50ch;"
-              >{moment(log.CreatedAt).format("DD-MM-YYYY HH:MM:ss.SSS")}</td
-            >
+            <td style="width: 1%;">{getSeverityClass(log.Severity).toUpperCase()}</td>
+            <td style="width: 50ch;">{moment(log.CreatedAt).format("DD-MM-YYYY HH:mm:ss.SSS")}</td>
             <td style="width: 70%; word-break: break-all;">{log.Message}</td>
             <td style="width: 1%;">{log.Category}</td>
           </tr>
