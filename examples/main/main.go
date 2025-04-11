@@ -1,8 +1,10 @@
 package main
 
 import (
+	"fmt"
 	"net/http"
 	"strings"
+	"time"
 
 	"github.com/Lexographics/logar"
 	"github.com/Lexographics/logar/gormlogger"
@@ -97,18 +99,29 @@ func main() {
 				"user_id":   userid,
 			}, "request")
 
+			start := time.Now()
 			err := next(c)
-			if err != nil {
-				logger.Error("user-trace", err, "request")
-				return err
-			}
+			duration := time.Since(start).String()
 
 			status := c.Response().Status
+
+			if err != nil {
+				fmt.Printf("err: %v\n", err)
+				logger.Error("user-trace", map[string]interface{}{
+					"requestid": requestid,
+					"status":    status,
+					"user_id":   userid,
+					"error":     err,
+					"duration":  duration,
+				}, "request")
+				return err
+			}
 
 			logger.Trace("user-trace", map[string]interface{}{
 				"requestid": requestid,
 				"status":    status,
 				"user_id":   userid,
+				"duration":  duration,
 			}, "request")
 
 			return nil

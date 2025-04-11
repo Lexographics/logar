@@ -20,7 +20,7 @@ type QueryOptFunc func(*QueryOptions)
 type QueryOptions struct {
 	Model              string
 	Category           string
-	Filter             string
+	Filters            []string
 	Severity           models.Severity
 	PaginationStrategy PaginationStrategy
 	Limit              int
@@ -45,7 +45,7 @@ func WithCategory(category string) QueryOptFunc {
 
 func WithFilter(filter string) QueryOptFunc {
 	return func(o *QueryOptions) {
-		o.Filter = filter
+		o.Filters = append(o.Filters, filter)
 	}
 }
 
@@ -112,7 +112,7 @@ func (l *Logger) prepareQuery(opts ...QueryOptFunc) *gorm.DB {
 	options := &QueryOptions{
 		Model:              "",
 		Category:           "",
-		Filter:             "",
+		Filters:            []string{},
 		Severity:           models.Severity_None,
 		PaginationStrategy: PaginationStatus_None,
 		Limit:              0,
@@ -133,8 +133,10 @@ func (l *Logger) prepareQuery(opts ...QueryOptFunc) *gorm.DB {
 	if options.Category != "" {
 		query = query.Where("category = ?", options.Category)
 	}
-	if options.Filter != "" {
-		query = query.Where("message LIKE ?", "%"+options.Filter+"%")
+	if len(options.Filters) > 0 {
+		for _, filter := range options.Filters {
+			query = query.Where("message LIKE ?", "%"+filter+"%")
+		}
 	}
 	if options.Severity != models.Severity_None {
 		query = query.Where("severity = ?", options.Severity)
