@@ -2,3 +2,5 @@
 /tmp
 /app.db
 /todo.md
+
+*.code-workspace
