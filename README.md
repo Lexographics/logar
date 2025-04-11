@@ -99,4 +99,4 @@ If you'd like to contribute to the project, please open an issue on GitHub to di
 
 ## Known Issues
 
-- Infinite pagination on web panel does not include filters in requests
+- ...
