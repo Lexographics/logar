@@ -9,11 +9,13 @@
 </script>
 
 
-<div style="display: flex; max-height: 100vh; overflow: hidden;">
+<div style="display: flex; max-width: 100vw; max-height: 100vh; overflow: hidden;">
   <Sidebar {models}></Sidebar>
   
-  <div style="width: 100%; height: 100vh;">
+  <div style="height: 100vh; flex-grow: 1; min-width: 0;">
     <Topbar></Topbar>
-    {@render children?.()}
+    <div style="height: calc(100vh - 60px); overflow-y: scroll;">
+      {@render children?.()}
+    </div>
   </div>
 </div>

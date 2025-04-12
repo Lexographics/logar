@@ -1,25 +1,32 @@
 <script>
   import { onMount } from 'svelte';
+  import { navigationStore } from './store';
 
-  let { models = [], isLocked = false } = $props();
-  
-  let isLogsExpanded = $state(false);
+  let { models = [] } = $props();
+
+  let loaded = $state(false);
   
   function toggleSidebar() {
-    isLocked = !isLocked;
+    navigationStore.current.isSidebarLocked = !navigationStore.current.isSidebarLocked;
   }
 
   function toggleLogs() {
-    isLogsExpanded = !isLogsExpanded;
+    navigationStore.current.isLogsExpanded = !navigationStore.current.isLogsExpanded;
   }
 
   onMount(() => {
-    isLocked = window.innerWidth > 768; // Open by default on larger screens
+    if (navigationStore.current.isSidebarLocked == null) {
+      navigationStore.current.isSidebarLocked = window.innerWidth > 768; // Open by default on larger screens
+    }
+
+    setTimeout(() => {
+      loaded = true;
+    }, 0);
   });
 </script>
 
 <div class="sidebar-container">
-  <div class="sidebar {isLocked ? 'locked' : ''}">
+  <div class="sidebar {navigationStore.current.isSidebarLocked || !loaded ? 'locked' : ''}">
     <div class="sidebar-header">
       <h2>
         <a class="linktext" href="/">
@@ -29,7 +36,7 @@
       </h2>
 
       <button aria-label="Toggle sidebar" class="toggle-button" onclick={toggleSidebar}>
-        <i class="fas {isLocked ? 'fa-lock' : 'fa-unlock'}"></i>
+        <i class="fas {navigationStore.current.isSidebarLocked ? 'fa-lock' : 'fa-unlock'}"></i>
       </button>
     </div>
     
@@ -40,12 +47,12 @@
           <a href={"javascript:void(0)"} onclick={toggleLogs} class="menu-item link">
             <i class="fas fa-list-alt"></i>
             <span class="text">Logs</span>
-            <i class="fas {isLogsExpanded ? 'fa-chevron-down' : 'fa-chevron-right'} chevron"></i>
+            <i class="fas {navigationStore.current.isLogsExpanded ? 'fa-chevron-down' : 'fa-chevron-right'} chevron"></i>
           </a>
-          <ul class="submenu {isLogsExpanded ? 'expanded' : ''}">
+          <ul class="submenu {navigationStore.current.isLogsExpanded ? 'expanded' : ''}">
             {#each models as model}
               <li>
-                <a class="link" style="padding-left: 1rem;" href={`/logs?model=${model.identifier}`}>
+                <a class="link submenu-item" href={`/logs?model=${model.identifier}`}>
                   <i class="fas fa-cube"></i>
                   <span class="text">{model.name || model.identifier}</span>
                 </a>
@@ -205,6 +212,13 @@
 
   .submenu li {
     margin: 5px 0;
+    padding-left: 0;
+    transition: padding-left 0.3s ease;
+  }
+
+  .sidebar.locked .submenu li,
+  .sidebar:hover .submenu li {
+    padding-left: 1rem;
   }
 
   .submenu a {
