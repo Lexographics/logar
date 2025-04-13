@@ -4,27 +4,85 @@ import (
 	"encoding/json"
 	"fmt"
 	"net/http"
+	"sync"
 	"time"
 
 	"github.com/Lexographics/logar"
 	"github.com/Lexographics/logar/internal/domain/models"
+	"github.com/google/uuid"
 )
 
-type Handler struct {
-	logger  *logar.Logger
-	service *Service
+type HandlerConfig struct {
 }
 
-func NewHandler(logger *logar.Logger) *Handler {
+type Session struct {
+	ID        string
+	Username  string
+	ExpiresAt time.Time
+}
+
+type Handler struct {
+	logger   *logar.Logger
+	service  *Service
+	sessions sync.Map
+	cfg      HandlerConfig
+}
+
+func NewHandler(logger *logar.Logger, cfg HandlerConfig) *Handler {
 	return &Handler{
-		logger:  logger,
-		service: NewService(),
+		logger:   logger,
+		service:  NewService(),
+		sessions: sync.Map{},
+		cfg:      cfg,
 	}
 }
 
 func (h *Handler) Router(mux *http.ServeMux) {
+	mux.HandleFunc("/auth", h.Auth)
 	mux.HandleFunc("/{model}/json", h.GetLogs)
 	mux.HandleFunc("/{model}/sse", h.GetLogsSSE)
+	mux.Handle("/", http.FileServer(http.Dir("webclient/build")))
+}
+
+func (h *Handler) AuthMiddleware(next http.HandlerFunc) http.HandlerFunc {
+	return func(w http.ResponseWriter, r *http.Request) {
+		authorization := r.Header.Get("Authorization")
+		if authorization == "" {
+			http.Error(w, "Unauthorized", http.StatusUnauthorized)
+			return
+		}
+
+		sessionAny, ok := h.sessions.Load(authorization)
+		if !ok {
+			http.Error(w, "Unauthorized", http.StatusUnauthorized)
+			return
+		}
+		session := sessionAny.(*Session)
+
+		if session.ExpiresAt.Before(time.Now()) {
+			h.sessions.Delete(authorization)
+			http.Error(w, "Unauthorized", http.StatusUnauthorized)
+			return
+		}
+
+		next.ServeHTTP(w, r)
+	}
+}
+
+func (h *Handler) Auth(w http.ResponseWriter, r *http.Request) {
+	if !h.logger.Auth(r) {
+		http.Error(w, "Unauthorized", http.StatusUnauthorized)
+		return
+	}
+
+	session := &Session{
+		ID:        uuid.New().String(),
+		Username:  "admin",
+		ExpiresAt: time.Now().Add(time.Hour * 24 * 7),
+	}
+	h.sessions.Store(session.ID, session)
+
+	http.Redirect(w, r, "/", http.StatusSeeOther)
 }
 
 func (h *Handler) GetLogs(w http.ResponseWriter, r *http.Request) {
@@ -40,8 +98,8 @@ func (h *Handler) GetLogs(w http.ResponseWriter, r *http.Request) {
 		logar.WithSeverity(models.Severity(severity)),
 	}
 
-	for _, filter := range filters.MessageFilters {
-		opts = append(opts, logar.WithFilter(filter))
+	for _, filter := range filters {
+		opts = append(opts, logar.WithFilterStruct(filter))
 	}
 
 	logs, err := h.logger.GetLogs(opts...)
@@ -111,8 +169,8 @@ func (h *Handler) GetLogsSSE(w http.ResponseWriter, r *http.Request) {
 				logar.WithSeverity(models.Severity(severity)),
 			}
 
-			for _, filter := range filters.MessageFilters {
-				opts = append(opts, logar.WithFilter(filter))
+			for _, filter := range filters {
+				opts = append(opts, logar.WithFilterStruct(filter))
 			}
 
 			opts = append(opts, logar.WithIDGreaterThan(uint(lastId)))

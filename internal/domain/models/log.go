@@ -13,20 +13,30 @@ type Log struct {
 	Severity  Severity
 }
 
+func (l Log) FieldNames() []string {
+	return []string{
+		"id",
+		"created_at",
+		"message",
+		"category",
+		"severity",
+	}
+}
+
 type Severity int
 
 const (
 	Severity_None Severity = iota
+	Severity_Trace
 	Severity_Log
 	Severity_Info
 	Severity_Warning
 	Severity_Error
 	Severity_Fatal
-	Severity_Trace
 	Severity_Max
 )
 
-var severityStrings = [...]string{"None", "Log", "Info", "Warn", "Error", "Fatal", "Trace"}
+var severityStrings = [...]string{"None", "Trace", "Log", "Info", "Warn", "Error", "Fatal"}
 
 func (s Severity) String() string {
 	s.Clamp()

@@ -1,10 +1,11 @@
 package api
 
 import (
+	"encoding/json"
 	"net/http"
-	"net/url"
 	"strconv"
-	"strings"
+
+	"github.com/Lexographics/logar/internal/domain/models"
 )
 
 type Service struct {
@@ -14,28 +15,18 @@ func NewService() *Service {
 	return &Service{}
 }
 
-type Filters struct {
-	MessageFilters []string
-}
-
-func (s *Service) ParseLogFilters(r *http.Request) (model string, cursor int, count int, severity int, filters Filters, error error) {
+func (s *Service) ParseLogFilters(r *http.Request) (model string, cursor int, count int, severity int, filters []models.Filter, error error) {
 	model = r.PathValue("model")
 	cursor, _ = strconv.Atoi(r.URL.Query().Get("cursor"))
 	count = 20
 	severity, _ = strconv.Atoi(r.URL.Query().Get("severity"))
 
-	queryString := strings.Split(r.URL.RawQuery, "&")
-	for _, filter := range queryString {
-		values := strings.Split(filter, "=")
-		key := values[0]
-		value := ""
-		if len(values) > 1 {
-			value = strings.Join(values[1:], "=")
-		}
-
-		if key == "message" {
-			value, _ = url.QueryUnescape(value)
-			filters.MessageFilters = append(filters.MessageFilters, value)
+	filters = []models.Filter{}
+	filtersJSON := r.URL.Query().Get("filters")
+	if filtersJSON != "" {
+		err := json.Unmarshal([]byte(filtersJSON), &filters)
+		if err != nil {
+			return "", 0, 0, 0, nil, err
 		}
 	}
 
