@@ -1,5 +1,7 @@
 package logar
 
+/*
+
 import (
 	"fmt"
 	"html/template"
@@ -253,3 +255,5 @@ func (cir *CaseInsensitiveReplacer) Replace(str string) string {
 		return strings.Replace(cir.replaceWith, cir.originalSearch, found, 1)
 	})
 }
+
+*/
