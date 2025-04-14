@@ -33,7 +33,7 @@
     </button>
 
     <div class="dropdown-menu" class:active={isDropdownOpen}>
-      <button class="dropdown-item" onclick={() => { goto('/settings#profile') }}> My Account </button>
+      <button class="dropdown-item" onclick={() => { goto(`${base}/settings#profile`) }}> My Account </button>
       <button class="dropdown-item" onclick={handleLogout}> Log out </button>
     </div>
   </div>

@@ -1,8 +1,10 @@
 package api
 
 import (
+	"embed"
 	"encoding/json"
 	"fmt"
+	"io/fs"
 	"net/http"
 	"reflect"
 	"strconv"
@@ -56,6 +58,9 @@ func NewHandler(logger *logar.Logger, cfg HandlerConfig) *Handler {
 	}
 }
 
+//go:embed build/*
+var staticFiles embed.FS
+
 func (h *Handler) Router(mux *http.ServeMux) {
 	mux.HandleFunc("POST /auth/login", h.Login)
 	mux.HandleFunc("GET /models", h.AuthMiddleware(h.ListModels))
@@ -63,7 +68,14 @@ func (h *Handler) Router(mux *http.ServeMux) {
 	mux.HandleFunc("GET /logs/{model}/sse", h.AuthMiddleware(h.GetLogsSSE))
 	mux.HandleFunc("GET /actions", h.AuthMiddleware(h.ListActions))
 	mux.HandleFunc("POST /actions/invoke", h.AuthMiddleware(h.InvokeActionHandler))
-	mux.Handle("/", http.FileServer(http.Dir("webclient/build")))
+
+	sub, err := fs.Sub(staticFiles, "build")
+	if err != nil {
+		h.logger.Error("logar-errors", fmt.Sprintf("Failed to create subdirectory: %v", err), "api")
+		return
+	}
+	mux.Handle("/", http.FileServer(http.FS(sub)))
+	// mux.Handle("/", http.FileServer(http.Dir("webclient/build")))
 }
 
 func (h *Handler) AuthMiddleware(next http.HandlerFunc) http.HandlerFunc {

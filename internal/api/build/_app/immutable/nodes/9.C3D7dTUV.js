@@ -1,0 +1,1 @@
+import"../chunks/CWj6FrbW.js";import"../chunks/Bj_6Qs7F.js";import{t as a,a as e}from"../chunks/DaIljfVv.js";import{B as p}from"../chunks/BTvZcNQX.js";var s=a("<h2>Settings</h2>");function h(t){p(t,{children:(o,i)=>{var r=s();e(o,r)},$$slots:{default:!0}})}export{h as component};
