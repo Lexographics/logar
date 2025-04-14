@@ -1,6 +1,8 @@
 <script>
   import { onMount } from 'svelte';
   import { navigationStore } from './store';
+  import { page } from '$app/stores';
+  import { base } from '$app/paths';
 
   let { models = [] } = $props();
 
@@ -29,7 +31,7 @@
   <div class="sidebar {navigationStore.current.isSidebarLocked || !loaded ? 'locked' : ''}">
     <div class="sidebar-header">
       <h2>
-        <a class="linktext" href="/">
+        <a class="linktext" href={`${base}/`}>
           <i class="fas fa-truck"></i>
           <span class="text">Logar</span>
         </a>
@@ -42,27 +44,28 @@
     
     <nav>
       <ul>
-        <li><a class="link" href="/"><i class="fas fa-home"></i>  <span class="text">Dashboard</span></a></li>
+        <li><a class="link" href={`${base}/`} class:active={$page.url.pathname.startsWith(`${base}/dashboard`)}><i class="fas fa-home"></i>  <span class="text">Dashboard</span></a></li>
         <li>
-          <a href={"javascript:void(0)"} onclick={toggleLogs} class="menu-item link">
+          <a href={"javascript:void(0)"} onclick={toggleLogs} class="menu-item link" class:active={$page.url.pathname.startsWith(`${base}/logs`)}>
             <i class="fas fa-list-alt"></i>
             <span class="text">Logs</span>
             <i class="fas {navigationStore.current.isLogsExpanded ? 'fa-chevron-down' : 'fa-chevron-right'} chevron"></i>
           </a>
-          <ul class="submenu {navigationStore.current.isLogsExpanded ? 'expanded' : ''}">
+          <ul class="scrollbar submenu {navigationStore.current.isLogsExpanded ? 'expanded' : ''}">
             {#each models as model}
               <li>
-                <a class="link submenu-item" href={`/logs?model=${model.identifier}`}>
+                <a class="link submenu-item" href={`${base}/logs?model=${model.identifier}`} class:active={$page.url.pathname.startsWith(`${base}/logs`) && $page.url.searchParams.get('model') === model.identifier}>
                   <i class="fas fa-cube"></i>
-                  <span class="text">{model.name || model.identifier}</span>
+                  <span class="text">{model.displayName || model.identifier}</span>
                 </a>
               </li>
             {/each}
           </ul>
         </li>
-        <li><a class="link" href="/analytics"><i class="fas fa-chart-bar"></i> <span class="text">Analytics</span></a></li>
-        <li><a class="link" href="/settings"><i class="fas fa-cog"></i> <span class="text">Settings</span></a></li>
-        <li><a class="link" href="/help"><i class="fas fa-question-circle"></i> <span class="text">Help</span></a></li>
+        <li><a class="link" href={`${base}/analytics`} class:active={$page.url.pathname.startsWith(`${base}/analytics`)}><i class="fas fa-chart-bar"></i> <span class="text">Analytics</span></a></li>
+        <li><a class="link" href={`${base}/actions`} class:active={$page.url.pathname.startsWith(`${base}/actions`)}><i class="fa-solid fa-server"></i> <span class="text">Remote Actions</span></a></li>
+        <li><a class="link" href={`${base}/settings`} class:active={$page.url.pathname.startsWith(`${base}/settings`)}><i class="fas fa-cog"></i> <span class="text">Settings</span></a></li>
+        <li><a class="link" href={`${base}/help`} class:active={$page.url.pathname.startsWith(`${base}/help`)}><i class="fas fa-question-circle"></i> <span class="text">Help</span></a></li>
       </ul>
     </nav>
     
@@ -75,9 +78,9 @@
 <style>
   .sidebar {
     height: 100vh;
-    background-color: #f4f4f4;
-    padding: 20px;
-    box-shadow: 2px 0 5px rgba(0, 0, 0, 0.1);
+    background-color: var(--sidebar-background);
+    padding: 20px 15px;
+    box-shadow: 2px 0 5px var(--shadow-color);
     /*
     position: fixed;
     top: 0;
@@ -112,18 +115,19 @@
     z-index: 1001;
     border: none;
     border-radius: 50%;
-    background: #f4f4f4;
+    background: var(--sidebar-background);
+    color: var(--sidebar-text);
     cursor: pointer;
     width: 30px;
     height: 30px;
-    box-shadow: 0 0 5px rgba(0, 0, 0, 0.2);
+    box-shadow: 0 0 5px var(--shadow-color);
     display: flex;
     align-items: center;
     justify-content: center;
   }
 
   .toggle-button:hover {
-    background-color: #e0e0e0;
+    background-color: var(--sidebar-hover);
   }
 
   .toggle-button i {
@@ -141,7 +145,8 @@
   .sidebar-header {
     margin-bottom: 20px;
     padding-bottom: 10px;
-    border-bottom: 1px solid #ddd;
+    border-bottom: 1px solid var(--border-color);
+    padding-left: 5px;
     display: flex;
     justify-content: space-between;
   }
@@ -149,7 +154,7 @@
   .sidebar-footer {
     margin-top: 20px;
     padding-top: 10px;
-    border-top: 1px solid #ddd;
+    border-top: 1px solid var(--border-color);
     font-size: 0.8em;
     overflow-x: visible;
     white-space: nowrap;
@@ -157,12 +162,12 @@
 
   .linktext {
     text-decoration: none;
-    color: #333;
+    color: var(--sidebar-text);
   }
   
   .link {
     text-decoration: none;
-    color: #333;
+    color: var(--sidebar-text);
     display: flex;
     align-items: center;
     padding: 8px 10px;
@@ -172,7 +177,12 @@
   }
   
   .link:hover {
-    background-color: #e0e0e0;
+    background-color: var(--sidebar-hover);
+  }
+
+  .link.active {
+    background-color: var(--sidebar-active);
+    font-weight: bold;
   }
   
   i {
@@ -199,15 +209,27 @@
     transition: transform 0.3s ease;
   }
 
+  /*
+  .rotate-90 {
+    transform: rotate(90deg);
+  }
+  */
+
   .submenu {
     max-height: 0;
-    overflow: hidden;
+    overflow-x: hidden;
+    overflow-y: hidden;
     transition: max-height 0.3s ease-out;
     padding-left: 20px;
   }
 
+  .submenu:has(:nth-child(9)) {
+    overflow-y: scroll;
+  }
+
   .submenu.expanded {
-    max-height: 150px;
+    /* overflow-y: auto; */
+    max-height: 300px;
   }
 
   .submenu li {

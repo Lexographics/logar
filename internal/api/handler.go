@@ -4,6 +4,9 @@ import (
 	"encoding/json"
 	"fmt"
 	"net/http"
+	"reflect"
+	"strconv"
+	"strings"
 	"sync"
 	"time"
 
@@ -13,6 +16,22 @@ import (
 )
 
 type HandlerConfig struct {
+}
+
+type InvokeActionRequest struct {
+	Path string   `json:"path"`
+	Args []string `json:"args"`
+}
+
+type InvokeActionResponse struct {
+	Result []any  `json:"result,omitempty"`
+	Error  string `json:"error,omitempty"`
+}
+
+type ActionDetails struct {
+	Path        string   `json:"path"`
+	Args        []string `json:"args"`
+	Description string   `json:"description"`
 }
 
 type Session struct {
@@ -38,9 +57,12 @@ func NewHandler(logger *logar.Logger, cfg HandlerConfig) *Handler {
 }
 
 func (h *Handler) Router(mux *http.ServeMux) {
-	mux.HandleFunc("/auth", h.Auth)
-	mux.HandleFunc("/{model}/json", h.GetLogs)
-	mux.HandleFunc("/{model}/sse", h.GetLogsSSE)
+	mux.HandleFunc("POST /auth/login", h.Login)
+	mux.HandleFunc("GET /models", h.AuthMiddleware(h.ListModels))
+	mux.HandleFunc("GET /logs/{model}", h.AuthMiddleware(h.GetLogs))
+	mux.HandleFunc("GET /logs/{model}/sse", h.AuthMiddleware(h.GetLogsSSE))
+	mux.HandleFunc("GET /actions", h.AuthMiddleware(h.ListActions))
+	mux.HandleFunc("POST /actions/invoke", h.AuthMiddleware(h.InvokeActionHandler))
 	mux.Handle("/", http.FileServer(http.Dir("webclient/build")))
 }
 
@@ -48,11 +70,17 @@ func (h *Handler) AuthMiddleware(next http.HandlerFunc) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		authorization := r.Header.Get("Authorization")
 		if authorization == "" {
+			authorization = r.URL.Query().Get("token")
+		}
+
+		if authorization == "" {
 			http.Error(w, "Unauthorized", http.StatusUnauthorized)
 			return
 		}
 
-		sessionAny, ok := h.sessions.Load(authorization)
+		token := strings.TrimPrefix(authorization, "Bearer ")
+
+		sessionAny, ok := h.sessions.Load(token)
 		if !ok {
 			http.Error(w, "Unauthorized", http.StatusUnauthorized)
 			return
@@ -60,7 +88,7 @@ func (h *Handler) AuthMiddleware(next http.HandlerFunc) http.HandlerFunc {
 		session := sessionAny.(*Session)
 
 		if session.ExpiresAt.Before(time.Now()) {
-			h.sessions.Delete(authorization)
+			h.sessions.Delete(token)
 			http.Error(w, "Unauthorized", http.StatusUnauthorized)
 			return
 		}
@@ -69,20 +97,38 @@ func (h *Handler) AuthMiddleware(next http.HandlerFunc) http.HandlerFunc {
 	}
 }
 
-func (h *Handler) Auth(w http.ResponseWriter, r *http.Request) {
+func (h *Handler) Login(w http.ResponseWriter, r *http.Request) {
 	if !h.logger.Auth(r) {
+		http.Error(w, "Unauthorized", http.StatusUnauthorized)
+		return
+	}
+
+	username := r.FormValue("username")
+	password := r.FormValue("password")
+
+	if !h.logger.IsAuthCredentialsCorrect(username, password) {
 		http.Error(w, "Unauthorized", http.StatusUnauthorized)
 		return
 	}
 
 	session := &Session{
 		ID:        uuid.New().String(),
-		Username:  "admin",
+		Username:  username,
 		ExpiresAt: time.Now().Add(time.Hour * 24 * 7),
 	}
 	h.sessions.Store(session.ID, session)
 
-	http.Redirect(w, r, "/", http.StatusSeeOther)
+	w.WriteHeader(http.StatusOK)
+	json.NewEncoder(w).Encode(map[string]any{
+		"token":    session.ID,
+		"username": username,
+	})
+}
+
+func (h *Handler) ListModels(w http.ResponseWriter, r *http.Request) {
+	models := h.logger.GetAllModels()
+	w.Header().Set("Content-Type", "application/json")
+	json.NewEncoder(w).Encode(models)
 }
 
 func (h *Handler) GetLogs(w http.ResponseWriter, r *http.Request) {
@@ -119,6 +165,130 @@ func (h *Handler) GetLogs(w http.ResponseWriter, r *http.Request) {
 		"Logs":   logs,
 		"LastId": lastId,
 	})
+}
+
+func (h *Handler) ListActions(w http.ResponseWriter, r *http.Request) {
+	actionsMap := h.logger.GetActionsMap()
+	details := []ActionDetails{}
+
+	for _, action := range actionsMap {
+		argTypes, err := h.logger.GetActionArgTypes(action.Path)
+		if err != nil {
+			h.logger.Error("logar-errors", fmt.Sprintf("Error getting arg types for action %s: %v", action.Path, err), "api")
+			continue
+		}
+
+		argTypeStrings := make([]string, len(argTypes))
+		for i, t := range argTypes {
+			argTypeStrings[i] = t.String()
+		}
+
+		details = append(details, ActionDetails{
+			Path:        action.Path,
+			Args:        argTypeStrings,
+			Description: action.Description,
+		})
+	}
+
+	w.Header().Set("Content-Type", "application/json")
+	if err := json.NewEncoder(w).Encode(details); err != nil {
+		h.logger.Error("logar-errors", fmt.Sprintf("Failed to encode action details: %v", err), "api")
+		http.Error(w, "Failed to encode response", http.StatusInternalServerError)
+	}
+}
+
+func (h *Handler) InvokeActionHandler(w http.ResponseWriter, r *http.Request) {
+	var req InvokeActionRequest
+	if err := json.NewDecoder(r.Body).Decode(&req); err != nil {
+		http.Error(w, fmt.Sprintf("Invalid request body: %v", err), http.StatusBadRequest)
+		return
+	}
+
+	if req.Path == "" {
+		http.Error(w, "Missing 'path' in request body", http.StatusBadRequest)
+		return
+	}
+
+	expectedTypes, err := h.logger.GetActionArgTypes(req.Path)
+	if err != nil {
+		http.Error(w, fmt.Sprintf("Error finding action '%s': %v", req.Path, err), http.StatusNotFound)
+		return
+	}
+
+	if len(req.Args) != len(expectedTypes) {
+		http.Error(w, fmt.Sprintf("Action '%s' expects %d arguments, but received %d", req.Path, len(expectedTypes), len(req.Args)), http.StatusBadRequest)
+		return
+	}
+
+	parsedArgs := make([]any, len(req.Args))
+	for i, argStr := range req.Args {
+		expectedType := expectedTypes[i]
+		val, err := parseStringArg(argStr, expectedType)
+		if err != nil {
+			http.Error(w, fmt.Sprintf("Error parsing argument %d for action '%s': expected type %s, error: %v", i+1, req.Path, expectedType.String(), err), http.StatusBadRequest)
+			return
+		}
+		parsedArgs[i] = val
+	}
+
+	result, err := h.logger.InvokeAction(req.Path, parsedArgs...)
+
+	w.Header().Set("Content-Type", "application/json")
+	resp := InvokeActionResponse{}
+	if err != nil {
+		resp.Error = err.Error()
+		w.WriteHeader(http.StatusInternalServerError)
+	} else {
+		resp.Result = result
+	}
+
+	if encodeErr := json.NewEncoder(w).Encode(resp); encodeErr != nil {
+		h.logger.Error("logar-errors", fmt.Sprintf("Failed to encode action response: %v", encodeErr), "api")
+	}
+}
+
+func parseStringArg(argStr string, targetType reflect.Type) (any, error) {
+	switch targetType.Kind() {
+	case reflect.String:
+		return argStr, nil
+	case reflect.Int, reflect.Int8, reflect.Int16, reflect.Int32, reflect.Int64:
+		intVal, err := strconv.ParseInt(argStr, 10, targetType.Bits())
+		if err != nil {
+			return nil, fmt.Errorf("cannot parse '%s' as %s: %w", argStr, targetType.Kind(), err)
+		}
+		p := reflect.New(targetType)
+		p.Elem().SetInt(intVal)
+		return p.Elem().Interface(), nil
+	case reflect.Uint, reflect.Uint8, reflect.Uint16, reflect.Uint32, reflect.Uint64:
+		uintVal, err := strconv.ParseUint(argStr, 10, targetType.Bits())
+		if err != nil {
+			return nil, fmt.Errorf("cannot parse '%s' as %s: %w", argStr, targetType.Kind(), err)
+		}
+		p := reflect.New(targetType)
+		p.Elem().SetUint(uintVal)
+		return p.Elem().Interface(), nil
+	case reflect.Float32, reflect.Float64:
+		floatVal, err := strconv.ParseFloat(argStr, targetType.Bits())
+		if err != nil {
+			return nil, fmt.Errorf("cannot parse '%s' as %s: %w", argStr, targetType.Kind(), err)
+		}
+		p := reflect.New(targetType)
+		p.Elem().SetFloat(floatVal)
+		return p.Elem().Interface(), nil
+	case reflect.Bool:
+		boolVal, err := strconv.ParseBool(argStr)
+		if err != nil {
+			return nil, fmt.Errorf("cannot parse '%s' as bool: %w", argStr, err)
+		}
+		return boolVal, nil
+	default:
+		p := reflect.New(targetType)
+		err := json.Unmarshal([]byte(argStr), p.Interface())
+		if err != nil {
+			return nil, fmt.Errorf("cannot unmarshal '%s' as JSON into %s: %w", argStr, targetType.String(), err)
+		}
+		return p.Elem().Interface(), nil
+	}
 }
 
 func (h *Handler) GetLogsSSE(w http.ResponseWriter, r *http.Request) {

@@ -2,6 +2,7 @@ package main
 
 import (
 	"fmt"
+	"math"
 	"net/http"
 	"strings"
 	"time"
@@ -31,6 +32,61 @@ func main() {
 		config.WithDatabase("logs.db"),
 		config.AddModel("System Logs", "system-logs"),
 		config.AddModel("User Trace", "user-trace"),
+		config.AddModel("Test Logs", "test-logs"),
+		config.AddModel("Test1", "test1"),
+		config.AddModel("Test2", "test2"),
+		config.AddModel("Test3", "test3"),
+		config.AddModel("Test4", "test4"),
+		// config.AddModel("Test5", "test5"),
+		// config.AddModel("Test6", "test6"),
+		// config.AddModel("Test7", "test7"),
+		// config.AddModel("Test6", "test6"),
+		// config.AddModel("Test8", "test8"),
+		// config.AddModel("Test9", "test9"),
+		// config.AddModel("Test10", "test10"),
+		config.AddModel("All Logs", "__all__"),
+
+		config.WithMasterCredentials("username", "password"),
+
+		// Example Actions
+		config.WithAction("Server/Test", "Test action", func() (string, int, string) {
+			return "test value 1", 123, "test value 3"
+		}),
+		config.WithAction("Server/Time", "Get current time", func() string {
+			return time.Now().Format(time.RFC3339)
+		}),
+		config.WithAction("Server/Ping", "Ping the server", func() string {
+			return "pong"
+		}),
+		config.WithAction("Math/Add", "Add two numbers", func(a, b float64) float64 {
+			return a + b
+		}),
+		config.WithAction("Math/Sub", "Subtract two numbers", func(a, b float64) float64 {
+			return a - b
+		}),
+		config.WithAction("Math/Mul", "Multiply two numbers", func(a, b float64) float64 {
+			return a * b
+		}),
+		config.WithAction("Math/Div", "Divide two numbers", func(a, b float64) float64 {
+			return a / b
+		}),
+		config.WithAction("Math/Advanced/Pow", "Power of two numbers", func(a, b float64) float64 {
+			return math.Pow(a, b)
+		}),
+		config.WithAction("Math/Advanced/Sqrt", "Square root of a number", func(a float64) float64 {
+			return math.Sqrt(a)
+		}),
+
+		config.WithAction("Greet", "Greet a user", func(name string) string {
+			return fmt.Sprintf("Hello, %s!", name)
+		}),
+		config.WithAction("Concat", "Concatenate strings", func(args []any) string {
+			str := ""
+			for _, arg := range args {
+				str += fmt.Sprintf("%v", arg)
+			}
+			return str
+		}),
 
 		config.AddProxy(proxy.NewProxy(
 			consolelogger.New(),
@@ -56,6 +112,27 @@ func main() {
 		panic(err)
 	}
 
+	res, err := logger.InvokeAction("Math/Div", 4.0, 3.0)
+	if err != nil {
+		panic(err)
+	}
+
+	fmt.Printf("add res: %v\n", res)
+
+	res, err = logger.InvokeAction("Server/Ping")
+	if err != nil {
+		panic(err)
+	}
+
+	fmt.Printf("ping res: %v\n", res)
+
+	res, err = logger.InvokeAction("Greet", "John")
+	if err != nil {
+		panic(err)
+	}
+
+	fmt.Printf("greet res: %v\n", res)
+
 	db, err := gorm.Open(sqlite.Open("app.db"), &gorm.Config{
 		Logger: gormlogger.New(logger, "user-trace", "db-log", 1),
 	})
@@ -66,8 +143,6 @@ func main() {
 	if err != nil {
 		panic(err)
 	}
-
-	logger.Info("system-logs", "User registered https://example.com", "user-register-telegram")
 
 	app := echo.New()
 	app.Use(middleware.CORS())
@@ -81,7 +156,10 @@ func main() {
 		},
 	}))
 
-	app.GET("/logger/*", echo.WrapHandler(logarweb.ServeHTTP("/logger", logger)))
+	app.Any("/logger/*", echo.WrapHandler(logarweb.ServeHTTP("/logger", logger)))
+	app.Any("/logger", func(c echo.Context) error {
+		return c.Redirect(http.StatusTemporaryRedirect, "/logger/")
+	})
 
 	app.Use(func(next echo.HandlerFunc) echo.HandlerFunc {
 		return func(c echo.Context) error {
@@ -143,10 +221,7 @@ func main() {
 		})
 	})
 
-	logger.Info("system-logs", "App Started https://example.com", "app-start")
-	logger.Info("system-logs", "App Started http://example.com", "app-start")
-
-	logger.Info("system-logs", logar.Map{"hello": "this"}, "app-start")
+	logger.Info("system-logs", logar.Map{"message": "App Started"}, "app-start")
 
 	err = app.Start(":3000")
 	if err != nil {

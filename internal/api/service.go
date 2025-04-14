@@ -17,6 +17,9 @@ func NewService() *Service {
 
 func (s *Service) ParseLogFilters(r *http.Request) (model string, cursor int, count int, severity int, filters []models.Filter, error error) {
 	model = r.PathValue("model")
+	if model == "__all__" {
+		model = ""
+	}
 	cursor, _ = strconv.Atoi(r.URL.Query().Get("cursor"))
 	count = 20
 	severity, _ = strconv.Atoi(r.URL.Query().Get("severity"))

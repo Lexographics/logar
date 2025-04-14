@@ -1,0 +1,299 @@
+:root {
+  /* General variables */
+  --scrollbar-size: 8px;
+
+  /* Light theme variables */
+  --background-color-light: #f7f7f7;
+  --card-background-light: #ffffff;
+  --text-color-light: #333333;
+  --text-secondary-color-light: #555555;
+  --border-color-light: #dddddd;
+  --primary-color-light: #3498db;
+  --primary-hover-color-light: #2980b9;
+  --success-color-light: #2ecc71;
+  --warning-color-light: #f39c12;
+  --error-color-light: #e74c3c;
+  --shadow-color-light: rgba(0, 0, 0, 0.1);
+  --input-background-light: #f7f7f7;
+  --input-background-opaque-light: #f7f7f7;
+  --input-border-light: #cccccc;
+  --input-text-light: #333333;
+  --header-background-light: #ffffff;
+  --sidebar-background-light: #f4f4f4;
+  --sidebar-text-light: #333333;
+  --sidebar-hover-light: #e0e0e0;
+  --sidebar-active-light: #d0d0d0;
+  --scrollbar-track-color-light: #e6e6e6;
+  --scrollbar-thumb-color-light: #3345af;
+  
+  /* Dark theme variables */
+  --background-color-dark: #121212;
+  --card-background-dark: #1e1e2e;
+  --text-color-dark: #e0e0e0;
+  --text-secondary-color-dark: #c0c0c0;
+  --border-color-dark: #444444;
+  --primary-color-dark: #6fa8dc;
+  --primary-hover-color-dark: #4a89dc;
+  --success-color-dark: #57cc99;
+  --warning-color-dark: #ffae42;
+  --error-color-dark: #ff6b6b;
+  --shadow-color-dark: rgba(0, 0, 0, 0.3);
+  --input-background-dark: rgba(0, 0, 0, 0.2);
+  --input-background-opaque-dark: rgba(0, 0, 0, 0.8);
+  --input-border-dark: rgba(255, 255, 255, 0.2);
+  --input-text-dark: #f0f0f0;
+  --header-background-dark: #1a1a2e;
+  --sidebar-background-dark: #0f0f1f;
+  --sidebar-text-dark: #e0e0e0;
+  --sidebar-hover-dark: #2d2d3a;
+  --sidebar-active-dark: #3d3d4a;
+  --scrollbar-track-color-dark: #242d31;
+  --scrollbar-thumb-color-dark: #3345af;
+
+
+  /* Default light theme variables */
+  --background-color: var(--background-color-light);
+  --card-background: var(--card-background-light);
+  --text-color: var(--text-color-light);
+  --text-secondary-color: var(--text-secondary-color-light);
+  --border-color: var(--border-color-light);
+  --primary-color: var(--primary-color-light);
+  --primary-hover-color: var(--primary-hover-color-light);
+  --success-color: var(--success-color-light);
+  --warning-color: var(--warning-color-light);
+  --error-color: var(--error-color-light);
+  --shadow-color: var(--shadow-color-light);
+  --input-background: var(--input-background-light);
+  --input-background-opaque: var(--input-background-opaque-light);
+  --input-border: var(--input-border-light);
+  --input-text: var(--input-text-light);
+  --header-background: var(--header-background-light);
+  --sidebar-background: var(--sidebar-background-light);
+  --sidebar-text: var(--sidebar-text-light);
+  --sidebar-hover: var(--sidebar-hover-light);
+  --sidebar-active: var(--sidebar-active-light);
+  --scrollbar-track-color: var(--scrollbar-track-color-light);
+  --scrollbar-thumb-color: var(--scrollbar-thumb-color-light);
+
+  /* Row colors light */
+  --row-trace-bg-light: #e6e6e6;
+  --row-trace-striped-bg-light: #d9d9d9;
+  
+  --row-log-bg-light: #d1e7dd;
+  --row-log-striped-bg-light: #c7dbd2;
+
+  --row-info-bg-light: #c5daf2;
+  --row-info-striped-bg-light: #d8e6f8;
+
+  --row-warning-bg-light: #fff3cd;
+  --row-warning-striped-bg-light: #f7e6b5;
+  
+  --row-error-bg-light: #f8d7da;
+  --row-error-striped-bg-light: #eccccf;
+
+  --row-fatal-bg-light: #d68c8c;
+  --row-fatal-striped-bg-light: #e6b1b1;
+
+  /* Row colors dark */
+  --row-trace-bg-dark: #2a2a2a;
+  --row-trace-striped-bg-dark: #333333;
+  
+  --row-log-bg-dark: #1a2e22;
+  --row-log-striped-bg-dark: #203a2b;
+  
+  --row-info-bg-dark: #1a2940;
+  --row-info-striped-bg-dark: #1f3352;
+  
+  --row-warning-bg-dark: #3d2e12;
+  --row-warning-striped-bg-dark: #4d3a17;
+
+  --row-error-bg-dark: #3d1a1d;
+  --row-error-striped-bg-dark: #4d2024;
+
+  --row-fatal-bg-dark: #4d1515;
+  --row-fatal-striped-bg-dark: #661a1a;
+  
+
+  --row-trace-bg: var(--row-trace-bg-light);
+  --row-trace-striped-bg: var(--row-trace-striped-bg-light);
+  --row-log-bg: var(--row-log-bg-light);
+  --row-log-striped-bg: var(--row-log-striped-bg-light);
+  --row-info-bg: var(--row-info-bg-light);
+  --row-info-striped-bg: var(--row-info-striped-bg-light);
+  --row-warning-bg: var(--row-warning-bg-light);
+  --row-warning-striped-bg: var(--row-warning-striped-bg-light);
+  --row-error-bg: var(--row-error-bg-light);
+  --row-error-striped-bg: var(--row-error-striped-bg-light);
+  --row-fatal-bg: var(--row-fatal-bg-light);
+  --row-fatal-striped-bg: var(--row-fatal-striped-bg-light);
+}
+
+[data-theme="light"] {
+  --background-color: var(--background-color-light);
+  --card-background: var(--card-background-light);
+  --text-color: var(--text-color-light);
+  --text-secondary-color: var(--text-secondary-color-light);
+  --border-color: var(--border-color-light);
+  --primary-color: var(--primary-color-light);
+  --primary-hover-color: var(--primary-hover-color-light);
+  --success-color: var(--success-color-light);
+  --warning-color: var(--warning-color-light);
+  --error-color: var(--error-color-light);
+  --shadow-color: var(--shadow-color-light);
+  --input-background: var(--input-background-light);
+  --input-background-opaque: var(--input-background-opaque-light);
+  --input-border: var(--input-border-light);
+  --input-text: var(--input-text-light);
+  --header-background: var(--header-background-light);
+  --sidebar-background: var(--sidebar-background-light);
+  --sidebar-text: var(--sidebar-text-light);
+  --sidebar-hover: var(--sidebar-hover-light);
+  --sidebar-active: var(--sidebar-active-light);
+  --scrollbar-track-color: var(--scrollbar-track-color-light);
+  --scrollbar-thumb-color: var(--scrollbar-thumb-color-light);
+
+  --row-trace-bg: var(--row-trace-bg-light);
+  --row-trace-striped-bg: var(--row-trace-striped-bg-light);
+  --row-log-bg: var(--row-log-bg-light);
+  --row-log-striped-bg: var(--row-log-striped-bg-light);
+  --row-info-bg: var(--row-info-bg-light);
+  --row-info-striped-bg: var(--row-info-striped-bg-light);
+  --row-warning-bg: var(--row-warning-bg-light);
+  --row-warning-striped-bg: var(--row-warning-striped-bg-light);
+  --row-error-bg: var(--row-error-bg-light);
+  --row-error-striped-bg: var(--row-error-striped-bg-light);
+  --row-fatal-bg: var(--row-fatal-bg-light);
+  --row-fatal-striped-bg: var(--row-fatal-striped-bg-light);
+}
+
+[data-theme="dark"] {
+  --background-color: var(--background-color-dark);
+  --card-background: var(--card-background-dark);
+  --text-color: var(--text-color-dark);
+  --text-secondary-color: var(--text-secondary-color-dark);
+  --border-color: var(--border-color-dark);
+  --primary-color: var(--primary-color-dark);
+  --primary-hover-color: var(--primary-hover-color-dark);
+  --success-color: var(--success-color-dark);
+  --warning-color: var(--warning-color-dark);
+  --error-color: var(--error-color-dark);
+  --shadow-color: var(--shadow-color-dark);
+  --input-background: var(--input-background-dark);
+  --input-background-opaque: var(--input-background-opaque-dark);
+  --input-border: var(--input-border-dark);
+  --input-text: var(--input-text-dark);
+  --header-background: var(--header-background-dark);
+  --sidebar-background: var(--sidebar-background-dark);
+  --sidebar-text: var(--sidebar-text-dark);
+  --sidebar-hover: var(--sidebar-hover-dark);
+  --sidebar-active: var(--sidebar-active-dark);
+  --scrollbar-track-color: var(--scrollbar-track-color-dark);
+  --scrollbar-thumb-color: var(--scrollbar-thumb-color-dark);
+
+  --row-trace-bg: var(--row-trace-bg-dark);
+  --row-trace-striped-bg: var(--row-trace-striped-bg-dark);
+  --row-log-bg: var(--row-log-bg-dark);
+  --row-log-striped-bg: var(--row-log-striped-bg-dark);
+  --row-info-bg: var(--row-info-bg-dark);
+  --row-info-striped-bg: var(--row-info-striped-bg-dark);
+  --row-warning-bg: var(--row-warning-bg-dark);
+  --row-warning-striped-bg: var(--row-warning-striped-bg-dark);
+  --row-error-bg: var(--row-error-bg-dark);
+  --row-error-striped-bg: var(--row-error-striped-bg-dark);
+  --row-fatal-bg: var(--row-fatal-bg-dark);
+  --row-fatal-striped-bg: var(--row-fatal-striped-bg-dark);
+}
+
+
+
+@media (prefers-color-scheme: dark) {
+  [data-theme="system"] {
+    --background-color: var(--background-color-dark);
+    --card-background: var(--card-background-dark);
+    --text-color: var(--text-color-dark);
+    --text-secondary-color: var(--text-secondary-color-dark);
+    --border-color: var(--border-color-dark);
+    --primary-color: var(--primary-color-dark);
+    --primary-hover-color: var(--primary-hover-color-dark);
+    --success-color: var(--success-color-dark);
+    --warning-color: var(--warning-color-dark);
+    --error-color: var(--error-color-dark);
+    --shadow-color: var(--shadow-color-dark);
+    --input-background: var(--input-background-dark);
+    --input-background-opaque: var(--input-background-opaque-dark);
+    --input-border: var(--input-border-dark);
+    --input-text: var(--input-text-dark);
+    --header-background: var(--header-background-dark);
+    --sidebar-background: var(--sidebar-background-dark);
+    --sidebar-text: var(--sidebar-text-dark);
+    --sidebar-hover: var(--sidebar-hover-dark);
+    --sidebar-active: var(--sidebar-active-dark);
+    --scrollbar-track-color: var(--scrollbar-track-color-dark);
+    --scrollbar-thumb-color: var(--scrollbar-thumb-color-dark);
+
+    --row-trace-bg: var(--row-trace-bg-dark);
+    --row-trace-striped-bg: var(--row-trace-striped-bg-dark);
+    --row-log-bg: var(--row-log-bg-dark);
+    --row-log-striped-bg: var(--row-log-striped-bg-dark);
+    --row-info-bg: var(--row-info-bg-dark);
+    --row-info-striped-bg: var(--row-info-striped-bg-dark);
+    --row-warning-bg: var(--row-warning-bg-dark);
+    --row-warning-striped-bg: var(--row-warning-striped-bg-dark);
+    --row-error-bg: var(--row-error-bg-dark);
+    --row-error-striped-bg: var(--row-error-striped-bg-dark);
+    --row-fatal-bg: var(--row-fatal-bg-dark);
+    --row-fatal-striped-bg: var(--row-fatal-striped-bg-dark);
+  }
+}
+
+@media (prefers-color-scheme: light) {
+  [data-theme="system"] {
+    --background-color: var(--background-color-light);
+    --card-background: var(--card-background-light);
+    --text-color: var(--text-color-light);
+    --text-secondary-color: var(--text-secondary-color-light);
+    --border-color: var(--border-color-light);
+    --primary-color: var(--primary-color-light);
+    --primary-hover-color: var(--primary-hover-color-light);
+    --success-color: var(--success-color-light);
+    --warning-color: var(--warning-color-light);
+    --error-color: var(--error-color-light);
+    --shadow-color: var(--shadow-color-light);
+    --input-background: var(--input-background-light);
+    --input-background-opaque: var(--input-background-opaque-light);
+    --input-border: var(--input-border-light);
+    --input-text: var(--input-text-light);
+    --header-background: var(--header-background-light);
+    --sidebar-background: var(--sidebar-background-light);
+    --sidebar-text: var(--sidebar-text-light);
+    --sidebar-hover: var(--sidebar-hover-light);
+    --sidebar-active: var(--sidebar-active-light);
+    --scrollbar-track-color: var(--scrollbar-track-color-light);
+    --scrollbar-thumb-color: var(--scrollbar-thumb-color-light);
+
+    --row-trace-bg: var(--row-trace-bg-light);
+    --row-trace-striped-bg: var(--row-trace-striped-bg-light);
+    --row-log-bg: var(--row-log-bg-light);
+    --row-log-striped-bg: var(--row-log-striped-bg-light);
+    --row-info-bg: var(--row-info-bg-light);
+    --row-info-striped-bg: var(--row-info-striped-bg-light);
+    --row-warning-bg: var(--row-warning-bg-light);
+    --row-warning-striped-bg: var(--row-warning-striped-bg-light);
+    --row-error-bg: var(--row-error-bg-light);
+    --row-error-striped-bg: var(--row-error-striped-bg-light);
+    --row-fatal-bg: var(--row-fatal-bg-light);
+    --row-fatal-striped-bg: var(--row-fatal-striped-bg-light);
+  }
+}
+
+body {
+  transition: background-color 0.3s ease, color 0.3s ease;
+}
+
+.settings-section.card, 
+.auth-card,
+input, 
+select, 
+button {
+  transition: background-color 0.3s ease, border-color 0.3s ease, color 0.3s ease, box-shadow 0.3s ease;
+} 

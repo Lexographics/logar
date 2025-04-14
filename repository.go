@@ -1,6 +1,8 @@
 package logar
 
 import (
+	"fmt"
+	"slices"
 	"time"
 
 	"github.com/Lexographics/logar/internal/domain/models"
@@ -21,6 +23,7 @@ type QueryOptions struct {
 	Model              string
 	Category           string
 	Filters            []string
+	FilterStructs      []models.Filter
 	Severity           models.Severity
 	PaginationStrategy PaginationStrategy
 	Limit              int
@@ -29,6 +32,7 @@ type QueryOptions struct {
 	From               *time.Time
 	To                 *time.Time
 	IDs                []uint
+	IDGreaterThan      uint
 }
 
 func WithModel(model string) QueryOptFunc {
@@ -40,6 +44,12 @@ func WithModel(model string) QueryOptFunc {
 func WithCategory(category string) QueryOptFunc {
 	return func(o *QueryOptions) {
 		o.Category = category
+	}
+}
+
+func WithFilterStruct(filter models.Filter) QueryOptFunc {
+	return func(o *QueryOptions) {
+		o.FilterStructs = append(o.FilterStructs, filter)
 	}
 }
 
@@ -96,6 +106,12 @@ func WithIDs(ids ...uint) QueryOptFunc {
 	}
 }
 
+func WithIDGreaterThan(id uint) QueryOptFunc {
+	return func(o *QueryOptions) {
+		o.IDGreaterThan = id
+	}
+}
+
 func (l *Logger) GetLogs(opts ...QueryOptFunc) ([]models.Log, error) {
 	var logs []models.Log
 	query := l.prepareQuery(opts...)
@@ -121,6 +137,7 @@ func (l *Logger) prepareQuery(opts ...QueryOptFunc) *gorm.DB {
 		From:               nil,
 		To:                 nil,
 		IDs:                nil,
+		IDGreaterThan:      0,
 	}
 	for _, opt := range opts {
 		opt(options)
@@ -143,13 +160,15 @@ func (l *Logger) prepareQuery(opts ...QueryOptFunc) *gorm.DB {
 	}
 
 	if options.PaginationStrategy == PaginationStatus_Offset {
-		query = query.Offset(options.Page * options.Limit).Limit(options.Limit)
+		query = query.Offset(options.Page * options.Limit)
 	}
 	if options.PaginationStrategy == PaginationStatus_Cursor {
-		query = query.Limit(options.Limit)
 		if options.Cursor > 0 {
 			query = query.Where("id < ?", options.Cursor)
 		}
+	}
+	if options.Limit != 0 {
+		query = query.Limit(options.Limit)
 	}
 
 	if options.From != nil {
@@ -161,6 +180,74 @@ func (l *Logger) prepareQuery(opts ...QueryOptFunc) *gorm.DB {
 
 	if options.IDs != nil {
 		query = query.Where("id IN (?)", options.IDs)
+	}
+
+	if options.IDGreaterThan > 0 {
+		query = query.Where("id > ?", options.IDGreaterThan)
+	}
+
+	if len(options.FilterStructs) > 0 {
+		for _, filter := range options.FilterStructs {
+			if !slices.Contains(models.Log{}.FieldNames(), filter.Field) {
+				continue
+			}
+
+			values := []any{}
+			for _, v := range filter.Value {
+				values = append(values, v)
+			}
+
+			if filter.Field == "created_at" {
+				for i, v := range filter.Value {
+					layout := "02-01-2006 15:04:05.000"
+					if len(v) == 19 {
+						layout = "02-01-2006 15:04:05"
+					}
+
+					t, err := time.Parse(layout, v)
+					if err != nil {
+						continue
+					}
+
+					values[i] = t
+				}
+			}
+
+			for len(values) < 2 {
+				values = append(values, "")
+			}
+
+			switch filter.Operator {
+			case models.FilterOperator_Equals:
+				query = query.Where(filter.Field+" = ?", values[0])
+			case models.FilterOperator_NotEquals:
+				query = query.Where(filter.Field+" != ?", values[0])
+			case models.FilterOperator_GreaterThan:
+				query = query.Where(filter.Field+" > ?", values[0])
+			case models.FilterOperator_GreaterThanOrEqual:
+				query = query.Where(filter.Field+" >= ?", values[0])
+			case models.FilterOperator_LessThan:
+				query = query.Where(filter.Field+" < ?", values[0])
+			case models.FilterOperator_LessThanOrEqual:
+				query = query.Where(filter.Field+" <= ?", values[0])
+			case models.FilterOperator_Contains:
+				query = query.Where(filter.Field+" LIKE ?", "%"+fmt.Sprint(values[0])+"%")
+			case models.FilterOperator_NotContains:
+				query = query.Where(filter.Field+" NOT LIKE ?", "%"+fmt.Sprint(values[0])+"%")
+			case models.FilterOperator_StartsWith:
+				query = query.Where(filter.Field+" LIKE ?", fmt.Sprint(values[0])+"%")
+			case models.FilterOperator_EndsWith:
+				query = query.Where(filter.Field+" LIKE ?", "%"+fmt.Sprint(values[0])+"%")
+			case models.FilterOperator_Between:
+				query = query.Where(filter.Field+" BETWEEN ? AND ?", values[0], values[1])
+			case models.FilterOperator_NotBetween:
+				query = query.Where(filter.Field+" NOT BETWEEN ? AND ?", values[0], values[1])
+			case models.FilterOperator_In:
+				query = query.Where(filter.Field+" IN (?)", values)
+			case models.FilterOperator_NotIn:
+				query = query.Where(filter.Field+" NOT IN (?)", values)
+			}
+		}
 	}
 
 	query = query.Order("id DESC")

@@ -1,16 +1,19 @@
 <script>
-  let isDropdownOpen = false;
-  let userProfile = {
-    name: "",
-    avatar: "",
-  };
+  import { goto } from "$app/navigation";
+  import { base } from "$app/paths";
+  import { userStore } from "./store";
+
+  let isDropdownOpen = $state(false);
 
   function toggleDropdown() {
     isDropdownOpen = !isDropdownOpen;
   }
 
   function handleLogout() {
-    console.log("Logging out...");
+    userStore.current = {
+      token: null,
+    };
+    goto(`${base}/login`);
   }
 
   function handleClickOutside(event) {
@@ -20,34 +23,32 @@
   }
 </script>
 
-<svelte:window on:click={handleClickOutside} />
+<svelte:window onclick={handleClickOutside} />
 
 <nav class="topbar">
   <div class="profile-section">
-    <button class="profile-button" on:click={toggleDropdown}>
-      <span class="username">{userProfile.name}</span>
-      <img src={userProfile.avatar} alt="Profile" class="avatar" />
+    <button class="profile-button" onclick={toggleDropdown}>
+      <span class="username">{userStore.current.username}</span>
+      <img src={"https://api.dicebear.com/9.x/thumbs/svg?seed=" + userStore.current.username} alt="avatar" class="avatar" />
     </button>
 
     <div class="dropdown-menu" class:active={isDropdownOpen}>
-      <button class="dropdown-item"> Profile </button>
-      <button class="dropdown-item"> My Account </button>
-      <button class="dropdown-item" on:click={handleLogout}> Log out </button>
+      <button class="dropdown-item" onclick={() => { goto('/settings#profile') }}> My Account </button>
+      <button class="dropdown-item" onclick={handleLogout}> Log out </button>
     </div>
   </div>
 </nav>
 
 <style>
   .topbar {
-    width: 100%;
     height: 60px;
-    background-color: #ffffff;
-    border-bottom: 1px solid #e5e5e5;
+    background-color: var(--header-background);
+    border-bottom: 1px solid var(--border-color);
     display: flex;
     justify-content: flex-end;
     align-items: center;
     padding: 0 20px;
-    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+    box-shadow: 0 2px 4px var(--shadow-color);
   }
 
   .profile-section {
@@ -66,7 +67,7 @@
   }
 
   .profile-button:hover {
-    background-color: #f5f5f5;
+    background-color: var(--input-background);
   }
 
   .avatar {
@@ -78,16 +79,16 @@
 
   .username {
     font-size: 14px;
-    color: #333;
+    color: var(--text-color);
   }
 
   .dropdown-menu {
     position: absolute;
     top: 100%;
     right: 0;
-    background-color: white;
+    background-color: var(--card-background);
     border-radius: 4px;
-    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+    box-shadow: 0 2px 10px var(--shadow-color);
     min-width: 150px;
     margin-top: 8px;
     opacity: 0;
@@ -109,10 +110,10 @@
     background: none;
     text-align: left;
     cursor: pointer;
-    color: #333;
+    color: var(--text-color);
   }
 
   .dropdown-item:hover {
-    background-color: #f5f5f5;
+    background-color: var(--input-background);
   }
 </style>

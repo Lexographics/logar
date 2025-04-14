@@ -1,36 +1,41 @@
+import { PUBLIC_API_URL } from "$env/static/public";
+import { userStore } from "$lib/store";
 import axios from "axios";
-
+import { checkSession } from "./service";
 
 export async function getLogs(model, cursor = 0, filters = []) {
   try {
-    let url = `http://localhost:3000/logger/${model}/json?cursor=${cursor}`;
-    if (filters.length > 0) {
-      const filterParams = filters.map(filter => `${filter.type}=${filter.value}`).join('&');
-      url += `&${filterParams}`;
-    }
-
-    const response = await axios.get(url, );
-
+    const response = await axios.get(`${PUBLIC_API_URL}/logs/${model}`, {
+      params: {
+        cursor: cursor,
+        filters: JSON.stringify(filters),
+      },
+      headers: {
+        Authorization: `Bearer ${userStore.current.token}`,
+      },
+    });
+    
     return [response.data, null];
   } catch (error) {
+    checkSession(error.response);
+
     console.error("Error fetching logs:", error);
     return [null, error];
   }
 }
 
 /**
- * Connect to the SSE logs endpoint and receive real-time log updates
  * @param {string} model
  * @param {Array} filters
- * @param {Function} onLogsReceived Callback function when new logs are received
- * @param {Function} onError Callback function when an error occurs
+ * @param {Function} onLogsReceived
+ * @param {Function} onError
+ * @param {Function} onCloseCallback
  * @returns {function} Function to close the SSE connection
  */
-export function connectToLogStream(model, filters = [], onLogsReceived, onError) {
-  let url = `http://localhost:3000/logger/${model}/sse`;
+export function connectToLogStream(model, filters = [], onLogsReceived, onError, onCloseCallback) {
+  let url = `${PUBLIC_API_URL}/logs/${model}/sse?token=${userStore.current.token}`;
   if (filters.length > 0) {
-    const filterParams = filters.map(filter => `${filter.type}=${filter.value}`).join('&');
-    url += `?${filterParams}`;
+    url += `&filters=${JSON.stringify(filters)}`;
   }
 
   const eventSource = new EventSource(url);
@@ -56,6 +61,22 @@ export function connectToLogStream(model, filters = [], onLogsReceived, onError)
     }
 
     eventSource.close();
+
+    if (onCloseCallback && typeof onCloseCallback === 'function') {
+      onCloseCallback();
+    }
+  };
+
+  eventSource.addEventListener('close', () => {
+    console.log("SSE connection closed by server");
+    if (onCloseCallback && typeof onCloseCallback === 'function') {
+      onCloseCallback();
+    }
+    eventSource.close();
+  });
+
+  eventSource.onopen = () => {
+    
   };
 
   return () => {
