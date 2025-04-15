@@ -8,7 +8,7 @@ import (
 	"time"
 
 	"github.com/Lexographics/logar/internal/domain/models"
-	"github.com/Lexographics/logar/internal/options/config"
+	"github.com/Lexographics/logar/options/config"
 	"github.com/Lexographics/logar/proxy"
 	"gorm.io/driver/sqlite"
 	"gorm.io/gorm"
