@@ -9,9 +9,9 @@ import (
 
 	"github.com/Lexographics/logar"
 	"github.com/Lexographics/logar/gormlogger"
-	"github.com/Lexographics/logar/internal/logarweb"
-	"github.com/Lexographics/logar/internal/logfilter"
-	"github.com/Lexographics/logar/internal/options/config"
+	"github.com/Lexographics/logar/logarweb"
+	"github.com/Lexographics/logar/logfilter"
+	"github.com/Lexographics/logar/options/config"
 	"github.com/Lexographics/logar/proxy"
 	"github.com/Lexographics/logar/proxy/consolelogger"
 	"gorm.io/driver/sqlite"

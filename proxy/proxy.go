@@ -2,7 +2,7 @@ package proxy
 
 import (
 	"github.com/Lexographics/logar/internal/domain/models"
-	"github.com/Lexographics/logar/internal/logfilter"
+	"github.com/Lexographics/logar/logfilter"
 )
 
 type ProxyTarget interface {
