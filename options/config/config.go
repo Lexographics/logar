@@ -14,7 +14,7 @@ type Config struct {
 	AuthFunc       AuthFunc
 	Models         LogModels
 	Proxies        []proxy.Proxy
-	Actions        ActionMap
+	Actions        Actions
 	MasterUsername string
 	MasterPassword string
 }
@@ -28,7 +28,7 @@ type LogModels []LogModel
 type AuthFunc func(r *http.Request) bool
 type ConfigOpt func(*Config)
 
-type ActionMap []Action
+type Actions []Action
 
 type Action struct {
 	Path        string

@@ -19,7 +19,7 @@ type Logger struct {
 	db      *gorm.DB
 	config  config.Config
 	proxies []proxy.Proxy
-	actions config.ActionMap
+	actions config.Actions
 }
 
 type Map map[string]any
@@ -33,7 +33,7 @@ func New(opts ...config.ConfigOpt) (*Logger, error) {
 		AuthFunc:    nil,
 		Models:      config.LogModels{},
 		Proxies:     []proxy.Proxy{},
-		Actions:     config.ActionMap{},
+		Actions:     config.Actions{},
 	}
 
 	for _, opt := range opts {
@@ -201,7 +201,7 @@ func (l *Logger) GetActionArgTypes(path string) ([]reflect.Type, error) {
 	return argTypes, nil
 }
 
-func (l *Logger) GetActionsMap() config.ActionMap {
+func (l *Logger) GetActionsMap() config.Actions {
 	return l.actions
 }
 
@@ -220,4 +220,23 @@ func (l *Logger) GetActionDetails(path string) (config.Action, bool) {
 		}
 	}
 	return config.Action{}, false
+}
+
+func (l *Logger) AddAction(action config.Action) {
+	for i, existingAction := range l.actions {
+		if existingAction.Path == action.Path {
+			l.actions[i] = action
+			return
+		}
+	}
+	l.actions = append(l.actions, action)
+}
+
+func (l *Logger) RemoveAction(path string) {
+	for i, action := range l.actions {
+		if action.Path == path {
+			l.actions = append(l.actions[:i], l.actions[i+1:]...)
+			return
+		}
+	}
 }
