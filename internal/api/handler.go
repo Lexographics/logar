@@ -26,7 +26,7 @@ type InvokeActionRequest struct {
 }
 
 type InvokeActionResponse struct {
-	Result []any  `json:"result,omitempty"`
+	Result any    `json:"result,omitempty"`
 	Error  string `json:"error,omitempty"`
 }
 
@@ -251,7 +251,11 @@ func (h *Handler) InvokeActionHandler(w http.ResponseWriter, r *http.Request) {
 		resp.Error = err.Error()
 		w.WriteHeader(http.StatusInternalServerError)
 	} else {
-		resp.Result = result
+		if len(result) == 1 {
+			resp.Result = result[0]
+		} else {
+			resp.Result = result
+		}
 	}
 
 	if encodeErr := json.NewEncoder(w).Encode(resp); encodeErr != nil {
