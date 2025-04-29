@@ -258,7 +258,9 @@ func (h *Handler) InvokeActionHandler(w http.ResponseWriter, r *http.Request) {
 func parseStringArg(argStr string, targetType reflect.Type) (any, error) {
 	switch targetType.Kind() {
 	case reflect.String:
-		return argStr, nil
+		p := reflect.New(targetType)
+		p.Elem().SetString(argStr)
+		return p.Elem().Interface(), nil
 	case reflect.Int, reflect.Int8, reflect.Int16, reflect.Int32, reflect.Int64:
 		intVal, err := strconv.ParseInt(argStr, 10, targetType.Bits())
 		if err != nil {
