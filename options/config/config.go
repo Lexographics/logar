@@ -9,7 +9,6 @@ import (
 type Config struct {
 	AppName        string
 	Database       string
-	AutoMigrate    bool
 	RequireAuth    bool
 	AuthFunc       AuthFunc
 	Models         LogModels
@@ -46,14 +45,6 @@ func WithDatabase(database string) ConfigOpt {
 	return func(cfg *Config) {
 		cfg.Database = database
 	}
-}
-
-func EnableAutoMigrate(cfg *Config) {
-	cfg.AutoMigrate = true
-}
-
-func DisableAutoMigrate(cfg *Config) {
-	cfg.AutoMigrate = false
 }
 
 func WithAuth(authFunc AuthFunc) ConfigOpt {

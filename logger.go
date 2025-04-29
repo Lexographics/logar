@@ -10,6 +10,7 @@ import (
 	"github.com/Lexographics/logar/internal/domain/models"
 	"github.com/Lexographics/logar/options/config"
 	"github.com/Lexographics/logar/proxy"
+	"github.com/google/uuid"
 	"gorm.io/driver/sqlite"
 	"gorm.io/gorm"
 	"gorm.io/gorm/logger"
@@ -28,7 +29,6 @@ func New(opts ...config.ConfigOpt) (*Logger, error) {
 	cfg := config.Config{
 		AppName:     "logger",
 		Database:    "logs.db",
-		AutoMigrate: true,
 		RequireAuth: false,
 		AuthFunc:    nil,
 		Models:      config.LogModels{},
@@ -47,11 +47,12 @@ func New(opts ...config.ConfigOpt) (*Logger, error) {
 		return nil, err
 	}
 
-	if cfg.AutoMigrate {
-		err = db.AutoMigrate(&models.Log{})
-		if err != nil {
-			return nil, err
-		}
+	err = db.AutoMigrate(
+		&models.Log{},
+		&models.Session{},
+	)
+	if err != nil {
+		return nil, err
 	}
 
 	return &Logger{
@@ -84,11 +85,43 @@ func (l *Logger) GetAllModels() config.LogModels {
 }
 
 func (l *Logger) IsAuthCredentialsCorrect(username, password string) bool {
-	if l.config.MasterUsername == "" || l.config.MasterPassword == "" {
-		return false
+	if l.config.MasterUsername == username && l.config.MasterPassword == password {
+		return true
+	}
+	return false
+}
+
+func (l *Logger) CreateSession(username string) (string, error) {
+	session := models.Session{
+		Username:  username,
+		ExpiresAt: time.Now().Add(time.Hour * 24),
+		Token:     uuid.New().String(),
 	}
 
-	return username == l.config.MasterUsername && password == l.config.MasterPassword
+	err := l.db.Create(&session).Error
+	if err != nil {
+		return "", err
+	}
+	return session.Token, nil
+}
+
+func (l *Logger) DeleteSession(token string) error {
+	return l.db.Where("token = ?", token).Delete(&models.Session{}).Error
+}
+
+func (l *Logger) GetSession(token string) (*models.Session, error) {
+	var session models.Session
+	err := l.db.Where("token = ?", token).First(&session).Error
+	if err != nil {
+		return nil, err
+	}
+
+	if session.ExpiresAt.Before(time.Now()) {
+		l.DeleteSession(token)
+		return nil, fmt.Errorf("session expired")
+	}
+
+	return &session, nil
 }
 
 func (l *Logger) Print(model string, message any, category string, severity models.Severity) error {

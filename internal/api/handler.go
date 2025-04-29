@@ -6,15 +6,14 @@ import (
 	"fmt"
 	"io/fs"
 	"net/http"
+	"os"
 	"reflect"
 	"strconv"
 	"strings"
-	"sync"
 	"time"
 
 	"github.com/Lexographics/logar"
 	"github.com/Lexographics/logar/internal/domain/models"
-	"github.com/google/uuid"
 )
 
 type HandlerConfig struct {
@@ -36,25 +35,17 @@ type ActionDetails struct {
 	Description string   `json:"description"`
 }
 
-type Session struct {
-	ID        string
-	Username  string
-	ExpiresAt time.Time
-}
-
 type Handler struct {
-	logger   *logar.Logger
-	service  *Service
-	sessions sync.Map
-	cfg      HandlerConfig
+	logger  *logar.Logger
+	service *Service
+	cfg     HandlerConfig
 }
 
 func NewHandler(logger *logar.Logger, cfg HandlerConfig) *Handler {
 	return &Handler{
-		logger:   logger,
-		service:  NewService(),
-		sessions: sync.Map{},
-		cfg:      cfg,
+		logger:  logger,
+		service: NewService(),
+		cfg:     cfg,
 	}
 }
 
@@ -101,15 +92,8 @@ func (h *Handler) AuthMiddleware(next http.HandlerFunc) http.HandlerFunc {
 
 		token := strings.TrimPrefix(authorization, "Bearer ")
 
-		sessionAny, ok := h.sessions.Load(token)
-		if !ok {
-			http.Error(w, "Unauthorized", http.StatusUnauthorized)
-			return
-		}
-		session := sessionAny.(*Session)
-
-		if session.ExpiresAt.Before(time.Now()) {
-			h.sessions.Delete(token)
+		_, err := h.logger.GetSession(token)
+		if err != nil {
 			http.Error(w, "Unauthorized", http.StatusUnauthorized)
 			return
 		}
@@ -132,16 +116,15 @@ func (h *Handler) Login(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	session := &Session{
-		ID:        uuid.New().String(),
-		Username:  username,
-		ExpiresAt: time.Now().Add(time.Hour * 24 * 7),
+	token, err := h.logger.CreateSession(username)
+	if err != nil {
+		http.Error(w, "Failed to create session", http.StatusInternalServerError)
+		return
 	}
-	h.sessions.Store(session.ID, session)
 
 	w.WriteHeader(http.StatusOK)
 	json.NewEncoder(w).Encode(map[string]any{
-		"token":    session.ID,
+		"token":    token,
 		"username": username,
 	})
 }
