@@ -58,6 +58,12 @@ func NewHandler(logger *logar.Logger, cfg HandlerConfig) *Handler {
 	}
 }
 
+var dev = false
+
+func init() {
+	dev = os.Getenv("LOGAR_DEV") == "true"
+}
+
 //go:embed build/*
 var staticFiles embed.FS
 
@@ -69,13 +75,16 @@ func (h *Handler) Router(mux *http.ServeMux) {
 	mux.HandleFunc("GET /actions", h.AuthMiddleware(h.ListActions))
 	mux.HandleFunc("POST /actions/invoke", h.AuthMiddleware(h.InvokeActionHandler))
 
-	sub, err := fs.Sub(staticFiles, "build")
-	if err != nil {
-		h.logger.Error("logar-errors", fmt.Sprintf("Failed to create subdirectory: %v", err), "api")
-		return
+	if dev {
+		mux.Handle("/", http.FileServer(http.Dir("webclient/build")))
+	} else {
+		sub, err := fs.Sub(staticFiles, "build")
+		if err != nil {
+			h.logger.Error("logar-errors", fmt.Sprintf("Failed to create subdirectory: %v", err), "api")
+			return
+		}
+		mux.Handle("/", http.FileServer(http.FS(sub)))
 	}
-	mux.Handle("/", http.FileServer(http.FS(sub)))
-	// mux.Handle("/", http.FileServer(http.Dir("webclient/build")))
 }
 
 func (h *Handler) AuthMiddleware(next http.HandlerFunc) http.HandlerFunc {
