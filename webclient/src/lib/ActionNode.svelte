@@ -127,7 +127,7 @@
 	</div>
 {:else}
 	<!-- Directory -->
-	<details class="directory-node" open>
+	<details class="directory-node">
 		<summary class="directory-summary list-item">
 			<span class="directory-icon"></span>
 			<span class="directory-name">{name}</span>
