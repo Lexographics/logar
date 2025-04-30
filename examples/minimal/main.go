@@ -10,7 +10,6 @@ import (
 	"github.com/Lexographics/logar/gormlogger"
 	"github.com/Lexographics/logar/logarweb"
 	"github.com/Lexographics/logar/logfilter"
-	"github.com/Lexographics/logar/options/config"
 	"github.com/Lexographics/logar/proxy"
 	"github.com/Lexographics/logar/proxy/consolelogger"
 	"gorm.io/driver/sqlite"
@@ -27,22 +26,22 @@ type AnotherCustomType float64
 func main() {
 
 	logger, err := logar.New(
-		config.WithAppName("minimal"),
-		config.WithDatabase("logs.db"),
-		config.AddModel("Logs", "logs"),
-		config.WithMasterCredentials("username", "password"),
+		logar.WithAppName("minimal"),
+		logar.WithDatabase("logs.db"),
+		logar.AddModel("Logs", "logs"),
+		logar.WithMasterCredentials("username", "password"),
 
-		config.WithAction("Server/Test", "Test action", func() (string, int, string) {
+		logar.WithAction("Server/Test", "Test action", func() (string, int, string) {
 			return "test value 1", 123, "test value 3"
 		}),
-		config.WithAction("Server/Time", "Get current time", func() string {
+		logar.WithAction("Server/Time", "Get current time", func() string {
 			return time.Now().Format(time.RFC3339)
 		}),
-		config.WithAction("Server/Ping", "Ping the server", func(duration time.Duration, timestamp time.Time, test string, test2 CustomType) string {
+		logar.WithAction("Server/Ping", "Ping the server", func(duration time.Duration, timestamp time.Time, test string, test2 CustomType) string {
 			return "duration: " + fmt.Sprint(duration) + " timestamp: " + fmt.Sprint(timestamp.String()) + " test: " + test + " test2: " + fmt.Sprint(test2)
 		}),
 
-		config.AddProxy(proxy.NewProxy(
+		logar.AddProxy(proxy.NewProxy(
 			consolelogger.New(),
 			logfilter.NewFilter(
 				logfilter.Not(

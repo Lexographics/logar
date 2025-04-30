@@ -1,4 +1,4 @@
-package config
+package logar
 
 import (
 	"net/http"
@@ -7,15 +7,16 @@ import (
 )
 
 type Config struct {
-	AppName        string
-	Database       string
-	RequireAuth    bool
-	AuthFunc       AuthFunc
-	Models         LogModels
-	Proxies        []proxy.Proxy
-	Actions        Actions
-	MasterUsername string
-	MasterPassword string
+	AppName         string
+	Database        string
+	RequireAuth     bool
+	AuthFunc        AuthFunc
+	Models          LogModels
+	Proxies         []proxy.Proxy
+	Actions         Actions
+	MasterUsername  string
+	MasterPassword  string
+	DefaultLanguage Language
 }
 
 type LogModel struct {
@@ -83,6 +84,12 @@ func WithMasterCredentials(username, password string) ConfigOpt {
 	return func(cfg *Config) {
 		cfg.MasterUsername = username
 		cfg.MasterPassword = password
+	}
+}
+
+func WithDefaultLanguage(language Language) ConfigOpt {
+	return func(cfg *Config) {
+		cfg.DefaultLanguage = language
 	}
 }
 

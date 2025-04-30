@@ -11,7 +11,6 @@ import (
 	"github.com/Lexographics/logar/gormlogger"
 	"github.com/Lexographics/logar/logarweb"
 	"github.com/Lexographics/logar/logfilter"
-	"github.com/Lexographics/logar/options/config"
 	"github.com/Lexographics/logar/proxy"
 	"github.com/Lexographics/logar/proxy/consolelogger"
 	"gorm.io/driver/sqlite"
@@ -28,59 +27,59 @@ func main() {
 	needAuth := false
 
 	logger, err := logar.New(
-		config.WithAppName(name),
-		config.WithDatabase("logs.db"),
-		config.AddModel("System Logs", "system-logs"),
-		config.AddModel("User Trace", "user-trace"),
-		config.AddModel("Test Logs", "test-logs"),
-		config.AddModel("Test1", "test1"),
-		config.AddModel("Test2", "test2"),
-		config.AddModel("Test3", "test3"),
-		config.AddModel("Test4", "test4"),
-		// config.AddModel("Test5", "test5"),
-		// config.AddModel("Test6", "test6"),
-		// config.AddModel("Test7", "test7"),
-		// config.AddModel("Test6", "test6"),
-		// config.AddModel("Test8", "test8"),
-		// config.AddModel("Test9", "test9"),
-		// config.AddModel("Test10", "test10"),
-		config.AddModel("All Logs", "__all__"),
+		logar.WithAppName(name),
+		logar.WithDatabase("logs.db"),
+		logar.AddModel("System Logs", "system-logs"),
+		logar.AddModel("User Trace", "user-trace"),
+		logar.AddModel("Test Logs", "test-logs"),
+		logar.AddModel("Test1", "test1"),
+		logar.AddModel("Test2", "test2"),
+		logar.AddModel("Test3", "test3"),
+		logar.AddModel("Test4", "test4"),
+		// logar.AddModel("Test5", "test5"),
+		// logar.AddModel("Test6", "test6"),
+		// logar.AddModel("Test7", "test7"),
+		// logar.AddModel("Test6", "test6"),
+		// logar.AddModel("Test8", "test8"),
+		// logar.AddModel("Test9", "test9"),
+		// logar.AddModel("Test10", "test10"),
+		logar.AddModel("All Logs", "__all__"),
 
-		config.WithMasterCredentials("username", "password"),
+		logar.WithMasterCredentials("username", "password"),
 
 		// Example Actions
-		config.WithAction("Server/Test", "Test action", func() (string, int, string) {
+		logar.WithAction("Server/Test", "Test action", func() (string, int, string) {
 			return "test value 1", 123, "test value 3"
 		}),
-		config.WithAction("Server/Time", "Get current time", func() string {
+		logar.WithAction("Server/Time", "Get current time", func() string {
 			return time.Now().Format(time.RFC3339)
 		}),
-		config.WithAction("Server/Ping", "Ping the server", func() string {
+		logar.WithAction("Server/Ping", "Ping the server", func() string {
 			return "pong"
 		}),
-		config.WithAction("Math/Add", "Add two numbers", func(a, b float64) float64 {
+		logar.WithAction("Math/Add", "Add two numbers", func(a, b float64) float64 {
 			return a + b
 		}),
-		config.WithAction("Math/Sub", "Subtract two numbers", func(a, b float64) float64 {
+		logar.WithAction("Math/Sub", "Subtract two numbers", func(a, b float64) float64 {
 			return a - b
 		}),
-		config.WithAction("Math/Mul", "Multiply two numbers", func(a, b float64) float64 {
+		logar.WithAction("Math/Mul", "Multiply two numbers", func(a, b float64) float64 {
 			return a * b
 		}),
-		config.WithAction("Math/Div", "Divide two numbers", func(a, b float64) float64 {
+		logar.WithAction("Math/Div", "Divide two numbers", func(a, b float64) float64 {
 			return a / b
 		}),
-		config.WithAction("Math/Advanced/Pow", "Power of two numbers", func(a, b float64) float64 {
+		logar.WithAction("Math/Advanced/Pow", "Power of two numbers", func(a, b float64) float64 {
 			return math.Pow(a, b)
 		}),
-		config.WithAction("Math/Advanced/Sqrt", "Square root of a number", func(a float64) float64 {
+		logar.WithAction("Math/Advanced/Sqrt", "Square root of a number", func(a float64) float64 {
 			return math.Sqrt(a)
 		}),
 
-		config.WithAction("Greet", "Greet a user", func(name string) string {
+		logar.WithAction("Greet", "Greet a user", func(name string) string {
 			return fmt.Sprintf("Hello, %s!", name)
 		}),
-		config.WithAction("Concat", "Concatenate strings", func(args []any) string {
+		logar.WithAction("Concat", "Concatenate strings", func(args []any) string {
 			str := ""
 			for _, arg := range args {
 				str += fmt.Sprintf("%v", arg)
@@ -88,7 +87,7 @@ func main() {
 			return str
 		}),
 
-		config.AddProxy(proxy.NewProxy(
+		logar.AddProxy(proxy.NewProxy(
 			consolelogger.New(),
 			logfilter.NewFilter(
 				logfilter.Not(
@@ -97,8 +96,8 @@ func main() {
 			),
 		)),
 
-		config.If(needAuth,
-			config.WithAuth(func(r *http.Request) bool {
+		logar.If(needAuth,
+			logar.WithAuth(func(r *http.Request) bool {
 				username, password, ok := r.BasicAuth()
 				if ok && username == "admin" && password == "password" {
 					return true
