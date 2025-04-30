@@ -31,8 +31,12 @@
 <nav class="topbar">
   <div class="profile-section">
     <button class="profile-button" onclick={toggleDropdown}>
-      <span class="username">{userStore.current.username}</span>
-      <img src={"https://api.dicebear.com/9.x/thumbs/svg?seed=" + userStore.current.username} alt="avatar" class="avatar" />
+      <div style="display: flex; flex-direction: column; align-items: center;">
+        <span class="username">{userStore.current.user.display_name}</span>
+        <span class="username" style="font-size: 0.75rem;">@{userStore.current.user.username}</span>
+      </div>
+      
+      <img src={"https://api.dicebear.com/9.x/thumbs/svg?seed=" + userStore.current.user.username} alt="avatar" class="avatar" />
     </button>
 
     <div class="dropdown-menu" class:active={isDropdownOpen}>

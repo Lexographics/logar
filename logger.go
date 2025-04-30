@@ -10,6 +10,7 @@ import (
 	"github.com/Lexographics/logar/internal/domain/models"
 	"github.com/Lexographics/logar/proxy"
 	"github.com/google/uuid"
+	"golang.org/x/crypto/bcrypt"
 	"gorm.io/driver/sqlite"
 	"gorm.io/gorm"
 	"gorm.io/gorm/logger"
@@ -62,6 +63,7 @@ func New(opts ...ConfigOpt) (*Logger, error) {
 	err = db.AutoMigrate(
 		&models.Log{},
 		&models.Session{},
+		&models.User{},
 	)
 	if err != nil {
 		return nil, err
@@ -122,16 +124,45 @@ func (l *Logger) GetAllModels() LogModels {
 	return l.config.Models
 }
 
-func (l *Logger) IsAuthCredentialsCorrect(username, password string) bool {
+func (l *Logger) LoginUser(username, password string) (models.User, error) {
 	if l.config.MasterUsername == username && l.config.MasterPassword == password {
-		return true
+		return models.User{
+			Username:    username,
+			DisplayName: "Master",
+			IsAdmin:     true,
+		}, nil
 	}
-	return false
+
+	var user models.User
+	err := l.db.Where("username = ?", username).First(&user).Error
+	if err != nil {
+		return models.User{}, err
+	}
+
+	if bcrypt.CompareHashAndPassword([]byte(user.Password), []byte(password)) != nil {
+		return models.User{}, fmt.Errorf("invalid password")
+	}
+
+	return user, nil
 }
 
-func (l *Logger) CreateSession(username string) (string, error) {
+func (l *Logger) CreateUser(username, displayName, password string) error {
+	hashedPassword, err := bcrypt.GenerateFromPassword([]byte(password), bcrypt.DefaultCost)
+	if err != nil {
+		return err
+	}
+
+	user := models.User{
+		Username:    username,
+		DisplayName: displayName,
+		Password:    string(hashedPassword),
+	}
+
+	return l.db.Create(&user).Error
+}
+func (l *Logger) CreateSession(user models.User) (string, error) {
 	session := models.Session{
-		Username:  username,
+		UserID:    user.ID,
 		ExpiresAt: time.Now().Add(time.Hour * 24),
 		Token:     uuid.New().String(),
 	}

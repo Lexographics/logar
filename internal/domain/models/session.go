@@ -7,6 +7,6 @@ type Session struct {
 	CreatedAt time.Time
 	ExpiresAt time.Time `gorm:"not null"`
 
-	Username string `gorm:"not null"`
-	Token    string `gorm:"not null;unique"`
+	UserID uint   `gorm:"not null"`
+	Token  string `gorm:"not null;unique"`
 }

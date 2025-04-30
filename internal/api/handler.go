@@ -111,12 +111,13 @@ func (h *Handler) Login(w http.ResponseWriter, r *http.Request) {
 	username := r.FormValue("username")
 	password := r.FormValue("password")
 
-	if !h.logger.IsAuthCredentialsCorrect(username, password) {
+	user, err := h.logger.LoginUser(username, password)
+	if err != nil {
 		http.Error(w, "Unauthorized", http.StatusUnauthorized)
 		return
 	}
 
-	token, err := h.logger.CreateSession(username)
+	token, err := h.logger.CreateSession(user)
 	if err != nil {
 		http.Error(w, "Failed to create session", http.StatusInternalServerError)
 		return
@@ -124,8 +125,8 @@ func (h *Handler) Login(w http.ResponseWriter, r *http.Request) {
 
 	w.WriteHeader(http.StatusOK)
 	json.NewEncoder(w).Encode(map[string]any{
-		"token":    token,
-		"username": username,
+		"token": token,
+		"user":  user,
 	})
 }
 
