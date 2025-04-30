@@ -1,5 +1,5 @@
 <script>
-	let { name = '', node = {}, currentPath = '' } = $props();
+	let { name = '', node = {}, currentPath = '', isOpen = false } = $props();
 	import { invokeAction } from '$lib/service/action';
 	import LL from '../i18n/i18n-svelte';
 	import ActionArgInput from './ActionArgInput.svelte';
@@ -40,7 +40,7 @@
 				return isNaN(timeVal) ? new Date(0) : timeVal;
 			case 'duration':
 				if (typeof value !== 'number' || isNaN(value)) {
-					return 0; // Handle invalid input
+					return 0;
 				}
 				return value;
 
@@ -117,7 +117,7 @@
 	</div>
 {:else}
 	<!-- Directory -->
-	<details class="directory-node">
+	<details class="directory-node" open={isOpen}>
 		<summary class="directory-summary list-item">
 			<span class="directory-icon"></span>
 			<span class="directory-name">{name}</span>

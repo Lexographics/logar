@@ -78,7 +78,7 @@
 			<div class="status-message">{$LL.remote_actions.no_actions()}</div>
 		{:else}
 			{#each actionsTree.childrenOrder as name}
-				<ActionNode {name} node={actionsTree.children[name]} currentPath="" />
+				<ActionNode {name} node={actionsTree.children[name]} currentPath="" isOpen={actionsTree.childrenOrder.length <= 2} />
 			{/each}
 		{/if}
 	</div>
