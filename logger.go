@@ -55,6 +55,12 @@ func New(opts ...config.ConfigOpt) (*Logger, error) {
 		return nil, err
 	}
 
+	// Delete expired sessions
+	err = db.Where("expires_at < ?", time.Now()).Delete(&models.Session{}).Error
+	if err != nil {
+		return nil, err
+	}
+
 	return &Logger{
 		db:      db,
 		config:  cfg,
