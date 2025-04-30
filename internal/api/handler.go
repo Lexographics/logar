@@ -53,6 +53,7 @@ func init() {
 var staticFiles embed.FS
 
 func (h *Handler) Router(mux *http.ServeMux) {
+	mux.HandleFunc("GET /language", h.GetLanguage)
 	mux.HandleFunc("POST /auth/login", h.Login)
 	mux.HandleFunc("POST /auth/logout", h.AuthMiddleware(h.Logout))
 	mux.HandleFunc("GET /models", h.AuthMiddleware(h.ListModels))
@@ -95,6 +96,10 @@ func (h *Handler) AuthMiddleware(next http.HandlerFunc) http.HandlerFunc {
 
 		next.ServeHTTP(w, r)
 	}
+}
+
+func (h *Handler) GetLanguage(w http.ResponseWriter, r *http.Request) {
+	w.Write([]byte(h.logger.GetDefaultLanguage()))
 }
 
 func (h *Handler) Login(w http.ResponseWriter, r *http.Request) {

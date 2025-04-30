@@ -29,6 +29,7 @@ func main() {
 	logger, err := logar.New(
 		logar.WithAppName(name),
 		logar.WithDatabase("logs.db"),
+		logar.WithDefaultLanguage(logar.English),
 		logar.AddModel("System Logs", "system-logs"),
 		logar.AddModel("User Trace", "user-trace"),
 		logar.AddModel("Test Logs", "test-logs"),

@@ -8,7 +8,6 @@ import (
 	"time"
 
 	"github.com/Lexographics/logar/internal/domain/models"
-	"github.com/Lexographics/logar/options/config"
 	"github.com/Lexographics/logar/proxy"
 	"github.com/google/uuid"
 	"gorm.io/driver/sqlite"
@@ -29,23 +28,24 @@ const (
 
 type Logger struct {
 	db        *gorm.DB
-	config    config.Config
+	config    Config
 	proxies   []proxy.Proxy
-	actions   config.Actions
+	actions   Actions
 	typeKinds map[string]TypeKind
 }
 
 type Map map[string]any
 
-func New(opts ...config.ConfigOpt) (*Logger, error) {
-	cfg := config.Config{
-		AppName:     "logger",
-		Database:    "logs.db",
-		RequireAuth: false,
-		AuthFunc:    nil,
-		Models:      config.LogModels{},
-		Proxies:     []proxy.Proxy{},
-		Actions:     config.Actions{},
+func New(opts ...ConfigOpt) (*Logger, error) {
+	cfg := Config{
+		AppName:         "logger",
+		Database:        "logs.db",
+		RequireAuth:     false,
+		AuthFunc:        nil,
+		Models:          LogModels{},
+		Proxies:         []proxy.Proxy{},
+		Actions:         Actions{},
+		DefaultLanguage: English,
 	}
 
 	for _, opt := range opts {
@@ -118,7 +118,7 @@ func (l *Logger) Auth(r *http.Request) bool {
 	return l.config.AuthFunc(r)
 }
 
-func (l *Logger) GetAllModels() config.LogModels {
+func (l *Logger) GetAllModels() LogModels {
 	return l.config.Models
 }
 
@@ -178,6 +178,10 @@ func (l *Logger) GetTypeKindString(type_ string) (TypeKind, bool) {
 
 func (l *Logger) SetTypeKindString(type_ string, kind TypeKind) {
 	l.typeKinds[type_] = kind
+}
+
+func (l *Logger) GetDefaultLanguage() Language {
+	return l.config.DefaultLanguage
 }
 
 func (l *Logger) Print(model string, message any, category string, severity models.Severity) error {
@@ -290,7 +294,7 @@ func (l *Logger) GetActionArgTypes(path string) ([]reflect.Type, error) {
 	return argTypes, nil
 }
 
-func (l *Logger) GetActionsMap() config.Actions {
+func (l *Logger) GetActionsMap() Actions {
 	return l.actions
 }
 
@@ -302,16 +306,16 @@ func (l *Logger) GetAllActions() []string {
 	return actions
 }
 
-func (l *Logger) GetActionDetails(path string) (config.Action, bool) {
+func (l *Logger) GetActionDetails(path string) (Action, bool) {
 	for _, action := range l.actions {
 		if action.Path == path {
 			return action, true
 		}
 	}
-	return config.Action{}, false
+	return Action{}, false
 }
 
-func (l *Logger) AddAction(action config.Action) {
+func (l *Logger) AddAction(action Action) {
 	for i, existingAction := range l.actions {
 		if existingAction.Path == action.Path {
 			l.actions[i] = action
