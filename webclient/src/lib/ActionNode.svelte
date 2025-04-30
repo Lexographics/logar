@@ -1,7 +1,7 @@
 <script>
 	let { name = '', node = {}, currentPath = '' } = $props();
 	import { invokeAction } from '$lib/service/action';
-    import ActionArgInput from './ActionArgInput.svelte';
+	import ActionArgInput from './ActionArgInput.svelte';
 	import Self from './ActionNode.svelte';
 
 	let result = $state(null);
@@ -25,21 +25,7 @@
 
 	let inputValues = $state({});
 
-	/*
-	function getInputType(goKind, goType) {
-		switch (goKind) {
-			case 'int': case 'int8': case 'int16': case 'int32': case 'int64':
-			case 'uint': case 'uint8': case 'uint16': case 'uint32': case 'uint64':
-			case 'float32': case 'float64': return 'number';
-			case 'bool': return 'checkbox';
-			case 'string': default: return 'text';
-		}
-	}
-	*/
-
 	function parseArgument(value, kind) {
-		console.log(kind);
-		
 		switch (kind) {
 			case 'int':
 				const intVal = parseInt(value, 10);
