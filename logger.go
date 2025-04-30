@@ -16,11 +16,23 @@ import (
 	"gorm.io/gorm/logger"
 )
 
+type TypeKind string
+
+const (
+	TypeKind_Text     TypeKind = "text"
+	TypeKind_Int      TypeKind = "int"
+	TypeKind_Float    TypeKind = "float"
+	TypeKind_Bool     TypeKind = "bool"
+	TypeKind_Time     TypeKind = "time"
+	TypeKind_Duration TypeKind = "duration"
+)
+
 type Logger struct {
-	db      *gorm.DB
-	config  config.Config
-	proxies []proxy.Proxy
-	actions config.Actions
+	db        *gorm.DB
+	config    config.Config
+	proxies   []proxy.Proxy
+	actions   config.Actions
+	typeKinds map[string]TypeKind
 }
 
 type Map map[string]any
@@ -61,12 +73,32 @@ func New(opts ...config.ConfigOpt) (*Logger, error) {
 		return nil, err
 	}
 
-	return &Logger{
-		db:      db,
-		config:  cfg,
-		proxies: cfg.Proxies,
-		actions: cfg.Actions,
-	}, nil
+	logger := &Logger{
+		db:        db,
+		config:    cfg,
+		proxies:   cfg.Proxies,
+		actions:   cfg.Actions,
+		typeKinds: map[string]TypeKind{},
+	}
+
+	// Default type kinds
+	logger.SetTypeKind(reflect.TypeOf(string("")), TypeKind_Text)
+	logger.SetTypeKind(reflect.TypeOf(int(0)), TypeKind_Int)
+	logger.SetTypeKind(reflect.TypeOf(int8(0)), TypeKind_Int)
+	logger.SetTypeKind(reflect.TypeOf(int16(0)), TypeKind_Int)
+	logger.SetTypeKind(reflect.TypeOf(int32(0)), TypeKind_Int)
+	logger.SetTypeKind(reflect.TypeOf(int64(0)), TypeKind_Int)
+	logger.SetTypeKind(reflect.TypeOf(uint(0)), TypeKind_Int)
+	logger.SetTypeKind(reflect.TypeOf(uint8(0)), TypeKind_Int)
+	logger.SetTypeKind(reflect.TypeOf(uint16(0)), TypeKind_Int)
+	logger.SetTypeKind(reflect.TypeOf(uint32(0)), TypeKind_Int)
+	logger.SetTypeKind(reflect.TypeOf(uint64(0)), TypeKind_Int)
+	logger.SetTypeKind(reflect.TypeOf(float32(0)), TypeKind_Float)
+	logger.SetTypeKind(reflect.TypeOf(float64(0)), TypeKind_Float)
+	logger.SetTypeKind(reflect.TypeOf(bool(false)), TypeKind_Bool)
+	logger.SetTypeKind(reflect.TypeOf(time.Time{}), TypeKind_Time)
+	logger.SetTypeKind(reflect.TypeOf(time.Duration(0)), TypeKind_Duration)
+	return logger, nil
 }
 
 func (l *Logger) Close() error {
@@ -128,6 +160,24 @@ func (l *Logger) GetSession(token string) (*models.Session, error) {
 	}
 
 	return &session, nil
+}
+
+func (l *Logger) GetTypeKind(type_ reflect.Type) (TypeKind, bool) {
+	kind, ok := l.typeKinds[type_.String()]
+	return kind, ok
+}
+
+func (l *Logger) SetTypeKind(type_ reflect.Type, kind TypeKind) {
+	l.typeKinds[type_.String()] = kind
+}
+
+func (l *Logger) GetTypeKindString(type_ string) (TypeKind, bool) {
+	kind, ok := l.typeKinds[type_]
+	return kind, ok
+}
+
+func (l *Logger) SetTypeKindString(type_ string, kind TypeKind) {
+	l.typeKinds[type_] = kind
 }
 
 func (l *Logger) Print(model string, message any, category string, severity models.Severity) error {

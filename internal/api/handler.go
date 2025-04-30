@@ -29,12 +29,6 @@ type InvokeActionResponse struct {
 	Error  string `json:"error,omitempty"`
 }
 
-type ActionDetails struct {
-	Path        string   `json:"path"`
-	Args        []string `json:"args"`
-	Description string   `json:"description"`
-}
-
 type Handler struct {
 	logger  *logar.Logger
 	service *Service
@@ -60,6 +54,7 @@ var staticFiles embed.FS
 
 func (h *Handler) Router(mux *http.ServeMux) {
 	mux.HandleFunc("POST /auth/login", h.Login)
+	mux.HandleFunc("POST /auth/logout", h.AuthMiddleware(h.Logout))
 	mux.HandleFunc("GET /models", h.AuthMiddleware(h.ListModels))
 	mux.HandleFunc("GET /logs/{model}", h.AuthMiddleware(h.GetLogs))
 	mux.HandleFunc("GET /logs/{model}/sse", h.AuthMiddleware(h.GetLogsSSE))
@@ -129,6 +124,23 @@ func (h *Handler) Login(w http.ResponseWriter, r *http.Request) {
 	})
 }
 
+func (h *Handler) Logout(w http.ResponseWriter, r *http.Request) {
+	authorization := r.Header.Get("Authorization")
+	if authorization == "" {
+		http.Error(w, "Unauthorized", http.StatusUnauthorized)
+		return
+	}
+
+	session, err := h.logger.GetSession(strings.TrimPrefix(authorization, "Bearer "))
+	if err != nil {
+		http.Error(w, "Unauthorized", http.StatusUnauthorized)
+		return
+	}
+
+	h.logger.DeleteSession(session.Token)
+	w.WriteHeader(http.StatusOK)
+}
+
 func (h *Handler) ListModels(w http.ResponseWriter, r *http.Request) {
 	models := h.logger.GetAllModels()
 	w.Header().Set("Content-Type", "application/json")
@@ -182,14 +194,22 @@ func (h *Handler) ListActions(w http.ResponseWriter, r *http.Request) {
 			continue
 		}
 
-		argTypeStrings := make([]string, len(argTypes))
+		argTypeData := make([]ArgType, len(argTypes))
 		for i, t := range argTypes {
-			argTypeStrings[i] = t.String()
+			kind, ok := h.logger.GetTypeKind(t)
+			if !ok {
+				kind = logar.TypeKind_Text
+			}
+
+			argTypeData[i] = ArgType{
+				Type: t.String(),
+				Kind: string(kind),
+			}
 		}
 
 		details = append(details, ActionDetails{
 			Path:        action.Path,
-			Args:        argTypeStrings,
+			Args:        argTypeData,
 			Description: action.Description,
 		})
 	}

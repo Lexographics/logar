@@ -1,6 +1,7 @@
 <script>
   import { goto } from "$app/navigation";
   import { base } from "$app/paths";
+  import { logout } from "./service/user";
   import { userStore } from "./store";
 
   let isDropdownOpen = $state(false);
@@ -9,7 +10,8 @@
     isDropdownOpen = !isDropdownOpen;
   }
 
-  function handleLogout() {
+  async function handleLogout() {
+    await logout();
     userStore.current = {
       token: null,
     };

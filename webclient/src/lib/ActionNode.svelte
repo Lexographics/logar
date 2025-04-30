@@ -1,6 +1,7 @@
 <script>
 	let { name = '', node = {}, currentPath = '' } = $props();
 	import { invokeAction } from '$lib/service/action';
+    import ActionArgInput from './ActionArgInput.svelte';
 	import Self from './ActionNode.svelte';
 
 	let result = $state(null);
@@ -24,8 +25,9 @@
 
 	let inputValues = $state({});
 
-	function getInputType(goType) {
-		switch (goType) {
+	/*
+	function getInputType(goKind, goType) {
+		switch (goKind) {
 			case 'int': case 'int8': case 'int16': case 'int32': case 'int64':
 			case 'uint': case 'uint8': case 'uint16': case 'uint32': case 'uint64':
 			case 'float32': case 'float64': return 'number';
@@ -33,18 +35,34 @@
 			case 'string': default: return 'text';
 		}
 	}
+	*/
 
-	function parseArgument(value, goType) {
-		switch (goType) {
-			case 'int': case 'int8': case 'int16': case 'int32': case 'int64':
-			case 'uint': case 'uint8': case 'uint16': case 'uint32': case 'uint64':
+	function parseArgument(value, kind) {
+		console.log(kind);
+		
+		switch (kind) {
+			case 'int':
 				const intVal = parseInt(value, 10);
 				return isNaN(intVal) ? 0 : intVal;
-			case 'float32': case 'float64':
+			case 'float':
 				const floatVal = parseFloat(value);
 				return isNaN(floatVal) ? 0.0 : floatVal;
 			case 'bool': return !!value;
-			case 'string': default: return String(value);
+			case 'time':
+				const timeVal = new Date(value);
+				return isNaN(timeVal) ? new Date(0) : timeVal;
+			case 'duration':
+				if (typeof value !== 'number' || isNaN(value)) {
+					return 0; // Handle invalid input
+				}
+				return value;
+
+			case 'text': default:
+				console.log("Value: ", value);
+				if (value === null || value === undefined) {
+					return ""
+				}
+				return String(value);
 		}
 	}
 
@@ -55,7 +73,7 @@
 		error = null;
 		const argsToSend = actionDetails.args.map((argType, i) => {
 			const rawValue = inputValues[i];
-			return parseArgument(rawValue, argType);
+			return parseArgument(rawValue, argType.kind);
 		});
 		try {
 			const [res, invokeError] = await invokeAction(nodePath, argsToSend);
@@ -86,21 +104,7 @@
 				{#if actionDetails.args && actionDetails.args.length > 0}
 					<div class="args-container">
 						{#each actionDetails.args as argType, i}
-							<label class="arg-label">
-								<span class="arg-type">{argType}</span>
-								{#if getInputType(argType) === 'checkbox'}
-									<input type="checkbox" bind:checked={inputValues[i]} class="checkbox arg-input" disabled={loading} />
-								{:else}
-									<input
-										type={getInputType(argType)}
-										bind:value={inputValues[i]}
-										placeholder={`Arg ${i + 1}`}
-										class="input input-sm arg-input"
-										disabled={loading}
-										step={getInputType(argType) === 'number' ? 'any' : undefined}
-									/>
-								{/if}
-							</label>
+							<ActionArgInput arg={argType} bind:value={inputValues[i]} loading={loading} />
 						{/each}
 					</div>
 				{:else}
@@ -189,33 +193,6 @@
 		flex-wrap: wrap;
 		gap: 0.75rem;
 		flex-grow: 1;
-	}
-	.arg-label {
-		display: flex;
-		align-items: center;
-		gap: 0.35rem;
-		background-color: var(--input-background);
-		padding: 0.2rem 0.4rem;
-		border-radius: 4px;
-		border: 1px solid var(--border-color);
-		font-size: 0.85rem;
-	}
-	.arg-type {
-		font-size: 0.75rem;
-		color: var(--text-secondary-color);
-	}
-	.arg-input {
-		flex-shrink: 0;
-	}
-
-	.arg-label > .input.arg-input {
-		min-width: 100px;
-		max-width: 180px;
-		flex-grow: 1;
-		background-color: var(--input-background);
-	}
-	.arg-label > .checkbox.arg-input {
-		margin: 0;
 	}
 
 	.no-args-message {
@@ -324,17 +301,6 @@
 
   button:active {
     transform: translateY(1px);
-  }
-
-  input[type="text"],
-  input[type="number"] {
-    padding: 0.6rem 0.8rem;
-    border: 1px solid var(--input-border);
-    border-radius: 5px;
-    font-size: 0.95em;
-    background-color: var(--input-background);
-    color: var(--input-text);
-    line-height: 1.4;
   }
 
 </style> 
