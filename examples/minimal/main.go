@@ -28,7 +28,9 @@ func main() {
 	logger, err := logar.New(
 		logar.WithAppName("minimal"),
 		logar.WithDatabase("logs.db"),
-		logar.AddModel("Logs", "logs"),
+
+		logar.AddModel("User Trace", "user-trace", "fa-solid fa-users"),
+		logar.AddModel("Logs", "logs", "fa-solid fa-file-lines"),
 		logar.WithMasterCredentials("username", "password"),
 
 		logar.WithAction("Server/Test", "Test action", func() (string, int, string) {

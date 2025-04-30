@@ -55,7 +55,7 @@
             {#each models as model}
               <li>
                 <a class="link submenu-item" href={`${base}/logs?model=${model.identifier}`} class:active={$page.url.pathname.startsWith(`${base}/logs`) && $page.url.searchParams.get('model') === model.identifier}>
-                  <i class="fas fa-cube"></i>
+                  <i class="{model.icon ? model.icon : 'fa-solid fa-cube'}"></i>
                   <span class="text">{model.displayName || model.identifier}</span>
                 </a>
               </li>
