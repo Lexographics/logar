@@ -2,6 +2,7 @@ import { PUBLIC_API_URL } from "$env/static/public";
 import { userStore } from "$lib/store";
 import { showToast } from "$lib/toast";
 import axios from "axios";
+import { checkSession } from "./service";
 
 export async function login(username, password) {
   try {
@@ -29,5 +30,35 @@ export async function logout() {
   } catch (error) {
     showToast(error?.response?.data || error.message);
     return error;
+  }
+}
+
+export async function revokeSession(sessionId) {
+  try {
+    const form = new FormData();
+    form.append('session_id', sessionId);
+    const response = await axios.post(`${PUBLIC_API_URL}/auth/revoke-session`, form, {
+      headers: {
+        Authorization: `Bearer ${userStore.current.token}`,
+      },
+    });
+    return null;
+  } catch (error) {
+    checkSession(error);
+    return error;
+  }
+}
+
+export async function getActiveSessions() {
+  try {
+    const response = await axios.get(`${PUBLIC_API_URL}/auth/sessions`, {
+      headers: {
+        Authorization: `Bearer ${userStore.current.token}`,
+      },
+    });
+    return [response.data, null];
+  } catch (error) {
+    checkSession(error);
+    return [null, error];
   }
 }

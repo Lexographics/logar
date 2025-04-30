@@ -60,6 +60,13 @@ func New(opts ...ConfigOpt) (*Logger, error) {
 		return nil, err
 	}
 
+	sqldb, err := db.DB()
+	if err != nil {
+		return nil, err
+	}
+
+	sqldb.SetMaxOpenConns(1)
+
 	err = db.AutoMigrate(
 		&models.Log{},
 		&models.Session{},
@@ -160,11 +167,12 @@ func (l *Logger) CreateUser(username, displayName, password string) error {
 
 	return l.db.Create(&user).Error
 }
-func (l *Logger) CreateSession(user models.User) (string, error) {
+func (l *Logger) CreateSession(user models.User, device string) (string, error) {
 	session := models.Session{
 		UserID:    user.ID,
 		ExpiresAt: time.Now().Add(time.Hour * 24),
 		Token:     uuid.New().String(),
+		Device:    device,
 	}
 
 	err := l.db.Create(&session).Error
@@ -190,7 +198,24 @@ func (l *Logger) GetSession(token string) (*models.Session, error) {
 		return nil, fmt.Errorf("session expired")
 	}
 
+	session.LastActivity = time.Now()
+	session.ExpiresAt = time.Now().Add(time.Hour * 24)
+	err = l.db.Save(&session).Error
+	if err != nil {
+		return nil, err
+	}
+
 	return &session, nil
+}
+
+func (l *Logger) GetActiveSessions(userID uint) ([]models.Session, error) {
+	var sessions []models.Session
+	err := l.db.Where("user_id = ? and expires_at > ?", userID, time.Now()).Find(&sessions).Error
+	if err != nil {
+		return nil, err
+	}
+
+	return sessions, nil
 }
 
 func (l *Logger) GetTypeKind(type_ reflect.Type) (TypeKind, bool) {

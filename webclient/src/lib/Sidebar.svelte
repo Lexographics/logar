@@ -64,6 +64,7 @@
         </li>
         <li><a class="link" href={`${base}/analytics`} class:active={$page.url.pathname.startsWith(`${base}/analytics`)}><i class="fas fa-chart-bar"></i> <span class="text">{$LL.analytics.title()}</span></a></li>
         <li><a class="link" href={`${base}/actions`} class:active={$page.url.pathname.startsWith(`${base}/actions`)}><i class="fa-solid fa-server"></i> <span class="text">{$LL.remote_actions.title()}</span></a></li>
+        <li><a class="link" href={`${base}/user`} class:active={$page.url.pathname.startsWith(`${base}/user`)}><i class="fa-solid fa-users"></i> <span class="text">User / Sessions</span></a></li>
         <li><a class="link" href={`${base}/settings`} class:active={$page.url.pathname.startsWith(`${base}/settings`)}><i class="fas fa-cog"></i> <span class="text">{$LL.settings.title()}</span></a></li>
         <li><a class="link" href={`${base}/help`} class:active={$page.url.pathname.startsWith(`${base}/help`)}><i class="fas fa-question-circle"></i> <span class="text">{$LL.help.title()}</span></a></li>
       </ul>

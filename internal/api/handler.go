@@ -14,6 +14,7 @@ import (
 
 	"github.com/Lexographics/logar"
 	"github.com/Lexographics/logar/internal/domain/models"
+	"github.com/mileusna/useragent"
 )
 
 type HandlerConfig struct {
@@ -56,6 +57,8 @@ func (h *Handler) Router(mux *http.ServeMux) {
 	mux.HandleFunc("GET /language", h.GetLanguage)
 	mux.HandleFunc("POST /auth/login", h.Login)
 	mux.HandleFunc("POST /auth/logout", h.AuthMiddleware(h.Logout))
+	mux.HandleFunc("GET /auth/sessions", h.AuthMiddleware(h.GetActiveSessions))
+	mux.HandleFunc("POST /auth/revoke-session", h.AuthMiddleware(h.RevokeSession))
 	mux.HandleFunc("GET /models", h.AuthMiddleware(h.ListModels))
 	mux.HandleFunc("GET /logs/{model}", h.AuthMiddleware(h.GetLogs))
 	mux.HandleFunc("GET /logs/{model}/sse", h.AuthMiddleware(h.GetLogsSSE))
@@ -117,7 +120,9 @@ func (h *Handler) Login(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	token, err := h.logger.CreateSession(user)
+	ua := useragent.Parse(r.UserAgent())
+	device := ua.Name + "/" + ua.OS
+	token, err := h.logger.CreateSession(user, device)
 	if err != nil {
 		http.Error(w, "Failed to create session", http.StatusInternalServerError)
 		return
@@ -128,6 +133,58 @@ func (h *Handler) Login(w http.ResponseWriter, r *http.Request) {
 		"token": token,
 		"user":  user,
 	})
+}
+
+func (h *Handler) RevokeSession(w http.ResponseWriter, r *http.Request) {
+	authorization := r.Header.Get("Authorization")
+	if authorization == "" {
+		http.Error(w, "Unauthorized", http.StatusUnauthorized)
+		return
+	}
+
+	sessionId := r.FormValue("session_id")
+	if sessionId == "" {
+		http.Error(w, "Missing 'session_id' in request body", http.StatusBadRequest)
+		return
+	}
+
+	h.logger.DeleteSession(sessionId)
+	w.WriteHeader(http.StatusOK)
+}
+
+func (h *Handler) GetActiveSessions(w http.ResponseWriter, r *http.Request) {
+	authorization := r.Header.Get("Authorization")
+	if authorization == "" {
+		http.Error(w, "Unauthorized", http.StatusUnauthorized)
+		return
+	}
+
+	token := strings.TrimPrefix(authorization, "Bearer ")
+	session, err := h.logger.GetSession(token)
+	if err != nil {
+		http.Error(w, "Unauthorized", http.StatusUnauthorized)
+		return
+	}
+
+	activeSessions, err := h.logger.GetActiveSessions(session.UserID)
+	if err != nil {
+		http.Error(w, "Failed to get active sessions", http.StatusInternalServerError)
+		return
+	}
+
+	sessionData := []SessionData{}
+	for _, session := range activeSessions {
+		sessionData = append(sessionData, SessionData{
+			Device:       session.Device,
+			LastActivity: session.LastActivity.Format(time.DateTime),
+			CreatedAt:    session.CreatedAt.Format(time.DateTime),
+			IsCurrent:    session.Token == token,
+			Token:        session.Token,
+		})
+	}
+
+	w.Header().Set("Content-Type", "application/json")
+	json.NewEncoder(w).Encode(sessionData)
 }
 
 func (h *Handler) Logout(w http.ResponseWriter, r *http.Request) {
