@@ -3,7 +3,7 @@
   import { navigationStore } from './store';
   import { page } from '$app/stores';
   import { base } from '$app/paths';
-
+  import LL from '../i18n/i18n-svelte';
   let { models = [] } = $props();
 
   let loaded = $state(false);
@@ -44,11 +44,11 @@
     
     <nav>
       <ul>
-        <li><a class="link" href={`${base}/`} class:active={$page.url.pathname.startsWith(`${base}/dashboard`)}><i class="fas fa-home"></i>  <span class="text">Dashboard</span></a></li>
+        <li><a class="link" href={`${base}/`} class:active={$page.url.pathname.startsWith(`${base}/dashboard`)}><i class="fas fa-home"></i>  <span class="text">{$LL.dashboard.title()}</span></a></li>
         <li>
           <a href={"javascript:void(0)"} onclick={toggleLogs} class="menu-item link" class:active={$page.url.pathname.startsWith(`${base}/logs`)}>
             <i class="fas fa-list-alt"></i>
-            <span class="text">Logs</span>
+            <span class="text">{$LL.logs.title()}</span>
             <i class="fas {navigationStore.current.isLogsExpanded ? 'fa-chevron-down' : 'fa-chevron-right'} chevron"></i>
           </a>
           <ul class="scrollbar submenu {navigationStore.current.isLogsExpanded ? 'expanded' : ''}">
@@ -62,10 +62,10 @@
             {/each}
           </ul>
         </li>
-        <li><a class="link" href={`${base}/analytics`} class:active={$page.url.pathname.startsWith(`${base}/analytics`)}><i class="fas fa-chart-bar"></i> <span class="text">Analytics</span></a></li>
-        <li><a class="link" href={`${base}/actions`} class:active={$page.url.pathname.startsWith(`${base}/actions`)}><i class="fa-solid fa-server"></i> <span class="text">Remote Actions</span></a></li>
-        <li><a class="link" href={`${base}/settings`} class:active={$page.url.pathname.startsWith(`${base}/settings`)}><i class="fas fa-cog"></i> <span class="text">Settings</span></a></li>
-        <li><a class="link" href={`${base}/help`} class:active={$page.url.pathname.startsWith(`${base}/help`)}><i class="fas fa-question-circle"></i> <span class="text">Help</span></a></li>
+        <li><a class="link" href={`${base}/analytics`} class:active={$page.url.pathname.startsWith(`${base}/analytics`)}><i class="fas fa-chart-bar"></i> <span class="text">{$LL.analytics.title()}</span></a></li>
+        <li><a class="link" href={`${base}/actions`} class:active={$page.url.pathname.startsWith(`${base}/actions`)}><i class="fa-solid fa-server"></i> <span class="text">{$LL.remote_actions.title()}</span></a></li>
+        <li><a class="link" href={`${base}/settings`} class:active={$page.url.pathname.startsWith(`${base}/settings`)}><i class="fas fa-cog"></i> <span class="text">{$LL.settings.title()}</span></a></li>
+        <li><a class="link" href={`${base}/help`} class:active={$page.url.pathname.startsWith(`${base}/help`)}><i class="fas fa-question-circle"></i> <span class="text">{$LL.help.title()}</span></a></li>
       </ul>
     </nav>
     

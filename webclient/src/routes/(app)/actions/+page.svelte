@@ -3,6 +3,7 @@
 	import ActionNode from '$lib/ActionNode.svelte';
 	import { getActions } from '$lib/service/action';
 	import { onMount } from 'svelte';
+	import LL from '../../../i18n/i18n-svelte';
 
 	let actionsTree = {};
 	let isLoading = true;
@@ -65,16 +66,16 @@
 
 <BaseView>
 	<div class="actions-page">
-		<h1 class="page-title">Remote Actions</h1>
+		<h1 class="page-title">{$LL.remote_actions.title()}</h1>
 
 		{#if isLoading}
-			<div class="status-message">Loading...</div>
+			<div class="status-message">{$LL.remote_actions.loading()}</div>
 		{:else if error}
 			<div class="status-message error">
-				<strong>Error:</strong> {error}
+				<strong>{$LL.remote_actions.error()}:</strong> {error}
 			</div>
 		{:else if Object.keys(actionsTree.children || {}).length === 0}
-			<div class="status-message">No actions defined.</div>
+			<div class="status-message">{$LL.remote_actions.no_actions()}</div>
 		{:else}
 			{#each actionsTree.childrenOrder as name}
 				<ActionNode {name} node={actionsTree.children[name]} currentPath="" />

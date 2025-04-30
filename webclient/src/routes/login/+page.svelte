@@ -4,6 +4,7 @@
   import { login } from '$lib/service/user';
   import { userStore } from '$lib/store';
   import { onMount } from 'svelte';
+  import LL from '../../i18n/i18n-svelte';
 
   let username = $state("");
   let password = $state("");
@@ -102,17 +103,17 @@
   {/each}
 
   <div class="auth-card">
-    <h1>Lock in</h1>
+    <h1>{$LL.login.title()}</h1>
     <form onsubmit={handleSubmit}>
       <div class="form-group">
-        <label for="username">Username</label>
+        <label for="username">{$LL.login.username()}</label>
         <input type="text" id="username" bind:value={username} required />
       </div>
       <div class="form-group">
-        <label for="password">Password</label>
+        <label for="password">{$LL.login.password()}</label>
         <input type="password" id="password" bind:value={password} required />
       </div>
-      <button type="submit" class="submit-button">Log In</button>
+      <button type="submit" class="submit-button">{$LL.login.login()}</button>
     </form>
   </div>
 </div>

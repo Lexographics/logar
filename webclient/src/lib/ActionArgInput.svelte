@@ -1,24 +1,23 @@
 <script>
-  // Removed unused import: import { time } from 'svelte/internal';
+  import LL from "../i18n/i18n-svelte";
 
   let {arg, loading, value = $bindable()} = $props();
-
 	const units = $state({
-    nsec: 1,
-    µsec: 1000,
-    msec: 1_000_000,
-    sec: 1_000_000_000,
-    min: 60 * 1_000_000_000,
-    hour: 3600 * 1_000_000_000,
-    day: 86400 * 1_000_000_000,
-    week: 7 * 86400 * 1_000_000_000,
-    month: 30 * 86400 * 1_000_000_000,
-    year: 365 * 86400 * 1_000_000_000,
+    nsec: { value: 1, label: $LL.remote_actions.units.nsec() },
+    µsec: { value: 1000, label: $LL.remote_actions.units.usec() },
+    msec: { value: 1_000_000, label: $LL.remote_actions.units.msec() },
+    sec: { value: 1_000_000_000, label: $LL.remote_actions.units.sec() },
+    min: { value: 60 * 1_000_000_000, label: $LL.remote_actions.units.min() },
+    hour: { value: 3600 * 1_000_000_000, label: $LL.remote_actions.units.hour() },
+    day: { value: 86400 * 1_000_000_000, label: $LL.remote_actions.units.day() },
+    week: { value: 7 * 86400 * 1_000_000_000, label: $LL.remote_actions.units.week() },
+    month: { value: 30 * 86400 * 1_000_000_000, label: $LL.remote_actions.units.month() },
+    year: { value: 365 * 86400 * 1_000_000_000, label: $LL.remote_actions.units.year() },
   });
 	const unitKeys = Object.keys(units);
 
 	function composeDurationNs(num, unit) {
-    const multiplier = units[unit];
+    const multiplier = units[unit].value;
     if (typeof num !== 'number' || isNaN(num) || !multiplier) {
       return 0;
     }
@@ -62,7 +61,7 @@
       <input type="number" bind:value={currentNum} class="input input-sm arg-input duration-number" disabled={loading} step="any" />
       <select bind:value={currentUnit} class="select select-sm arg-input duration-unit" disabled={loading}>
         {#each unitKeys as unit}
-          <option value={unit}>{unit}</option>
+          <option value={unit}>{units[unit].label}</option>
         {/each}
       </select>
     </div>

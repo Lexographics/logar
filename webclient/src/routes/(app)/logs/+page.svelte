@@ -8,6 +8,7 @@
   import moment from "moment";
   import { mount, onMount, untrack } from "svelte";
   import { fade, fly } from 'svelte/transition';
+  import LL from "../../../i18n/i18n-svelte";
 
   let model = $state("");
   let filters = $state([]);
@@ -34,11 +35,11 @@
   });
   
   const FILTER_FIELDS = $state([
-    { value: 'id', label: 'ID' },
-    { value: 'created_at', label: 'Timestamp' },
-    { value: 'category', label: 'Category' },
-    { value: 'message', label: 'Message' },
-    { value: 'severity', label: 'Severity' },
+    { value: 'id', label: $LL.logs.fields.id() },
+    { value: 'created_at', label: $LL.logs.fields.timestamp() },
+    { value: 'category', label: $LL.logs.fields.category() },
+    { value: 'message', label: $LL.logs.fields.message() },
+    { value: 'severity', label: $LL.logs.fields.severity() },
   ]);
 
   const FILTER_OPERATORS = $state([
@@ -49,16 +50,16 @@
     { value: '>=', label: '>=', requires: 1 },
     { value: '<', label: '<', requires: 1 },
     { value: '<=', label: '<=', requires: 1 },
-    { value: 'contains', label: 'Contains', requires: 1 },
-    { value: 'not_contains', label: 'Not Contains', requires: 1 },
-    { value: 'starts_with', label: 'Starts With', requires: 1 },
-    { value: 'ends_with', label: 'Ends With', requires: 1 },
+    { value: 'contains', label: $LL.logs.operators.contains(), requires: 1 },
+    { value: 'not_contains', label: $LL.logs.operators.not_contains(), requires: 1 },
+    { value: 'starts_with', label: $LL.logs.operators.starts_with(), requires: 1 },
+    { value: 'ends_with', label: $LL.logs.operators.ends_with(), requires: 1 },
     // Double Value
-    { value: 'between', label: 'Between', requires: 2 },
-    { value: 'not_between', label: 'Not Between', requires: 2 },
+    { value: 'between', label: $LL.logs.operators.between(), requires: 2 },
+    { value: 'not_between', label: $LL.logs.operators.not_between(), requires: 2 },
     // Multi Value
-    { value: 'in', label: 'In', requires: 'multi' },
-    { value: 'not_in', label: 'Not In', requires: 'multi' },
+    { value: 'in', label: $LL.logs.operators.in(), requires: 'multi' },
+    { value: 'not_in', label: $LL.logs.operators.not_in(), requires: 'multi' },
   ]);
 
   let selectedField = $state(FILTER_FIELDS[0].value);
@@ -283,9 +284,9 @@
       </select>
 
       {#if selectedField === 'created_at'}
-        <p class="filter-tip">Tip: Use format DD-MM-YYYY HH:mm:ss.SSS</p>
+        <p class="filter-tip">{$LL.logs.time_format_tip()}</p>
       {:else if selectedField === 'severity'}
-        <p class="filter-tip">Severities: 1 (Trace), 2 (Log), 3 (Info), 4 (Warn), 5 (Error), 6 (Fatal)</p>
+        <p class="filter-tip">{$LL.logs.severity_tip()}</p>
       {/if}
 
       <select bind:value={selectedOperator} class="filter-select">
@@ -298,45 +299,45 @@
         <input
           type="text"
           bind:value={filterValue1}
-          placeholder="Value"
+          placeholder={$LL.logs.value()}
           class="filter-input"
           onkeydown={(e) => e.key === 'Enter' && handleAddFilter()}
         />
         {#if selectedField === 'created_at'}
-          <button class="now-button" onclick={() => filterValue1 = getCurrentTimestamp()}>Now</button>
+          <button class="now-button" onclick={() => filterValue1 = getCurrentTimestamp()}>{$LL.logs.now()}</button>
         {/if}
       {:else if currentOperatorInfo?.requires === 2}
         <input
           type="text"
           bind:value={filterValue1}
-          placeholder="From"
+          placeholder={$LL.logs.from()}
           class="filter-input filter-input-range"
         />
         {#if selectedField === 'created_at'}
-          <button class="now-button" onclick={() => filterValue1 = getCurrentTimestamp()}>Now</button>
+          <button class="now-button" onclick={() => filterValue1 = getCurrentTimestamp()}>{$LL.logs.now()}</button>
         {/if}
         <input
           type="text"
           bind:value={filterValue2}
-          placeholder="To"
+          placeholder={$LL.logs.to()}
           class="filter-input filter-input-range"
           onkeydown={(e) => e.key === 'Enter' && handleAddFilter()}
         />
         {#if selectedField === 'created_at'}
-          <button class="now-button" onclick={() => filterValue2 = getCurrentTimestamp()}>Now</button>
+          <button class="now-button" onclick={() => filterValue2 = getCurrentTimestamp()}>{$LL.logs.now()}</button>
         {/if}
       {:else if currentOperatorInfo?.requires === 'multi'}
         <input
           type="text"
           bind:value={filterValuesMulti}
-          placeholder="Values (comma-separated)"
+          placeholder={$LL.logs.values_comma_separated()}
           class="filter-input filter-input-multi"
           onkeydown={(e) => e.key === 'Enter' && handleAddFilter()}
         />
       {/if}
 
       <button class="filter-button" onclick={handleAddFilter}>
-        Add Filter
+        {$LL.logs.add_filter()}
       </button>
     </div>
 
@@ -356,10 +357,10 @@
 
     <div class="sse-status-container">
       <span class="status-dot {isStreamConnected ? 'connected' : 'disconnected'}"></span>
-      <span class="status-text">{isStreamConnected ? 'Live Stream Connected' : 'Live Stream Disconnected'}</span>
+      <span class="status-text">{isStreamConnected ? $LL.logs.live_stream_connected() : $LL.logs.live_stream_disconnected()}</span>
       {#if connectionAttempted && !isStreamConnected}
-        <button class="reconnect-button" onclick={setupLogStream} title="Attempt to reconnect the live stream">
-          Reconnect
+        <button class="reconnect-button" onclick={setupLogStream} title={$LL.logs.reconnect_tip()}>
+          {$LL.logs.reconnect()}
         </button>
       {/if}
     </div>
@@ -368,11 +369,11 @@
       <table style="max-width: 100%;">
         <thead>
           <tr>
-            <th style="text-align: center;">ID</th>
+            <th style="text-align: center;">{$LL.logs.fields.id()}</th>
             <th style="text-align: center;"><i class="fa-solid fa-signal"></i></th>
-            <th style="text-align: center;">Timestamp</th>
-            <th style="text-align: left;">Message</th>
-            <th style="text-align: center;">Category</th>
+            <th style="text-align: center;">{$LL.logs.fields.timestamp()}</th>
+            <th style="text-align: left;">{$LL.logs.fields.message()}</th>
+            <th style="text-align: center;">{$LL.logs.fields.category()}</th>
           </tr>
         </thead>
         <tbody>

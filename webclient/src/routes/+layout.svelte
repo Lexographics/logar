@@ -1,6 +1,5 @@
 <script>
   import { goto } from '$app/navigation';
-  import { userStore } from '$lib/store';
   import ThemeProvider from '$lib/ThemeProvider.svelte';
   import { onMount } from 'svelte';
 

@@ -1,5 +1,6 @@
 /logs.db*
 /tmp
+/webclient/tmp
 /app.db
 /todo.md
 

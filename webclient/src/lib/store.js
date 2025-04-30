@@ -6,10 +6,8 @@ export const navigationStore = new SessionStorage("navigation", {
 })
 
 export const settingsStore = new LocalStorage("settings", {
-  selectedLanguage: "en",
+  selectedLanguage: null,
   currentTheme: "light",
-  emailNotifications: true,
-  pushNotifications: false,
 })
 
 export const userStore = new LocalStorage("user", {

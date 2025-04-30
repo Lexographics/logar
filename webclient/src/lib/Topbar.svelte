@@ -1,6 +1,7 @@
 <script>
   import { goto } from "$app/navigation";
   import { base } from "$app/paths";
+  import LL from "../i18n/i18n-svelte";
   import { logout } from "./service/user";
   import { userStore } from "./store";
 
@@ -35,8 +36,8 @@
     </button>
 
     <div class="dropdown-menu" class:active={isDropdownOpen}>
-      <button class="dropdown-item" onclick={() => { goto(`${base}/settings#profile`) }}> My Account </button>
-      <button class="dropdown-item" onclick={handleLogout}> Log out </button>
+      <button class="dropdown-item" onclick={() => { goto(`${base}/settings#profile`) }}> {$LL.topbar.my_account()} </button>
+      <button class="dropdown-item" onclick={handleLogout}> {$LL.topbar.sign_out()} </button>
     </div>
   </div>
 </nav>

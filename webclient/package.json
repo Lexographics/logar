@@ -7,7 +7,8 @@
 		"dev": "vite dev",
 		"build": "vite build",
 		"preview": "vite preview",
-		"prepare": "svelte-kit sync || echo ''"
+		"prepare": "svelte-kit sync || echo ''",
+		"typesafe-i18n": "typesafe-i18n"
 	},
 	"devDependencies": {
 		"@sveltejs/adapter-auto": "^4.0.0",
@@ -21,6 +22,7 @@
 		"axios": "^1.8.4",
 		"chart.js": "^4.4.8",
 		"moment": "^2.30.1",
-		"sweetalert": "^2.1.2"
+		"sweetalert": "^2.1.2",
+		"typesafe-i18n": "^5.26.2"
 	}
 }

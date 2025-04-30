@@ -1,6 +1,7 @@
 <script>
 	let { name = '', node = {}, currentPath = '' } = $props();
 	import { invokeAction } from '$lib/service/action';
+	import LL from '../i18n/i18n-svelte';
 	import ActionArgInput from './ActionArgInput.svelte';
 	import Self from './ActionNode.svelte';
 
@@ -44,7 +45,6 @@
 				return value;
 
 			case 'text': default:
-				console.log("Value: ", value);
 				if (value === null || value === undefined) {
 					return ""
 				}
@@ -94,12 +94,12 @@
 						{/each}
 					</div>
 				{:else}
-					<p class="no-args-message">(No arguments)</p>
+					<p class="no-args-message">{$LL.remote_actions.no_args()}</p>
 				{/if}
 
 				<button onclick={handleInvoke} disabled={loading} class="btn btn-sm invoke-button variant-ghost-primary">
 					{#if loading}...
-					{:else}Invoke{/if}
+					{:else}{$LL.remote_actions.invoke()}{/if}
 				</button>
 			</div>
 
