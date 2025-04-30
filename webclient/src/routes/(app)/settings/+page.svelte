@@ -1,5 +1,6 @@
 <script>
   import BaseView from "$lib/BaseView.svelte";
+  import { updateUser } from "$lib/service/user";
   import { settingsStore, userStore } from "$lib/store";
   import LL, { setLocale } from "../../../i18n/i18n-svelte";
   
@@ -9,7 +10,7 @@
     setLocale(settingsStore.current.selectedLanguage || "en");
   }
 
-  let displayName = $state(userStore.current.username);
+  let displayName = $state(userStore.current.user.username);
 
   function changePassword() {
     alert('Password change not implemented yet.');
@@ -21,9 +22,13 @@
     }
   }
 
-  function saveDisplayName() {
-    alert('Display name change not implemented yet.');
-    // userStore.current.displayName = displayName;
+  async function saveDisplayName() {
+    const err = await updateUser({
+      displayName: displayName,
+    })
+    if (err) {
+      showToast(err.message);
+    }
   }
 </script>
 
@@ -67,7 +72,7 @@
       <h3>{$LL.settings.profile.title()}</h3>
       <div class="setting-item">
         <span>{$LL.settings.profile.username()}</span>
-        <span>@{userStore.current.username}</span>
+        <span>@{userStore.current.user.username}</span>
       </div>
       <div class="setting-item">
         <label for="display-name">{$LL.settings.profile.display_name()}</label>

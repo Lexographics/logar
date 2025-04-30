@@ -59,6 +59,7 @@ func (h *Handler) Router(mux *http.ServeMux) {
 	mux.HandleFunc("POST /auth/logout", h.AuthMiddleware(h.Logout))
 	mux.HandleFunc("GET /auth/sessions", h.AuthMiddleware(h.GetActiveSessions))
 	mux.HandleFunc("POST /auth/revoke-session", h.AuthMiddleware(h.RevokeSession))
+	mux.HandleFunc("PUT /auth/user", h.AuthMiddleware(h.UpdateUser))
 	mux.HandleFunc("GET /models", h.AuthMiddleware(h.ListModels))
 	mux.HandleFunc("GET /logs/{model}", h.AuthMiddleware(h.GetLogs))
 	mux.HandleFunc("GET /logs/{model}/sse", h.AuthMiddleware(h.GetLogsSSE))
@@ -185,6 +186,46 @@ func (h *Handler) GetActiveSessions(w http.ResponseWriter, r *http.Request) {
 
 	w.Header().Set("Content-Type", "application/json")
 	json.NewEncoder(w).Encode(sessionData)
+}
+
+func (h *Handler) UpdateUser(w http.ResponseWriter, r *http.Request) {
+	authorization := r.Header.Get("Authorization")
+	if authorization == "" {
+		http.Error(w, "Unauthorized", http.StatusUnauthorized)
+		return
+	}
+
+	token := strings.TrimPrefix(authorization, "Bearer ")
+	session, err := h.logger.GetSession(token)
+	if err != nil {
+		http.Error(w, "Unauthorized", http.StatusUnauthorized)
+		return
+	}
+
+	user, err := h.logger.GetUser(session.UserID)
+	if err != nil {
+		http.Error(w, "Unauthorized", http.StatusUnauthorized)
+		return
+	}
+
+	if user.ID == 0 {
+		http.Error(w, "Main user cannot be updated", http.StatusUnauthorized)
+		return
+	}
+
+	displayName := r.FormValue("display_name")
+	if displayName != "" {
+		user.DisplayName = displayName
+	}
+
+	err = h.logger.UpdateUser(user)
+	if err != nil {
+		http.Error(w, "Failed to update user", http.StatusInternalServerError)
+		return
+	}
+
+	json.NewEncoder(w).Encode(user)
+	w.WriteHeader(http.StatusOK)
 }
 
 func (h *Handler) Logout(w http.ResponseWriter, r *http.Request) {

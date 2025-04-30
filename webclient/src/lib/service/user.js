@@ -62,3 +62,24 @@ export async function getActiveSessions() {
     return [null, error];
   }
 }
+
+export async function updateUser({displayName}) {
+  try {
+    const form = new FormData();
+    if (displayName) {
+      form.append('display_name', displayName);
+    }
+
+    const response = await axios.put(`${PUBLIC_API_URL}/auth/user`, form, {
+      headers: {
+        Authorization: `Bearer ${userStore.current.token}`,
+      },
+    });
+
+    userStore.current.user = response.data;
+    return null;
+  } catch (error) {
+    checkSession(error);
+    return error;
+  }
+}
