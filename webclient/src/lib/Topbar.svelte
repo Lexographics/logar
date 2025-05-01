@@ -2,7 +2,7 @@
   import { goto } from "$app/navigation";
   import { base } from "$app/paths";
   import LL from "../i18n/i18n-svelte";
-  import { logout } from "./service/user";
+  import userService from "./service/userService";
   import { userStore } from "./store";
 
   let isDropdownOpen = $state(false);
@@ -12,7 +12,7 @@
   }
 
   async function handleLogout() {
-    await logout();
+    await userService.logout();
     userStore.current = {
       token: null,
     };

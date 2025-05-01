@@ -1,7 +1,7 @@
 <script>
 	import BaseView from '$lib/BaseView.svelte';
+	import actionService from '$lib/service/actionService';
 	import ActionNode from '$lib/ActionNode.svelte';
-	import { getActions } from '$lib/service/action';
 	import { onMount } from 'svelte';
 	import LL from '../../../i18n/i18n-svelte';
 
@@ -11,7 +11,7 @@
 
 	onMount(async () => {
 		try {
-			const [actionDetails, err] = await getActions();
+			const [actionDetails, err] = await actionService.getActions();
 			if (err) {
 				throw err;
 			}

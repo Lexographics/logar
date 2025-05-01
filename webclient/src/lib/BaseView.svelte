@@ -1,15 +1,15 @@
 <script>
-  import { getModels } from "$lib/service/model";
   import Sidebar from "$lib/Sidebar.svelte";
   import { onMount } from "svelte";
   import Topbar from "./Topbar.svelte";
+  import modelService from "$lib/service/modelService";
 
   let { children } = $props();
 
   let models = $state([]);
 
   onMount(async () => {
-    const [modelsData, error] = await getModels();
+    const [modelsData, error] = await modelService.getModels();
     if (error) {
       console.error(error);
     }

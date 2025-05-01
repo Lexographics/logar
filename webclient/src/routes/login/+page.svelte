@@ -1,7 +1,7 @@
 <script>
   import { goto } from '$app/navigation';
   import { base } from '$app/paths';
-  import { login } from '$lib/service/user';
+  import userService from '$lib/service/userService';
   import { userStore } from '$lib/store';
   import { onMount } from 'svelte';
   import LL from '../../i18n/i18n-svelte';
@@ -12,7 +12,7 @@
   async function handleSubmit(e) {
     e.preventDefault();
     
-    const [data, error] = await login(username, password);
+    const [data, error] = await userService.login(username, password);
     if (error) {
       console.error('Login error:', error);
     } else {

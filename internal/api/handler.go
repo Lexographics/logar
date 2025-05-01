@@ -87,7 +87,7 @@ func (h *Handler) AuthMiddleware(next http.HandlerFunc) http.HandlerFunc {
 		}
 
 		if authorization == "" {
-			http.Error(w, "Unauthorized", http.StatusUnauthorized)
+			WriteSessionExpired(w)
 			return
 		}
 
@@ -95,7 +95,7 @@ func (h *Handler) AuthMiddleware(next http.HandlerFunc) http.HandlerFunc {
 
 		_, err := h.logger.GetSession(token)
 		if err != nil {
-			http.Error(w, "Unauthorized", http.StatusUnauthorized)
+			WriteSessionExpired(w)
 			return
 		}
 
@@ -104,12 +104,12 @@ func (h *Handler) AuthMiddleware(next http.HandlerFunc) http.HandlerFunc {
 }
 
 func (h *Handler) GetLanguage(w http.ResponseWriter, r *http.Request) {
-	w.Write([]byte(h.logger.GetDefaultLanguage()))
+	json.NewEncoder(w).Encode(NewResponse(StatusCode_Success, h.logger.GetDefaultLanguage()))
 }
 
 func (h *Handler) Login(w http.ResponseWriter, r *http.Request) {
 	if !h.logger.Auth(r) {
-		http.Error(w, "Unauthorized", http.StatusUnauthorized)
+		WriteSessionExpired(w)
 		return
 	}
 
@@ -118,7 +118,8 @@ func (h *Handler) Login(w http.ResponseWriter, r *http.Request) {
 
 	user, err := h.logger.LoginUser(username, password)
 	if err != nil {
-		http.Error(w, "Unauthorized", http.StatusUnauthorized)
+		w.WriteHeader(500)
+		json.NewEncoder(w).Encode(NewResponse(StatusCode_Error, err.Error()))
 		return
 	}
 
@@ -126,51 +127,58 @@ func (h *Handler) Login(w http.ResponseWriter, r *http.Request) {
 	device := ua.Name + "/" + ua.OS
 	token, err := h.logger.CreateSession(user, device)
 	if err != nil {
-		http.Error(w, "Failed to create session", http.StatusInternalServerError)
+		w.WriteHeader(500)
+		json.NewEncoder(w).Encode(NewResponse(StatusCode_Error, err.Error()))
 		return
 	}
 
 	w.WriteHeader(http.StatusOK)
-	json.NewEncoder(w).Encode(map[string]any{
+	json.NewEncoder(w).Encode(NewResponse(StatusCode_Success, map[string]any{
 		"token": token,
 		"user":  user,
-	})
+	}))
 }
 
 func (h *Handler) RevokeSession(w http.ResponseWriter, r *http.Request) {
 	authorization := r.Header.Get("Authorization")
 	if authorization == "" {
-		http.Error(w, "Unauthorized", http.StatusUnauthorized)
+		w.WriteHeader(422)
+		json.NewEncoder(w).Encode(NewResponse(StatusCode_InvalidRequest, "Missing authorization header"))
 		return
 	}
 
 	sessionId := r.FormValue("session_id")
 	if sessionId == "" {
-		http.Error(w, "Missing 'session_id' in request body", http.StatusBadRequest)
+		w.WriteHeader(422)
+		json.NewEncoder(w).Encode(NewResponse(StatusCode_InvalidRequest, "Missing 'session_id' in request body"))
 		return
 	}
 
 	h.logger.DeleteSession(sessionId)
 	w.WriteHeader(http.StatusOK)
+	json.NewEncoder(w).Encode(NewResponse(StatusCode_Success, nil))
 }
 
 func (h *Handler) GetActiveSessions(w http.ResponseWriter, r *http.Request) {
 	authorization := r.Header.Get("Authorization")
 	if authorization == "" {
-		http.Error(w, "Unauthorized", http.StatusUnauthorized)
+		w.WriteHeader(401)
+		json.NewEncoder(w).Encode(NewResponse(StatusCode_InvalidRequest, "Missing authorization header"))
 		return
 	}
 
 	token := strings.TrimPrefix(authorization, "Bearer ")
 	session, err := h.logger.GetSession(token)
 	if err != nil {
-		http.Error(w, "Unauthorized", http.StatusUnauthorized)
+		w.WriteHeader(401)
+		json.NewEncoder(w).Encode(NewResponse(StatusCode_InvalidRequest, "Missing authorization header"))
 		return
 	}
 
 	activeSessions, err := h.logger.GetActiveSessions(session.UserID)
 	if err != nil {
-		http.Error(w, "Failed to get active sessions", http.StatusInternalServerError)
+		w.WriteHeader(500)
+		json.NewEncoder(w).Encode(NewResponse(StatusCode_Error, "Failed to get active sessions"))
 		return
 	}
 
@@ -186,31 +194,35 @@ func (h *Handler) GetActiveSessions(w http.ResponseWriter, r *http.Request) {
 	}
 
 	w.Header().Set("Content-Type", "application/json")
-	json.NewEncoder(w).Encode(sessionData)
+	json.NewEncoder(w).Encode(NewResponse(StatusCode_Success, sessionData))
 }
 
 func (h *Handler) UpdateUser(w http.ResponseWriter, r *http.Request) {
 	authorization := r.Header.Get("Authorization")
 	if authorization == "" {
-		http.Error(w, "Unauthorized", http.StatusUnauthorized)
+		w.WriteHeader(401)
+		json.NewEncoder(w).Encode(NewResponse(StatusCode_InvalidRequest, "Missing authorization header"))
 		return
 	}
 
 	token := strings.TrimPrefix(authorization, "Bearer ")
 	session, err := h.logger.GetSession(token)
 	if err != nil {
-		http.Error(w, "Unauthorized", http.StatusUnauthorized)
+		w.WriteHeader(401)
+		json.NewEncoder(w).Encode(NewResponse(StatusCode_InvalidRequest, "Missing authorization header"))
 		return
 	}
 
 	user, err := h.logger.GetUser(session.UserID)
 	if err != nil {
-		http.Error(w, "Unauthorized", http.StatusUnauthorized)
+		w.WriteHeader(500)
+		json.NewEncoder(w).Encode(NewResponse(StatusCode_Error, "Failed to get user"))
 		return
 	}
 
 	if user.ID == 0 {
-		http.Error(w, "Main user cannot be updated", http.StatusUnauthorized)
+		w.WriteHeader(401)
+		json.NewEncoder(w).Encode(NewResponse(StatusCode_InvalidRequest, "Main user cannot be updated"))
 		return
 	}
 
@@ -221,24 +233,27 @@ func (h *Handler) UpdateUser(w http.ResponseWriter, r *http.Request) {
 
 	err = h.logger.UpdateUser(user)
 	if err != nil {
-		http.Error(w, "Failed to update user", http.StatusInternalServerError)
+		w.WriteHeader(500)
+		json.NewEncoder(w).Encode(NewResponse(StatusCode_Error, "Failed to update user"))
 		return
 	}
 
-	json.NewEncoder(w).Encode(user)
+	json.NewEncoder(w).Encode(NewResponse(StatusCode_Success, user))
 	w.WriteHeader(http.StatusOK)
 }
 
 func (h *Handler) Logout(w http.ResponseWriter, r *http.Request) {
 	authorization := r.Header.Get("Authorization")
 	if authorization == "" {
-		http.Error(w, "Unauthorized", http.StatusUnauthorized)
+		w.WriteHeader(401)
+		json.NewEncoder(w).Encode(NewResponse(StatusCode_InvalidRequest, "Missing authorization header"))
 		return
 	}
 
 	session, err := h.logger.GetSession(strings.TrimPrefix(authorization, "Bearer "))
 	if err != nil {
-		http.Error(w, "Unauthorized", http.StatusUnauthorized)
+		w.WriteHeader(401)
+		json.NewEncoder(w).Encode(NewResponse(StatusCode_InvalidRequest, "Missing authorization header"))
 		return
 	}
 
@@ -249,13 +264,14 @@ func (h *Handler) Logout(w http.ResponseWriter, r *http.Request) {
 func (h *Handler) ListModels(w http.ResponseWriter, r *http.Request) {
 	models := h.logger.GetAllModels()
 	w.Header().Set("Content-Type", "application/json")
-	json.NewEncoder(w).Encode(models)
+	json.NewEncoder(w).Encode(NewResponse(StatusCode_Success, models))
 }
 
 func (h *Handler) GetLogs(w http.ResponseWriter, r *http.Request) {
 	model, cursor, count, severity, filters, err := h.service.ParseLogFilters(r)
 	if err != nil {
-		http.Error(w, err.Error(), http.StatusInternalServerError)
+		w.WriteHeader(500)
+		json.NewEncoder(w).Encode(NewResponse(StatusCode_Error, err.Error()))
 		return
 	}
 
@@ -271,7 +287,8 @@ func (h *Handler) GetLogs(w http.ResponseWriter, r *http.Request) {
 
 	logs, err := h.logger.GetLogs(opts...)
 	if err != nil {
-		http.Error(w, err.Error(), http.StatusInternalServerError)
+		w.WriteHeader(500)
+		json.NewEncoder(w).Encode(NewResponse(StatusCode_Error, err.Error()))
 		return
 	}
 
@@ -281,11 +298,11 @@ func (h *Handler) GetLogs(w http.ResponseWriter, r *http.Request) {
 	}
 
 	w.Header().Set("Content-Type", "application/json")
-	json.NewEncoder(w).Encode(map[string]any{
+	json.NewEncoder(w).Encode(NewResponse(StatusCode_Success, map[string]any{
 		"Model":  model,
 		"Logs":   logs,
 		"LastId": lastId,
-	})
+	}))
 }
 
 func (h *Handler) ListActions(w http.ResponseWriter, r *http.Request) {
@@ -320,32 +337,33 @@ func (h *Handler) ListActions(w http.ResponseWriter, r *http.Request) {
 	}
 
 	w.Header().Set("Content-Type", "application/json")
-	if err := json.NewEncoder(w).Encode(details); err != nil {
-		h.logger.Error("logar-errors", fmt.Sprintf("Failed to encode action details: %v", err), "api")
-		http.Error(w, "Failed to encode response", http.StatusInternalServerError)
-	}
+	json.NewEncoder(w).Encode(NewResponse(StatusCode_Success, details))
 }
 
 func (h *Handler) InvokeActionHandler(w http.ResponseWriter, r *http.Request) {
 	var req InvokeActionRequest
 	if err := json.NewDecoder(r.Body).Decode(&req); err != nil {
-		http.Error(w, fmt.Sprintf("Invalid request body: %v", err), http.StatusBadRequest)
+		w.WriteHeader(422)
+		json.NewEncoder(w).Encode(NewResponse(StatusCode_InvalidRequest, fmt.Sprintf("Invalid request body: %v", err)))
 		return
 	}
 
 	if req.Path == "" {
-		http.Error(w, "Missing 'path' in request body", http.StatusBadRequest)
+		w.WriteHeader(422)
+		json.NewEncoder(w).Encode(NewResponse(StatusCode_InvalidRequest, "Missing 'path' in request body"))
 		return
 	}
 
 	expectedTypes, err := h.logger.GetActionArgTypes(req.Path)
 	if err != nil {
-		http.Error(w, fmt.Sprintf("Error finding action '%s': %v", req.Path, err), http.StatusNotFound)
+		w.WriteHeader(404)
+		json.NewEncoder(w).Encode(NewResponse(StatusCode_Error, fmt.Sprintf("Error finding action '%s': %v", req.Path, err)))
 		return
 	}
 
 	if len(req.Args) != len(expectedTypes) {
-		http.Error(w, fmt.Sprintf("Action '%s' expects %d arguments, but received %d", req.Path, len(expectedTypes), len(req.Args)), http.StatusBadRequest)
+		w.WriteHeader(422)
+		json.NewEncoder(w).Encode(NewResponse(StatusCode_InvalidRequest, fmt.Sprintf("Action '%s' expects %d arguments, but received %d", req.Path, len(expectedTypes), len(req.Args))))
 		return
 	}
 
@@ -354,7 +372,8 @@ func (h *Handler) InvokeActionHandler(w http.ResponseWriter, r *http.Request) {
 		expectedType := expectedTypes[i]
 		val, err := parseStringArg(argStr, expectedType)
 		if err != nil {
-			http.Error(w, fmt.Sprintf("Error parsing argument %d for action '%s': expected type %s, error: %v", i+1, req.Path, expectedType.String(), err), http.StatusBadRequest)
+			w.WriteHeader(422)
+			json.NewEncoder(w).Encode(NewResponse(StatusCode_InvalidRequest, fmt.Sprintf("Error parsing argument %d for action '%s': expected type %s, error: %v", i+1, req.Path, expectedType.String(), err)))
 			return
 		}
 		parsedArgs[i] = val
@@ -366,7 +385,8 @@ func (h *Handler) InvokeActionHandler(w http.ResponseWriter, r *http.Request) {
 	resp := InvokeActionResponse{}
 	if err != nil {
 		resp.Error = err.Error()
-		w.WriteHeader(http.StatusInternalServerError)
+		w.WriteHeader(500)
+		json.NewEncoder(w).Encode(NewResponse(StatusCode_Error, err.Error()))
 	} else {
 		if len(result) == 1 {
 			resp.Result = result[0]
@@ -375,42 +395,45 @@ func (h *Handler) InvokeActionHandler(w http.ResponseWriter, r *http.Request) {
 		}
 	}
 
-	if encodeErr := json.NewEncoder(w).Encode(resp); encodeErr != nil {
-		h.logger.Error("logar-errors", fmt.Sprintf("Failed to encode action response: %v", encodeErr), "api")
-	}
+	json.NewEncoder(w).Encode(NewResponse(StatusCode_Success, resp))
 }
 
 func (h *Handler) GetAllUsers(w http.ResponseWriter, r *http.Request) {
 	users, err := h.logger.GetAllUsers()
 	if err != nil {
-		http.Error(w, "Failed to get all users", http.StatusInternalServerError)
+		w.WriteHeader(500)
+		json.NewEncoder(w).Encode(NewResponse(StatusCode_Error, "Failed to get all users"))
 		return
 	}
 
-	json.NewEncoder(w).Encode(users)
+	json.NewEncoder(w).Encode(NewResponse(StatusCode_Success, users))
 }
 
 func (h *Handler) CreateUser(w http.ResponseWriter, r *http.Request) {
 	authorization := r.Header.Get("Authorization")
 	if authorization == "" {
-		http.Error(w, "Unauthorized", http.StatusUnauthorized)
+		w.WriteHeader(401)
+		json.NewEncoder(w).Encode(NewResponse(StatusCode_InvalidRequest, "Missing authorization header"))
 		return
 	}
 
 	token := strings.TrimPrefix(authorization, "Bearer ")
 	session, err := h.logger.GetSession(token)
 	if err != nil {
-		http.Error(w, "Unauthorized", http.StatusUnauthorized)
+		w.WriteHeader(401)
+		json.NewEncoder(w).Encode(NewResponse(StatusCode_InvalidRequest, "Missing authorization header"))
 		return
 	}
 
 	selfUser, err := h.logger.GetUser(session.UserID)
 	if err != nil {
-		http.Error(w, "Unauthorized", http.StatusUnauthorized)
+		w.WriteHeader(401)
+		json.NewEncoder(w).Encode(NewResponse(StatusCode_InvalidRequest, "Missing authorization header"))
 		return
 	}
 	if !selfUser.IsAdmin {
-		http.Error(w, "Only admins can create users", http.StatusUnauthorized)
+		w.WriteHeader(401)
+		json.NewEncoder(w).Encode(NewResponse(StatusCode_InvalidRequest, "Only admins can create users"))
 		return
 	}
 
@@ -419,17 +442,19 @@ func (h *Handler) CreateUser(w http.ResponseWriter, r *http.Request) {
 	isAdmin := r.FormValue("is_admin") == "true"
 	display_name := r.FormValue("display_name")
 	if username == "" || password == "" {
-		http.Error(w, "Missing 'username' or 'password' in request body", http.StatusBadRequest)
+		w.WriteHeader(422)
+		json.NewEncoder(w).Encode(NewResponse(StatusCode_InvalidRequest, "Missing 'username' or 'password' in request body"))
 		return
 	}
 
 	user, err := h.logger.CreateUser(username, display_name, password, isAdmin)
 	if err != nil {
-		http.Error(w, "Failed to create user", http.StatusInternalServerError)
+		w.WriteHeader(500)
+		json.NewEncoder(w).Encode(NewResponse(StatusCode_Error, "Failed to create user"))
 		return
 	}
 
-	json.NewEncoder(w).Encode(user)
+	json.NewEncoder(w).Encode(NewResponse(StatusCode_Success, user))
 }
 
 func parseStringArg(argStr string, targetType reflect.Type) (any, error) {
@@ -486,7 +511,8 @@ func (h *Handler) GetLogsSSE(w http.ResponseWriter, r *http.Request) {
 
 	model, _, count, severity, filters, err := h.service.ParseLogFilters(r)
 	if err != nil {
-		http.Error(w, err.Error(), http.StatusInternalServerError)
+		w.WriteHeader(500)
+		json.NewEncoder(w).Encode(NewResponse(StatusCode_Error, err.Error()))
 		return
 	}
 
@@ -496,7 +522,8 @@ func (h *Handler) GetLogsSSE(w http.ResponseWriter, r *http.Request) {
 		},
 	)
 	if err != nil {
-		http.Error(w, err.Error(), http.StatusInternalServerError)
+		w.WriteHeader(500)
+		json.NewEncoder(w).Encode(NewResponse(StatusCode_Error, err.Error()))
 		return
 	}
 	lastId := uint(0)
@@ -506,7 +533,8 @@ func (h *Handler) GetLogsSSE(w http.ResponseWriter, r *http.Request) {
 
 	flusher, ok := w.(http.Flusher)
 	if !ok {
-		http.Error(w, "Streaming unsupported", http.StatusInternalServerError)
+		w.WriteHeader(500)
+		json.NewEncoder(w).Encode(NewResponse(StatusCode_Error, "Streaming not supported"))
 		return
 	}
 

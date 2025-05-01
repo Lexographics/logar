@@ -150,23 +150,66 @@ func (l *Logger) LoginUser(username, password string) (models.User, error) {
 		return models.User{}, fmt.Errorf("invalid password")
 	}
 
+	err = l.db.Table("users").Where("id = ?", user.ID).Update("last_activity", time.Now()).Error
+	if err != nil {
+		return models.User{}, err
+	}
+
 	return user, nil
 }
 
-func (l *Logger) CreateUser(username, displayName, password string) error {
+func (l *Logger) CreateUser(username, displayName, password string, isAdmin bool) (models.User, error) {
 	hashedPassword, err := bcrypt.GenerateFromPassword([]byte(password), bcrypt.DefaultCost)
 	if err != nil {
-		return err
+		return models.User{}, err
 	}
 
 	user := models.User{
 		Username:    username,
 		DisplayName: displayName,
 		Password:    string(hashedPassword),
+		IsAdmin:     isAdmin,
 	}
 
-	return l.db.Create(&user).Error
+	err = l.db.Create(&user).Error
+	if err != nil {
+		return models.User{}, err
+	}
+
+	return user, nil
 }
+
+func (l *Logger) GetUser(id uint) (models.User, error) {
+	if id == 0 {
+		return models.User{
+			ID:          0,
+			Username:    l.config.MasterUsername,
+			DisplayName: "Master",
+			IsAdmin:     true,
+		}, nil
+	}
+
+	var user models.User
+	err := l.db.Where("id = ?", id).First(&user).Error
+	if err != nil {
+		return models.User{}, err
+	}
+	return user, nil
+}
+
+func (l *Logger) GetAllUsers() ([]models.User, error) {
+	var users []models.User
+	err := l.db.Find(&users).Error
+	if err != nil {
+		return nil, err
+	}
+	return users, nil
+}
+
+func (l *Logger) UpdateUser(user models.User) error {
+	return l.db.Save(&user).Error
+}
+
 func (l *Logger) CreateSession(user models.User, device string) (string, error) {
 	session := models.Session{
 		UserID:    user.ID,
@@ -198,9 +241,14 @@ func (l *Logger) GetSession(token string) (*models.Session, error) {
 		return nil, fmt.Errorf("session expired")
 	}
 
-	session.LastActivity = time.Now()
-	session.ExpiresAt = time.Now().Add(time.Hour * 24)
+	now := time.Now()
+	session.LastActivity = now
+	session.ExpiresAt = now.Add(time.Hour * 24)
 	err = l.db.Save(&session).Error
+	if err != nil {
+		return nil, err
+	}
+	err = l.db.Model(&models.User{}).Where("id = ?", session.UserID).Update("last_activity", now).Error
 	if err != nil {
 		return nil, err
 	}

@@ -1,9 +1,9 @@
 <script>
 	let { name = '', node = {}, currentPath = '', isOpen = false } = $props();
-	import { invokeAction } from '$lib/service/action';
 	import LL from '../i18n/i18n-svelte';
 	import ActionArgInput from './ActionArgInput.svelte';
 	import Self from './ActionNode.svelte';
+	import actionService from './service/actionService';
 
 	let result = $state(null);
 	let error = $state(null);
@@ -62,7 +62,7 @@
 			return parseArgument(rawValue, argType.kind);
 		});
 		try {
-			const [res, invokeError] = await invokeAction(nodePath, argsToSend);
+			const [res, invokeError] = await actionService.invokeAction(nodePath, argsToSend);
 			if (invokeError) throw invokeError;
 			if (res && res.error) error = res.error;
 			else if (res) result = res.result;

@@ -1,6 +1,6 @@
 <script>
   import BaseView from "$lib/BaseView.svelte";
-  import { updateUser } from "$lib/service/user";
+  import userService from "$lib/service/userService";
   import { settingsStore, userStore } from "$lib/store";
   import LL, { setLocale } from "../../../i18n/i18n-svelte";
   
@@ -10,7 +10,7 @@
     setLocale(settingsStore.current.selectedLanguage || "en");
   }
 
-  let displayName = $state(userStore.current.user.username);
+  let displayName = $state(userStore.current.user?.display_name || "");
 
   function changePassword() {
     alert('Password change not implemented yet.');
@@ -23,12 +23,11 @@
   }
 
   async function saveDisplayName() {
-    const err = await updateUser({
-      displayName: displayName,
-    })
+    const [user, err] = await userService.updateUser(displayName);
     if (err) {
       showToast(err.message);
     }
+    userStore.current.user = user;
   }
 </script>
 

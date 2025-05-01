@@ -2,7 +2,7 @@
   import { browser } from "$app/environment";
   import { page } from "$app/stores";
   import BaseView from "$lib/BaseView.svelte";
-  import { getLogs, connectToLogStream } from "$lib/service/logs";
+  import logService from "$lib/service/logService";
   import Sidebar from "$lib/Sidebar.svelte";
   import { SessionStorage } from "$lib/storage.svelte";
   import moment from "moment";
@@ -185,7 +185,7 @@
 
     loading = true;
     
-    const [data, err] = await getLogs(modelName, lastCursor, filters);
+    const [data, err] = await logService.getLogs(modelName, lastCursor, filters);
 
     if (err) {
       console.error(err);
@@ -216,7 +216,7 @@
       streamCleanup();
     }
     
-    streamCleanup = connectToLogStream(
+    streamCleanup = logService.connectToLogStream(
       model, 
       filters, 
       handleNewLogs,

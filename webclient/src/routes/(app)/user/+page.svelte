@@ -1,7 +1,7 @@
 <script>
   import { goto } from "$app/navigation";
   import BaseView from "$lib/BaseView.svelte";
-  import { createUser, getActiveSessions, getAllUsers, logout, revokeSession } from "$lib/service/user";
+  import userService from "$lib/service/userService";
   import { userStore } from "$lib/store";
   import Modal from "$lib/widgets/Modal.svelte";
   import moment from "moment";
@@ -17,7 +17,7 @@
     is_admin: false,
   });
   async function onCreateUser() {
-    const [data, error] = await createUser(newUser.username, newUser.password, newUser.display_name, newUser.is_admin);
+    const [data, error] = await userService.createUser(newUser.username, newUser.password, newUser.display_name, newUser.is_admin);
     if (error) {
       console.error(error);
     }
@@ -31,7 +31,7 @@
       if (!yes) {
         return;
       }
-      await logout();
+      await userService.logout();
       userStore.current = null;
       goto("/login");
       return;
@@ -42,7 +42,7 @@
       return;
     }
 
-    const error = await revokeSession(session.token);
+    const error = await userService.revokeSession(session.token);
     if (error) {
       console.error(error);
     }
@@ -50,13 +50,13 @@
   }
 
   onMount(async () => {
-    const [data, error] = await getActiveSessions();
+    const [data, error] = await userService.getActiveSessions();
     if (error) {
       console.error(error);
     }
     myActiveSessions = data;
 
-    const [usersData, err] = await getAllUsers();
+    const [usersData, err] = await userService.getAllUsers();
     if (err) {
       console.error(err);
     }
@@ -114,6 +114,8 @@
     {#if userStore.current?.user?.is_admin}
       <button style="margin-top: 1rem;" onclick={() => createUserModal?.openModal()} class="">Create User</button>
     {/if}
+
+    <div style="margin-top: 2rem;"></div>
   </div>
 
 </BaseView>
