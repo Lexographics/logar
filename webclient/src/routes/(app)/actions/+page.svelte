@@ -1,7 +1,7 @@
 <script>
-	import BaseView from '$lib/BaseView.svelte';
+	import BaseView from '$lib/widgets/BaseView.svelte';
 	import actionService from '$lib/service/actionService';
-	import ActionNode from '$lib/ActionNode.svelte';
+	import ActionNode from './ActionNode.svelte';
 	import { onMount } from 'svelte';
 	import LL from '../../../i18n/i18n-svelte';
 

@@ -1,5 +1,5 @@
 <script>
-  import BaseView from "$lib/BaseView.svelte";
+  import BaseView from "$lib/widgets/BaseView.svelte";
   import userService from "$lib/service/userService";
   import { settingsStore, userStore } from "$lib/store";
   import LL, { setLocale } from "../../../i18n/i18n-svelte";

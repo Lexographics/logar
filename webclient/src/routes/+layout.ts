@@ -4,6 +4,8 @@ import { setLocale } from "../i18n/i18n-svelte";
 import { loadAllLocalesAsync } from "../i18n/i18n-util.async";
 import { PUBLIC_API_URL } from "$env/static/public";
 import { locales } from "../i18n/i18n-util";
+import type { Response } from "$lib/types/response";
+import type { Locales } from "../i18n/i18n-types";
 
 export const prerender = true;
 export const trailingSlash = 'always';
@@ -15,9 +17,9 @@ export const trailingSlash = 'always';
   } else {
     setLocale("en");
     
-    axios.get(`${PUBLIC_API_URL}/language`).then((res) => {
-      settingsStore.current.selectedLanguage = res.data;
-      setLocale(res.data);
+    axios.get<Response<string>>(`${PUBLIC_API_URL}/language`).then((res) => {
+      settingsStore.current.selectedLanguage = res.data.data;
+      setLocale(res.data.data as Locales);
     });
   }
 })();

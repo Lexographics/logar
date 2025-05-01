@@ -1,6 +1,6 @@
 <script>
   import { goto } from '$app/navigation';
-  import ThemeProvider from '$lib/ThemeProvider.svelte';
+  import ThemeProvider from '$lib/widgets/ThemeProvider.svelte';
   import { onMount } from 'svelte';
 
   let { children } = $props();

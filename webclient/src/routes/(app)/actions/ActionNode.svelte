@@ -1,9 +1,9 @@
 <script>
 	let { name = '', node = {}, currentPath = '', isOpen = false } = $props();
-	import LL from '../i18n/i18n-svelte';
+	import LL from '../../../i18n/i18n-svelte';
 	import ActionArgInput from './ActionArgInput.svelte';
 	import Self from './ActionNode.svelte';
-	import actionService from './service/actionService';
+	import actionService from '$lib/service/actionService';
 
 	let result = $state(null);
 	let error = $state(null);

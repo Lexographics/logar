@@ -1,9 +1,9 @@
 <script>
   import { browser } from "$app/environment";
   import { page } from "$app/stores";
-  import BaseView from "$lib/BaseView.svelte";
+  import BaseView from "$lib/widgets/BaseView.svelte";
   import logService from "$lib/service/logService";
-  import Sidebar from "$lib/Sidebar.svelte";
+  import Sidebar from "$lib/widgets/Sidebar.svelte";
   import { SessionStorage } from "$lib/storage.svelte";
   import moment from "moment";
   import { mount, onMount, untrack } from "svelte";

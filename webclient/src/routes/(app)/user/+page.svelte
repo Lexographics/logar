@@ -1,6 +1,6 @@
 <script>
   import { goto } from "$app/navigation";
-  import BaseView from "$lib/BaseView.svelte";
+  import BaseView from "$lib/widgets/BaseView.svelte";
   import userService from "$lib/service/userService";
   import { userStore } from "$lib/store";
   import Modal from "$lib/widgets/Modal.svelte";

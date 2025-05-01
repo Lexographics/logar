@@ -1,9 +1,9 @@
 <script>
   import { onMount } from 'svelte';
-  import { navigationStore } from './store';
+  import { navigationStore } from '../store';
   import { page } from '$app/stores';
   import { base } from '$app/paths';
-  import LL from '../i18n/i18n-svelte';
+  import LL from '../../i18n/i18n-svelte';
   let { models = [] } = $props();
 
   let loaded = $state(false);

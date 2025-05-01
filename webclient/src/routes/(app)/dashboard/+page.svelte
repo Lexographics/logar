@@ -1,5 +1,5 @@
 <script>
-  import BaseView from "$lib/BaseView.svelte";
+  import BaseView from "$lib/widgets/BaseView.svelte";
 
 </script>
 

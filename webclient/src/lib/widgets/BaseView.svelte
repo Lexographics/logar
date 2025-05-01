@@ -1,5 +1,5 @@
 <script>
-  import Sidebar from "$lib/Sidebar.svelte";
+  import Sidebar from "$lib/widgets/Sidebar.svelte";
   import { onMount } from "svelte";
   import Topbar from "./Topbar.svelte";
   import modelService from "$lib/service/modelService";

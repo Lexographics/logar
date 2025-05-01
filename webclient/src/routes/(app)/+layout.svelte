@@ -2,7 +2,7 @@
   import { goto } from '$app/navigation';
   import { base } from '$app/paths';
   import { userStore } from '$lib/store';
-  import ThemeProvider from '$lib/ThemeProvider.svelte';
+  import ThemeProvider from '$lib/widgets/ThemeProvider.svelte';
   import { onMount } from 'svelte';
 
   let { children } = $props();
