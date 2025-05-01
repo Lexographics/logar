@@ -217,8 +217,23 @@ func main() {
 		}
 
 		return c.JSON(http.StatusOK, map[string]interface{}{
-			"message": "Hello, Logar!",
+			"status": "ok",
 		})
+	})
+
+	app.GET("/timer", func(c echo.Context) error {
+		timer := logger.NewTimer()
+		defer timer.Log("user-trace", "Handler done", "handler")
+
+		time.Sleep(time.Second * 1)
+
+		timer.Log("user-trace", "Do some stuff", "handler")
+
+		time.Sleep(time.Millisecond * 1500)
+
+		timer.Log("user-trace", "Do some more stuff", "handler")
+
+		return c.String(http.StatusOK, "Timer test!")
 	})
 
 	logger.Info("system-logs", logar.Map{"message": "App Started"}, "app-start")
