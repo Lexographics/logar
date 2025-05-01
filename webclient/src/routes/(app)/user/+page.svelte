@@ -1,12 +1,29 @@
 <script>
   import { goto } from "$app/navigation";
   import BaseView from "$lib/BaseView.svelte";
-  import { getActiveSessions, logout, revokeSession } from "$lib/service/user";
+  import { createUser, getActiveSessions, getAllUsers, logout, revokeSession } from "$lib/service/user";
   import { userStore } from "$lib/store";
+  import Modal from "$lib/widgets/Modal.svelte";
   import moment from "moment";
   import { onMount } from "svelte";
 
   let myActiveSessions = $state([]);
+  
+  let createUserModal = $state(null);
+  let newUser = $state({
+    username: "",
+    display_name: "",
+    password: "",
+    is_admin: false,
+  });
+  async function onCreateUser() {
+    const [data, error] = await createUser(newUser.username, newUser.password, newUser.display_name, newUser.is_admin);
+    if (error) {
+      console.error(error);
+    }
+    users = [...users, data];
+    createUserModal?.closeModal();
+  }
 
   async function onRevokeSession(session) {
     if (session.is_current) {
@@ -38,7 +55,15 @@
       console.error(error);
     }
     myActiveSessions = data;
+
+    const [usersData, err] = await getAllUsers();
+    if (err) {
+      console.error(err);
+    }
+    users = usersData;
   });
+
+  let users = $state([]);
 </script>
 
 <BaseView>
@@ -59,8 +84,58 @@
       </li>
       {/each}
     </ul>
+
+    <h3 style="margin-top: 2rem;">All Users</h3>
+    <ul class="item-list">
+      {#each users as user}
+      <li class="card" style="list-style: none; display: flex; justify-content: space-between; align-items: center;">
+        <div style="display: flex; align-items: center; gap: 1rem;">
+          <img src="https://api.dicebear.com/9.x/thumbs/svg?seed={user.username}" alt="avatar" class="avatar" />
+
+          <div>
+            <span>
+              <span>{user.display_name} (@{user.username}) {user.is_admin ? '(Admin)' : ''}</span>
+            </span>
+            <br>
+            {#if moment(user.last_activity).isAfter(moment().subtract(10, 'second'))}
+            <span style="color: var(--success-color);" class="blink">
+              <div style="background-color: var(--success-color); padding: 0.3rem; margin: 0.1rem; border-radius: 50%; display: inline-block;"></div>
+              Online
+            </span>
+            {:else}
+              <span style="color: var(--error-color);">Last seen: {moment(user.last_activity).fromNow()}</span>
+            {/if}
+          </div>
+        </div>
+      </li>
+      {/each}
+    </ul>
+    
+    {#if userStore.current?.user?.is_admin}
+      <button style="margin-top: 1rem;" onclick={() => createUserModal?.openModal()} class="">Create User</button>
+    {/if}
   </div>
+
 </BaseView>
+
+<Modal bind:this={createUserModal} title="Create User" onClose={() => {
+  newUser = {
+    username: "",
+    password: "",
+    is_admin: false,
+  };
+}}>
+  <div style="display: flex; flex-direction: column; gap: 1rem; width: 100%; margin-top: 1rem;">
+    <input type="text" bind:value={newUser.username} placeholder="Username" />
+    <input type="text" bind:value={newUser.display_name} placeholder="Display Name" />
+    <input type="text" bind:value={newUser.password} placeholder="Password" />
+    <label>
+      <input type="checkbox" bind:checked={newUser.is_admin} />
+      <span>Is Admin</span>
+    </label>
+    <button onclick={onCreateUser}>Create User</button>
+  </div>
+</Modal>
 
 <style>
   .content {
@@ -84,7 +159,7 @@
     display: flex;
     flex-direction: column;
     gap: 1rem;
-    margin-top: 1.5rem;
+    margin-top: 0.5rem;
   }
   
   button:focus {
@@ -122,5 +197,32 @@
 
   .danger-button:hover {
     background-color: #c0392b;
+  }
+
+  .avatar {
+    width: 2rem;
+    height: 2rem;
+    border-radius: 50%;
+  }
+
+  input {
+    padding: 0.6rem 0.8rem;
+    border-radius: 5px;
+    font-size: 0.95em;
+    line-height: 1.4;
+    border: 1px solid var(--border-color);
+  }
+
+  .blink {
+    animation: blink 1s  infinite;
+  }
+
+  @keyframes blink {
+    50% {
+      opacity: 0.5;
+    }
+    100% {
+      opacity: 1;
+    }
   }
 </style>

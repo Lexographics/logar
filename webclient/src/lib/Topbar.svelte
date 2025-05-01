@@ -32,11 +32,11 @@
   <div class="profile-section">
     <button class="profile-button" onclick={toggleDropdown}>
       <div style="display: flex; flex-direction: column; align-items: center;">
-        <span class="username">{userStore.current.user.display_name}</span>
-        <span class="username" style="font-size: 0.75rem;">@{userStore.current.user.username}</span>
+        <span class="username">{userStore.current.user?.display_name}</span>
+        <span class="username" style="font-size: 0.75rem;">@{userStore.current.user?.username}</span>
       </div>
       
-      <img src={"https://api.dicebear.com/9.x/thumbs/svg?seed=" + userStore.current.user.username} alt="avatar" class="avatar" />
+      <img src={"https://api.dicebear.com/9.x/thumbs/svg?seed=" + userStore.current.user?.username} alt="avatar" class="avatar" />
     </button>
 
     <div class="dropdown-menu" class:active={isDropdownOpen}>

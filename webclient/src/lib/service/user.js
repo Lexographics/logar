@@ -70,7 +70,7 @@ export async function updateUser({displayName}) {
       form.append('display_name', displayName);
     }
 
-    const response = await axios.put(`${PUBLIC_API_URL}/auth/user`, form, {
+    const response = await axios.put(`${PUBLIC_API_URL}/user`, form, {
       headers: {
         Authorization: `Bearer ${userStore.current.token}`,
       },
@@ -81,5 +81,39 @@ export async function updateUser({displayName}) {
   } catch (error) {
     checkSession(error);
     return error;
+  }
+}
+
+export async function getAllUsers() {
+  try {
+    const response = await axios.get(`${PUBLIC_API_URL}/user`, {
+      headers: {
+        Authorization: `Bearer ${userStore.current.token}`,
+      },
+    });
+    return [response.data, null];
+  } catch (error) {
+    checkSession(error);
+    return [null, error];
+  }
+}
+
+export async function createUser(username, password, displayName, is_admin = false) {
+  try {
+    const form = new FormData();
+    form.append('username', username);
+    form.append('password', password);
+    form.append('display_name', displayName);
+    form.append('is_admin', is_admin);
+    
+    const response = await axios.post(`${PUBLIC_API_URL}/user`, form, {
+      headers: {
+        Authorization: `Bearer ${userStore.current.token}`,
+      },
+    });
+    return [response.data, null];
+  } catch (error) {
+    checkSession(error);
+    return [null, error];
   }
 }

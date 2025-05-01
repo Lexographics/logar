@@ -87,7 +87,7 @@
     top: 0;
     left: 0;
     */
-    z-index: 1000;
+    z-index: 10;
     overflow-x: hidden;
     transition: all 0.3s ease;
     width: 250px;
@@ -113,7 +113,7 @@
   }
 
   .toggle-button {
-    z-index: 1001;
+    z-index: 11;
     border: none;
     border-radius: 50%;
     background: var(--sidebar-background);

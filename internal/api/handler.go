@@ -59,13 +59,14 @@ func (h *Handler) Router(mux *http.ServeMux) {
 	mux.HandleFunc("POST /auth/logout", h.AuthMiddleware(h.Logout))
 	mux.HandleFunc("GET /auth/sessions", h.AuthMiddleware(h.GetActiveSessions))
 	mux.HandleFunc("POST /auth/revoke-session", h.AuthMiddleware(h.RevokeSession))
-	mux.HandleFunc("PUT /auth/user", h.AuthMiddleware(h.UpdateUser))
 	mux.HandleFunc("GET /models", h.AuthMiddleware(h.ListModels))
 	mux.HandleFunc("GET /logs/{model}", h.AuthMiddleware(h.GetLogs))
 	mux.HandleFunc("GET /logs/{model}/sse", h.AuthMiddleware(h.GetLogsSSE))
 	mux.HandleFunc("GET /actions", h.AuthMiddleware(h.ListActions))
 	mux.HandleFunc("POST /actions/invoke", h.AuthMiddleware(h.InvokeActionHandler))
-
+	mux.HandleFunc("PUT /user", h.AuthMiddleware(h.UpdateUser))
+	mux.HandleFunc("POST /user", h.AuthMiddleware(h.CreateUser))
+	mux.HandleFunc("GET /user", h.AuthMiddleware(h.GetAllUsers))
 	if dev {
 		mux.Handle("/", http.FileServer(http.Dir("webclient/build")))
 	} else {
@@ -377,6 +378,58 @@ func (h *Handler) InvokeActionHandler(w http.ResponseWriter, r *http.Request) {
 	if encodeErr := json.NewEncoder(w).Encode(resp); encodeErr != nil {
 		h.logger.Error("logar-errors", fmt.Sprintf("Failed to encode action response: %v", encodeErr), "api")
 	}
+}
+
+func (h *Handler) GetAllUsers(w http.ResponseWriter, r *http.Request) {
+	users, err := h.logger.GetAllUsers()
+	if err != nil {
+		http.Error(w, "Failed to get all users", http.StatusInternalServerError)
+		return
+	}
+
+	json.NewEncoder(w).Encode(users)
+}
+
+func (h *Handler) CreateUser(w http.ResponseWriter, r *http.Request) {
+	authorization := r.Header.Get("Authorization")
+	if authorization == "" {
+		http.Error(w, "Unauthorized", http.StatusUnauthorized)
+		return
+	}
+
+	token := strings.TrimPrefix(authorization, "Bearer ")
+	session, err := h.logger.GetSession(token)
+	if err != nil {
+		http.Error(w, "Unauthorized", http.StatusUnauthorized)
+		return
+	}
+
+	selfUser, err := h.logger.GetUser(session.UserID)
+	if err != nil {
+		http.Error(w, "Unauthorized", http.StatusUnauthorized)
+		return
+	}
+	if !selfUser.IsAdmin {
+		http.Error(w, "Only admins can create users", http.StatusUnauthorized)
+		return
+	}
+
+	username := r.FormValue("username")
+	password := r.FormValue("password")
+	isAdmin := r.FormValue("is_admin") == "true"
+	display_name := r.FormValue("display_name")
+	if username == "" || password == "" {
+		http.Error(w, "Missing 'username' or 'password' in request body", http.StatusBadRequest)
+		return
+	}
+
+	user, err := h.logger.CreateUser(username, display_name, password, isAdmin)
+	if err != nil {
+		http.Error(w, "Failed to create user", http.StatusInternalServerError)
+		return
+	}
+
+	json.NewEncoder(w).Encode(user)
 }
 
 func parseStringArg(argStr string, targetType reflect.Type) (any, error) {
