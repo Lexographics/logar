@@ -318,6 +318,10 @@ type RootTranslation = {
 			select_theme: string
 			options: {
 				/**
+				 * S​y​s​t​e​m​ ​P​r​e​f​e​r​e​n​c​e
+				 */
+				system: string
+				/**
 				 * L​i​g​h​t
 				 */
 				light: string
@@ -326,9 +330,33 @@ type RootTranslation = {
 				 */
 				dark: string
 				/**
-				 * S​y​s​t​e​m​ ​P​r​e​f​e​r​e​n​c​e
+				 * D​a​r​k​ ​B​l​u​e
 				 */
-				system: string
+				dark_blue: string
+				/**
+				 * L​i​g​h​t​ ​G​r​e​e​n
+				 */
+				light_green: string
+				/**
+				 * D​a​r​k​ ​G​r​e​e​n
+				 */
+				dark_green: string
+				/**
+				 * L​i​g​h​t​ ​P​u​r​p​l​e
+				 */
+				light_purple: string
+				/**
+				 * D​a​r​k​ ​P​u​r​p​l​e
+				 */
+				dark_purple: string
+				/**
+				 * L​i​g​h​t​ ​P​i​n​k
+				 */
+				light_pink: string
+				/**
+				 * D​a​r​k​ ​P​i​n​k
+				 */
+				dark_pink: string
 			}
 			/**
 			 * C​u​r​r​e​n​t​ ​T​h​e​m​e​:​ ​{​0​}
@@ -750,6 +778,10 @@ export type TranslationFunctions = {
 			select_theme: () => LocalizedString
 			options: {
 				/**
+				 * System Preference
+				 */
+				system: () => LocalizedString
+				/**
 				 * Light
 				 */
 				light: () => LocalizedString
@@ -758,9 +790,33 @@ export type TranslationFunctions = {
 				 */
 				dark: () => LocalizedString
 				/**
-				 * System Preference
+				 * Dark Blue
 				 */
-				system: () => LocalizedString
+				dark_blue: () => LocalizedString
+				/**
+				 * Light Green
+				 */
+				light_green: () => LocalizedString
+				/**
+				 * Dark Green
+				 */
+				dark_green: () => LocalizedString
+				/**
+				 * Light Purple
+				 */
+				light_purple: () => LocalizedString
+				/**
+				 * Dark Purple
+				 */
+				dark_purple: () => LocalizedString
+				/**
+				 * Light Pink
+				 */
+				light_pink: () => LocalizedString
+				/**
+				 * Dark Pink
+				 */
+				dark_pink: () => LocalizedString
 			}
 			/**
 			 * Current Theme: {0}

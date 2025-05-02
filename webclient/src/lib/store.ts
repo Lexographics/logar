@@ -16,7 +16,7 @@ type SettingsStore = {
 }
 export const settingsStore = new LocalStorage<SettingsStore>("settings", {
   selectedLanguage: null,
-  currentTheme: "light",
+  currentTheme: "system",
 })
 
 export type UserStore = {

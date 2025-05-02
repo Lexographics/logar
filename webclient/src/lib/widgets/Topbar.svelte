@@ -49,7 +49,7 @@
 <style>
   .topbar {
     height: 60px;
-    background-color: var(--header-background);
+    background: var(--header-background);
     border-bottom: 1px solid var(--border-color);
     display: flex;
     justify-content: flex-end;
@@ -93,7 +93,7 @@
     position: absolute;
     top: 100%;
     right: 0;
-    background-color: var(--card-background);
+    background: var(--card-background);
     border-radius: 4px;
     box-shadow: 0 2px 10px var(--shadow-color);
     min-width: 150px;

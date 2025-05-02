@@ -37,7 +37,7 @@
     max-width: 100vw;
     max-height: 100vh;
     overflow: hidden;
-    background-color: var(--background-color);
+    background: var(--background-color);
     color: var(--text-color);
   }
 

@@ -2,7 +2,7 @@
   /* General variables */
   --scrollbar-size: 8px;
 
-  /* Light theme variables */
+  /* ********************* Light theme ********************* */
   --background-color-light: #f7f7f7;
   --card-background-light: #ffffff;
   --text-color-light: #333333;
@@ -25,8 +25,20 @@
   --sidebar-active-light: #d0d0d0;
   --scrollbar-track-color-light: #e6e6e6;
   --scrollbar-thumb-color-light: #3345af;
+  --row-trace-bg-light: #e6e6e6;
+  --row-trace-striped-bg-light: #d9d9d9;
+  --row-log-bg-light: #d1e7dd;
+  --row-log-striped-bg-light: #c7dbd2;
+  --row-info-bg-light: #c5daf2;
+  --row-info-striped-bg-light: #d8e6f8;
+  --row-warning-bg-light: #fff3cd;
+  --row-warning-striped-bg-light: #f7e6b5;
+  --row-error-bg-light: #f8d7da;
+  --row-error-striped-bg-light: #eccccf;
+  --row-fatal-bg-light: #d68c8c;
+  --row-fatal-striped-bg-light: #e6b1b1;
   
-  /* Dark theme variables */
+  /* ********************* Dark theme ********************* */
   --background-color-dark: #121212;
   --card-background-dark: #1e1e2e;
   --text-color-dark: #e0e0e0;
@@ -49,9 +61,21 @@
   --sidebar-active-dark: #3d3d4a;
   --scrollbar-track-color-dark: #242d31;
   --scrollbar-thumb-color-dark: #3345af;
+  --row-trace-bg-dark: #2a2a2a;
+  --row-trace-striped-bg-dark: #333333;
+  --row-log-bg-dark: #1a2e22;
+  --row-log-striped-bg-dark: #203a2b;
+  --row-info-bg-dark: #1a2940;
+  --row-info-striped-bg-dark: #1f3352;
+  --row-warning-bg-dark: #3d2e12;
+  --row-warning-striped-bg-dark: #4d3a17;
+  --row-error-bg-dark: #3d1a1d;
+  --row-error-striped-bg-dark: #4d2024;
+  --row-fatal-bg-dark: #4d1515;
+  --row-fatal-striped-bg-dark: #661a1a;
 
 
-  /* Default light theme variables */
+  /* ********************* Default theme (Light) ********************* */
   --background-color: var(--background-color-light);
   --card-background: var(--card-background-light);
   --text-color: var(--text-color-light);
@@ -74,46 +98,6 @@
   --sidebar-active: var(--sidebar-active-light);
   --scrollbar-track-color: var(--scrollbar-track-color-light);
   --scrollbar-thumb-color: var(--scrollbar-thumb-color-light);
-
-  /* Row colors light */
-  --row-trace-bg-light: #e6e6e6;
-  --row-trace-striped-bg-light: #d9d9d9;
-  
-  --row-log-bg-light: #d1e7dd;
-  --row-log-striped-bg-light: #c7dbd2;
-
-  --row-info-bg-light: #c5daf2;
-  --row-info-striped-bg-light: #d8e6f8;
-
-  --row-warning-bg-light: #fff3cd;
-  --row-warning-striped-bg-light: #f7e6b5;
-  
-  --row-error-bg-light: #f8d7da;
-  --row-error-striped-bg-light: #eccccf;
-
-  --row-fatal-bg-light: #d68c8c;
-  --row-fatal-striped-bg-light: #e6b1b1;
-
-  /* Row colors dark */
-  --row-trace-bg-dark: #2a2a2a;
-  --row-trace-striped-bg-dark: #333333;
-  
-  --row-log-bg-dark: #1a2e22;
-  --row-log-striped-bg-dark: #203a2b;
-  
-  --row-info-bg-dark: #1a2940;
-  --row-info-striped-bg-dark: #1f3352;
-  
-  --row-warning-bg-dark: #3d2e12;
-  --row-warning-striped-bg-dark: #4d3a17;
-
-  --row-error-bg-dark: #3d1a1d;
-  --row-error-striped-bg-dark: #4d2024;
-
-  --row-fatal-bg-dark: #4d1515;
-  --row-fatal-striped-bg-dark: #661a1a;
-  
-
   --row-trace-bg: var(--row-trace-bg-light);
   --row-trace-striped-bg: var(--row-trace-striped-bg-light);
   --row-log-bg: var(--row-log-bg-light);
@@ -126,6 +110,258 @@
   --row-error-striped-bg: var(--row-error-striped-bg-light);
   --row-fatal-bg: var(--row-fatal-bg-light);
   --row-fatal-striped-bg: var(--row-fatal-striped-bg-light);
+
+  /* ********************* Dark Blue theme ********************* */
+  --background-color-dark-blue: #0f172a;
+  --card-background-dark-blue: #1e293b;
+  --text-color-dark-blue: #e2e8f0;
+  --text-secondary-color-dark-blue: #94a3b8;
+  --border-color-dark-blue: #334155;
+  --primary-color-dark-blue: #3b82f6;
+  --primary-hover-color-dark-blue: #2563eb;
+  --success-color-dark-blue: #22c55e;
+  --warning-color-dark-blue: #f59e0b;
+  --error-color-dark-blue: #ef4444;
+  --shadow-color-dark-blue: rgba(0, 0, 0, 0.4);
+  --input-background-dark-blue: rgba(15, 23, 42, 0.5);
+  --input-background-opaque-dark-blue: #1e293b;
+  --input-border-dark-blue: #475569;
+  --input-text-dark-blue: #cbd5e1;
+  --header-background-dark-blue: #1e293b;
+  --sidebar-background-dark-blue: #0b111f;
+  --sidebar-text-dark-blue: #e2e8f0;
+  --sidebar-hover-dark-blue: #334155;
+  --sidebar-active-dark-blue: #475569;
+  --scrollbar-track-color-dark-blue: #1e293b;
+  --scrollbar-thumb-color-dark-blue: #3b82f6;
+  --row-trace-bg-dark-blue: #1e293b;
+  --row-trace-striped-bg-dark-blue: #283548;
+  --row-log-bg-dark-blue: #162a3d;
+  --row-log-striped-bg-dark-blue: #1b324a;
+  --row-info-bg-dark-blue: #172554;
+  --row-info-striped-bg-dark-blue: #1e3a8a;
+  --row-warning-bg-dark-blue: #422006;
+  --row-warning-striped-bg-dark-blue: #5f300a;
+  --row-error-bg-dark-blue: #450a0a;
+  --row-error-striped-bg-dark-blue: #631010;
+  --row-fatal-bg-dark-blue: #5e0c0c;
+  --row-fatal-striped-bg-dark-blue: #7f1d1d;
+
+  /* ********************* Light Green theme ********************* */
+  --background-color-light-green: linear-gradient(135deg, #e0fcfc, #e0f7f0);
+  --card-background-light-green: #ffffff;
+  --text-color-light-green: #1f2937;
+  --text-secondary-color-light-green: #4b5563;
+  --border-color-light-green: #d1fae5;
+  --primary-color-light-green: #14b8a6;
+  --primary-hover-color-light-green: #0d9488;
+  --success-color-light-green: #10b981;
+  --warning-color-light-green: #f59e0b;
+  --error-color-light-green: #ef4444;
+  --shadow-color-light-green: rgba(16, 185, 129, 0.1);
+  --input-background-light-green: #f0fdfa;
+  --input-background-opaque-light-green: #f0fdfa;
+  --input-border-light-green: #a7f3d0;
+  --input-text-light-green: #1f2937;
+  --header-background-light-green: linear-gradient(to right, #ccfbf1, #d1fae5);
+  --sidebar-background-light-green: #f0fdfa;
+  --sidebar-text-light-green: #1f2937;
+  --sidebar-hover-light-green: #ccfbf1;
+  --sidebar-active-light-green: #a7f3d0;
+  --scrollbar-track-color-light-green: #d1fae5;
+  --scrollbar-thumb-color-light-green: #14b8a6;
+  --row-trace-bg-light-green: #f0fdfa;
+  --row-trace-striped-bg-light-green: #e6fcf6;
+  --row-log-bg-light-green: #d1fae5;
+  --row-log-striped-bg-light-green: #c2f7dd;
+  --row-info-bg-light-green: #cffafe;
+  --row-info-striped-bg-light-green: #bbf7ef;
+  --row-warning-bg-light-green: #fffbeb;
+  --row-warning-striped-bg-light-green: #fef3c7;
+  --row-error-bg-light-green: #fee2e2;
+  --row-error-striped-bg-light-green: #fecaca;
+  --row-fatal-bg-light-green: #ffcdd2;
+  --row-fatal-striped-bg-light-green: #ef9a9a;
+
+  /* ********************* Dark Green theme ********************* */
+  --background-color-dark-green: #061a14;
+  --card-background-dark-green: #0f2e24;
+  --text-color-dark-green: #d1fae5;
+  --text-secondary-color-dark-green: #a7f3d0;
+  --border-color-dark-green: #043b29;
+  --primary-color-dark-green: #34d399;
+  --primary-hover-color-dark-green: #10b981;
+  --success-color-dark-green: #57cc99;
+  --warning-color-dark-green: #ffae42;
+  --error-color-dark-green: #ff6b6b;
+  --shadow-color-dark-green: rgba(0, 0, 0, 0.4);
+  --input-background-dark-green: rgba(6, 26, 20, 0.5);
+  --input-background-opaque-dark-green: #0b3d30;
+  --input-border-dark-green: #055039;
+  --input-text-dark-green: #a7f3d0;
+  --header-background-dark-green: #0f2e24;
+  --sidebar-background-dark-green: #041f19;
+  --sidebar-text-dark-green: #d1fae5;
+  --sidebar-hover-dark-green: #0b3d30;
+  --sidebar-active-dark-green: #055039;
+  --scrollbar-track-color-dark-green: #0f2e24;
+  --scrollbar-thumb-color-dark-green: #34d399;
+  --row-trace-bg-dark-green: #0f2e24;
+  --row-trace-striped-bg-dark-green: #133a2e;
+  --row-log-bg-dark-green: #0b3d30;
+  --row-log-striped-bg-dark-green: #0e4f3e;
+  --row-info-bg-dark-green: #0f3046;
+  --row-info-striped-bg-dark-green: #133e5a;
+  --row-warning-bg-dark-green: #451a03;
+  --row-warning-striped-bg-dark-green: #5a2103;
+  --row-error-bg-dark-green: #41061d;
+  --row-error-striped-bg-dark-green: #5a0828;
+  --row-fatal-bg-dark-green: #6b0f31;
+  --row-fatal-striped-bg-dark-green: #831843;
+
+  /* ********************* Light Purple theme ********************* */
+  --background-color-light-purple: #f5f3ff;
+  --card-background-light-purple: #ffffff;
+  --text-color-light-purple: #3730a3;
+  --text-secondary-color-light-purple: #6d28d9;
+  --border-color-light-purple: #ddd6fe;
+  --primary-color-light-purple: #8b5cf6;
+  --primary-hover-color-light-purple: #7c3aed;
+  --success-color-light-purple: #22c55e;
+  --warning-color-light-purple: #f59e0b;
+  --error-color-light-purple: #ef4444;
+  --shadow-color-light-purple: rgba(139, 92, 246, 0.1);
+  --input-background-light-purple: #ede9fe;
+  --input-background-opaque-light-purple: #ede9fe;
+  --input-border-light-purple: #c4b5fd;
+  --input-text-light-purple: #5b21b6;
+  --header-background-light-purple: #ffffff;
+  --sidebar-background-light-purple: #f5f3ff;
+  --sidebar-text-light-purple: #4c1d95;
+  --sidebar-hover-light-purple: #ddd6fe;
+  --sidebar-active-light-purple: #c4b5fd;
+  --scrollbar-track-color-light-purple: #e0e7ff;
+  --scrollbar-thumb-color-light-purple: #8b5cf6;
+  --row-trace-bg-light-purple: #f5f3ff;
+  --row-trace-striped-bg-light-purple: #eef2ff;
+  --row-log-bg-light-purple: #ede9fe;
+  --row-log-striped-bg-light-purple: #e0e7ff;
+  --row-info-bg-light-purple: #e0f2fe;
+  --row-info-striped-bg-light-purple: #dbeafe;
+  --row-warning-bg-light-purple: #fffbeb;
+  --row-warning-striped-bg-light-purple: #fef3c7;
+  --row-error-bg-light-purple: #fee2e2;
+  --row-error-striped-bg-light-purple: #fecaca;
+  --row-fatal-bg-light-purple: #ffcdd2;
+  --row-fatal-striped-bg-light-purple: #ef9a9a;
+
+  /* ********************* Dark Purple theme ********************* */
+  --background-color-dark-purple: #1e1b4b;
+  --card-background-dark-purple: #2e225f;
+  --text-color-dark-purple: #e0e7ff;
+  --text-secondary-color-dark-purple: #c7d2fe;
+  --border-color-dark-purple: #4c1d95;
+  --primary-color-dark-purple: #a78bfa;
+  --primary-hover-color-dark-purple: #8b5cf6;
+  --success-color-dark-purple: #57cc99;
+  --warning-color-dark-purple: #ffae42;
+  --error-color-dark-purple: #ff6b6b;
+  --shadow-color-dark-purple: rgba(0, 0, 0, 0.4);
+  --input-background-dark-purple: rgba(46, 34, 95, 0.5);
+  --input-background-opaque-dark-purple: #3730a3;
+  --input-border-dark-purple: #5b21b6;
+  --input-text-dark-purple: #e0e7ff;
+  --header-background-dark-purple: #2e225f;
+  --sidebar-background-dark-purple: #1a163b;
+  --sidebar-text-dark-purple: #e0e7ff;
+  --sidebar-hover-dark-purple: #4c1d95;
+  --sidebar-active-dark-purple: #5b21b6;
+  --scrollbar-track-color-dark-purple: #2e225f;
+  --scrollbar-thumb-color-dark-purple: #a78bfa;
+  --row-trace-bg-dark-purple: #2e225f;
+  --row-trace-striped-bg-dark-purple: #3a2b7a;
+  --row-log-bg-dark-purple: #3730a3;
+  --row-log-striped-bg-dark-purple: #4338ca;
+  --row-info-bg-dark-purple: #312e81;
+  --row-info-striped-bg-dark-purple: #3b359e;
+  --row-warning-bg-dark-purple: #422006;
+  --row-warning-striped-bg-dark-purple: #5f300a;
+  --row-error-bg-dark-purple: #450a0a;
+  --row-error-striped-bg-dark-purple: #631010;
+  --row-fatal-bg-dark-purple: #5e0c0c;
+  --row-fatal-striped-bg-dark-purple: #7f1d1d;
+
+  /* ********************* Light Pink Theme ********************* */
+  --background-color-light-pink: linear-gradient(135deg, #d8b4fe, #fda4af);
+  --card-background-light-pink: #ffffff;
+  --text-color-light-pink: #581c87;
+  --text-secondary-color-light-pink: #9d174d;
+  --border-color-light-pink: #fbcfe8;
+  --primary-color-light-pink: #d946ef;
+  --primary-hover-color-light-pink: #c026d3;
+  --success-color-light-pink: #22c55e;
+  --warning-color-light-pink: #f59e0b;
+  --error-color-light-pink: #ef4444;
+  --shadow-color-light-pink: rgba(217, 70, 239, 0.1);
+  --input-background-light-pink: #fae8ff;
+  --input-background-opaque-light-pink: #fae8ff;
+  --input-border-light-pink: #f5d0fe;
+  --input-text-light-pink: #701a75;
+  --header-background-light-pink: linear-gradient(to right, #c084fc, #f472b6);
+  --sidebar-background-light-pink: #fdf4ff;
+  --sidebar-text-light-pink: #581c87;
+  --sidebar-hover-light-pink: #f5d0fe;
+  --sidebar-active-light-pink: #f0abfc;
+  --scrollbar-track-color-light-pink: #fce7f3;
+  --scrollbar-thumb-color-light-pink: #d946ef;
+  --row-trace-bg-light-pink: #fdf4ff;
+  --row-trace-striped-bg-light-pink: #fae8ff;
+  --row-log-bg-light-pink: #fce7f3;
+  --row-log-striped-bg-light-pink: #fbcfe8;
+  --row-info-bg-light-pink: #f0f9ff;
+  --row-info-striped-bg-light-pink: #e0f2fe;
+  --row-warning-bg-light-pink: #fffbeb;
+  --row-warning-striped-bg-light-pink: #fef3c7;
+  --row-error-bg-light-pink: #fff1f2;
+  --row-error-striped-bg-light-pink: #ffe4e6;
+  --row-fatal-bg-light-pink: #fecdd3;
+  --row-fatal-striped-bg-light-pink: #fda4af;
+
+  /* ********************* Dark Pink Theme ********************* */
+  --background-color-dark-pink: linear-gradient(135deg, #2a0547, #41061d);
+  --card-background-dark-pink: #1f0b33;
+  --text-color-dark-pink: #e9d5ff;
+  --text-secondary-color-dark-pink: #f5d0fe;
+  --border-color-dark-pink: #581c87;
+  --primary-color-dark-pink: #e879f9;
+  --primary-hover-color-dark-pink: #d946ef;
+  --success-color-dark-pink: #57cc99;
+  --warning-color-dark-pink: #ffae42;
+  --error-color-dark-pink: #ff6b6b;
+  --shadow-color-dark-pink: rgba(0, 0, 0, 0.6);
+  --input-background-dark-pink: rgba(31, 11, 51, 0.5);
+  --input-background-opaque-dark-pink: #1f0b33;
+  --input-border-dark-pink: #581c87;
+  --input-text-dark-pink: #e9d5ff;
+  --header-background-dark-pink: linear-gradient(to right, #4a044e, #831843);
+  --sidebar-background-dark-pink: #1a0526;
+  --sidebar-text-dark-pink: #e9d5ff;
+  --sidebar-hover-dark-pink: #4a044e;
+  --sidebar-active-dark-pink: #581c87;
+  --scrollbar-track-color-dark-pink: #1f0b33;
+  --scrollbar-thumb-color-dark-pink: #e879f9;
+  --row-trace-bg-dark-pink: #1f0b33;
+  --row-trace-striped-bg-dark-pink: #2a0e44;
+  --row-log-bg-dark-pink: #4a044e;
+  --row-log-striped-bg-dark-pink: #60085e;
+  --row-info-bg-dark-pink: #1e1b4b;
+  --row-info-striped-bg-dark-pink: #2e225f;
+  --row-warning-bg-dark-pink: #451a03;
+  --row-warning-striped-bg-dark-pink: #5a2103;
+  --row-error-bg-dark-pink: #41061d;
+  --row-error-striped-bg-dark-pink: #5a0828;
+  --row-fatal-bg-dark-pink: #6b0f31;
+  --row-fatal-striped-bg-dark-pink: #831843;
 }
 
 [data-theme="light"] {
@@ -204,7 +440,266 @@
   --row-fatal-striped-bg: var(--row-fatal-striped-bg-dark);
 }
 
+[data-theme="dark-blue"] {
+  --background-color: var(--background-color-dark-blue);
+  --card-background: var(--card-background-dark-blue);
+  --text-color: var(--text-color-dark-blue);
+  --text-secondary-color: var(--text-secondary-color-dark-blue);
+  --border-color: var(--border-color-dark-blue);
+  --primary-color: var(--primary-color-dark-blue);
+  --primary-hover-color: var(--primary-hover-color-dark-blue);
+  --success-color: var(--success-color-dark-blue);
+  --warning-color: var(--warning-color-dark-blue);
+  --error-color: var(--error-color-dark-blue);
+  --shadow-color: var(--shadow-color-dark-blue);
+  --input-background: var(--input-background-dark-blue);
+  --input-background-opaque: var(--input-background-opaque-dark-blue);
+  --input-border: var(--input-border-dark-blue);
+  --input-text: var(--input-text-dark-blue);
+  --header-background: var(--header-background-dark-blue);
+  --sidebar-background: var(--sidebar-background-dark-blue);
+  --sidebar-text: var(--sidebar-text-dark-blue);
+  --sidebar-hover: var(--sidebar-hover-dark-blue);
+  --sidebar-active: var(--sidebar-active-dark-blue);
+  --scrollbar-track-color: var(--scrollbar-track-color-dark-blue);
+  --scrollbar-thumb-color: var(--scrollbar-thumb-color-dark-blue);
 
+  --row-trace-bg: var(--row-trace-bg-dark-blue);
+  --row-trace-striped-bg: var(--row-trace-striped-bg-dark-blue);
+  --row-log-bg: var(--row-log-bg-dark-blue);
+  --row-log-striped-bg: var(--row-log-striped-bg-dark-blue);
+  --row-info-bg: var(--row-info-bg-dark-blue);
+  --row-info-striped-bg: var(--row-info-striped-bg-dark-blue);
+  --row-warning-bg: var(--row-warning-bg-dark-blue);
+  --row-warning-striped-bg: var(--row-warning-striped-bg-dark-blue);
+  --row-error-bg: var(--row-error-bg-dark-blue);
+  --row-error-striped-bg: var(--row-error-striped-bg-dark-blue);
+  --row-fatal-bg: var(--row-fatal-bg-dark-blue);
+  --row-fatal-striped-bg: var(--row-fatal-striped-bg-dark-blue);
+}
+
+[data-theme="light-green"] {
+  --background-color: var(--background-color-light-green);
+  --card-background: var(--card-background-light-green);
+  --text-color: var(--text-color-light-green);
+  --text-secondary-color: var(--text-secondary-color-light-green);
+  --border-color: var(--border-color-light-green);
+  --primary-color: var(--primary-color-light-green);
+  --primary-hover-color: var(--primary-hover-color-light-green);
+  --success-color: var(--success-color-light-green);
+  --warning-color: var(--warning-color-light-green);
+  --error-color: var(--error-color-light-green);
+  --shadow-color: var(--shadow-color-light-green);
+  --input-background: var(--input-background-light-green);
+  --input-background-opaque: var(--input-background-opaque-light-green);
+  --input-border: var(--input-border-light-green);
+  --input-text: var(--input-text-light-green);
+  --header-background: var(--header-background-light-green);
+  --sidebar-background: var(--sidebar-background-light-green);
+  --sidebar-text: var(--sidebar-text-light-green);
+  --sidebar-hover: var(--sidebar-hover-light-green);
+  --sidebar-active: var(--sidebar-active-light-green);
+  --scrollbar-track-color: var(--scrollbar-track-color-light-green);
+  --scrollbar-thumb-color: var(--scrollbar-thumb-color-light-green);
+
+  --row-trace-bg: var(--row-trace-bg-light-green);
+  --row-trace-striped-bg: var(--row-trace-striped-bg-light-green);
+  --row-log-bg: var(--row-log-bg-light-green);
+  --row-log-striped-bg: var(--row-log-striped-bg-light-green);
+  --row-info-bg: var(--row-info-bg-light-green);
+  --row-info-striped-bg: var(--row-info-striped-bg-light-green);
+  --row-warning-bg: var(--row-warning-bg-light-green);
+  --row-warning-striped-bg: var(--row-warning-striped-bg-light-green);
+  --row-error-bg: var(--row-error-bg-light-green);
+  --row-error-striped-bg: var(--row-error-striped-bg-light-green);
+  --row-fatal-bg: var(--row-fatal-bg-light-green);
+  --row-fatal-striped-bg: var(--row-fatal-striped-bg-light-green);
+}
+
+[data-theme="dark-green"] {
+  --background-color: var(--background-color-dark-green);
+  --card-background: var(--card-background-dark-green);
+  --text-color: var(--text-color-dark-green);
+  --text-secondary-color: var(--text-secondary-color-dark-green);
+  --border-color: var(--border-color-dark-green);
+  --primary-color: var(--primary-color-dark-green);
+  --primary-hover-color: var(--primary-hover-color-dark-green);
+  --success-color: var(--success-color-dark-green);
+  --warning-color: var(--warning-color-dark-green);
+  --error-color: var(--error-color-dark-green);
+  --shadow-color: var(--shadow-color-dark-green);
+  --input-background: var(--input-background-dark-green);
+  --input-background-opaque: var(--input-background-opaque-dark-green);
+  --input-border: var(--input-border-dark-green);
+  --input-text: var(--input-text-dark-green);
+  --header-background: var(--header-background-dark-green);
+  --sidebar-background: var(--sidebar-background-dark-green);
+  --sidebar-text: var(--sidebar-text-dark-green);
+  --sidebar-hover: var(--sidebar-hover-dark-green);
+  --sidebar-active: var(--sidebar-active-dark-green);
+  --scrollbar-track-color: var(--scrollbar-track-color-dark-green);
+  --scrollbar-thumb-color: var(--scrollbar-thumb-color-dark-green);
+  --row-trace-bg: var(--row-trace-bg-dark-green);
+  --row-trace-striped-bg: var(--row-trace-striped-bg-dark-green);
+  --row-log-bg: var(--row-log-bg-dark-green);
+  --row-log-striped-bg: var(--row-log-striped-bg-dark-green);
+  --row-info-bg: var(--row-info-bg-dark-green);
+  --row-info-striped-bg: var(--row-info-striped-bg-dark-green);
+  --row-warning-bg: var(--row-warning-bg-dark-green);
+  --row-warning-striped-bg: var(--row-warning-striped-bg-dark-green);
+  --row-error-bg: var(--row-error-bg-dark-green);
+  --row-error-striped-bg: var(--row-error-striped-bg-dark-green);
+  --row-fatal-bg: var(--row-fatal-bg-dark-green);
+  --row-fatal-striped-bg: var(--row-fatal-striped-bg-dark-green);
+}
+
+[data-theme="light-purple"] {
+  --background-color: var(--background-color-light-purple);
+  --card-background: var(--card-background-light-purple);
+  --text-color: var(--text-color-light-purple);
+  --text-secondary-color: var(--text-secondary-color-light-purple);
+  --border-color: var(--border-color-light-purple);
+  --primary-color: var(--primary-color-light-purple);
+  --primary-hover-color: var(--primary-hover-color-light-purple);
+  --success-color: var(--success-color-light-purple);
+  --warning-color: var(--warning-color-light-purple);
+  --error-color: var(--error-color-light-purple);
+  --shadow-color: var(--shadow-color-light-purple);
+  --input-background: var(--input-background-light-purple);
+  --input-background-opaque: var(--input-background-opaque-light-purple);
+  --input-border: var(--input-border-light-purple);
+  --input-text: var(--input-text-light-purple);
+  --header-background: var(--header-background-light-purple);
+  --sidebar-background: var(--sidebar-background-light-purple);
+  --sidebar-text: var(--sidebar-text-light-purple);
+  --sidebar-hover: var(--sidebar-hover-light-purple);
+  --sidebar-active: var(--sidebar-active-light-purple);
+  --scrollbar-track-color: var(--scrollbar-track-color-light-purple);
+  --scrollbar-thumb-color: var(--scrollbar-thumb-color-light-purple);
+  --row-trace-bg: var(--row-trace-bg-light-purple);
+  --row-trace-striped-bg: var(--row-trace-striped-bg-light-purple);
+  --row-log-bg: var(--row-log-bg-light-purple);
+  --row-log-striped-bg: var(--row-log-striped-bg-light-purple);
+  --row-info-bg: var(--row-info-bg-light-purple);
+  --row-info-striped-bg: var(--row-info-striped-bg-light-purple);
+  --row-warning-bg: var(--row-warning-bg-light-purple);
+  --row-warning-striped-bg: var(--row-warning-striped-bg-light-purple);
+  --row-error-bg: var(--row-error-bg-light-purple);
+  --row-error-striped-bg: var(--row-error-striped-bg-light-purple);
+  --row-fatal-bg: var(--row-fatal-bg-light-purple);
+  --row-fatal-striped-bg: var(--row-fatal-striped-bg-light-purple);
+}
+
+[data-theme="dark-purple"] {
+  --background-color: var(--background-color-dark-purple);
+  --card-background: var(--card-background-dark-purple);
+  --text-color: var(--text-color-dark-purple);
+  --text-secondary-color: var(--text-secondary-color-dark-purple);
+  --border-color: var(--border-color-dark-purple);
+  --primary-color: var(--primary-color-dark-purple);
+  --primary-hover-color: var(--primary-hover-color-dark-purple);
+  --success-color: var(--success-color-dark-purple);
+  --warning-color: var(--warning-color-dark-purple);
+  --error-color: var(--error-color-dark-purple);
+  --shadow-color: var(--shadow-color-dark-purple);
+  --input-background: var(--input-background-dark-purple);
+  --input-background-opaque: var(--input-background-opaque-dark-purple);
+  --input-border: var(--input-border-dark-purple);
+  --input-text: var(--input-text-dark-purple);
+  --header-background: var(--header-background-dark-purple);
+  --sidebar-background: var(--sidebar-background-dark-purple);
+  --sidebar-text: var(--sidebar-text-dark-purple);
+  --sidebar-hover: var(--sidebar-hover-dark-purple);
+  --sidebar-active: var(--sidebar-active-dark-purple);
+  --scrollbar-track-color: var(--scrollbar-track-color-dark-purple);
+  --scrollbar-thumb-color: var(--scrollbar-thumb-color-dark-purple);
+  --row-trace-bg: var(--row-trace-bg-dark-purple);
+  --row-trace-striped-bg: var(--row-trace-striped-bg-dark-purple);
+  --row-log-bg: var(--row-log-bg-dark-purple);
+  --row-log-striped-bg: var(--row-log-striped-bg-dark-purple);
+  --row-info-bg: var(--row-info-bg-dark-purple);
+  --row-info-striped-bg: var(--row-info-striped-bg-dark-purple);
+  --row-warning-bg: var(--row-warning-bg-dark-purple);
+  --row-warning-striped-bg: var(--row-warning-striped-bg-dark-purple);
+  --row-error-bg: var(--row-error-bg-dark-purple);
+  --row-error-striped-bg: var(--row-error-striped-bg-dark-purple);
+  --row-fatal-bg: var(--row-fatal-bg-dark-purple);
+  --row-fatal-striped-bg: var(--row-fatal-striped-bg-dark-purple);
+}
+
+[data-theme="light-pink"] {
+  --background-color: var(--background-color-light-pink);
+  --card-background: var(--card-background-light-pink);
+  --text-color: var(--text-color-light-pink);
+  --text-secondary-color: var(--text-secondary-color-light-pink);
+  --border-color: var(--border-color-light-pink);
+  --primary-color: var(--primary-color-light-pink);
+  --primary-hover-color: var(--primary-hover-color-light-pink);
+  --success-color: var(--success-color-light-pink);
+  --warning-color: var(--warning-color-light-pink);
+  --error-color: var(--error-color-light-pink);
+  --shadow-color: var(--shadow-color-light-pink);
+  --input-background: var(--input-background-light-pink);
+  --input-background-opaque: var(--input-background-opaque-light-pink);
+  --input-border: var(--input-border-light-pink);
+  --input-text: var(--input-text-light-pink);
+  --header-background: var(--header-background-light-pink);
+  --sidebar-background: var(--sidebar-background-light-pink);
+  --sidebar-text: var(--sidebar-text-light-pink);
+  --sidebar-hover: var(--sidebar-hover-light-pink);
+  --sidebar-active: var(--sidebar-active-light-pink);
+  --scrollbar-track-color: var(--scrollbar-track-color-light-pink);
+  --scrollbar-thumb-color: var(--scrollbar-thumb-color-light-pink);
+  --row-trace-bg: var(--row-trace-bg-light-pink);
+  --row-trace-striped-bg: var(--row-trace-striped-bg-light-pink);
+  --row-log-bg: var(--row-log-bg-light-pink);
+  --row-log-striped-bg: var(--row-log-striped-bg-light-pink);
+  --row-info-bg: var(--row-info-bg-light-pink);
+  --row-info-striped-bg: var(--row-info-striped-bg-light-pink);
+  --row-warning-bg: var(--row-warning-bg-light-pink);
+  --row-warning-striped-bg: var(--row-warning-striped-bg-light-pink);
+  --row-error-bg: var(--row-error-bg-light-pink);
+  --row-error-striped-bg: var(--row-error-striped-bg-light-pink);
+  --row-fatal-bg: var(--row-fatal-bg-light-pink);
+  --row-fatal-striped-bg: var(--row-fatal-striped-bg-light-pink);
+}
+
+[data-theme="dark-pink"] {
+  --background-color: var(--background-color-dark-pink);
+  --card-background: var(--card-background-dark-pink);
+  --text-color: var(--text-color-dark-pink);
+  --text-secondary-color: var(--text-secondary-color-dark-pink);
+  --border-color: var(--border-color-dark-pink);
+  --primary-color: var(--primary-color-dark-pink);
+  --primary-hover-color: var(--primary-hover-color-dark-pink);
+  --success-color: var(--success-color-dark-pink);
+  --warning-color: var(--warning-color-dark-pink);
+  --error-color: var(--error-color-dark-pink);
+  --shadow-color: var(--shadow-color-dark-pink);
+  --input-background: var(--input-background-dark-pink);
+  --input-background-opaque: var(--input-background-opaque-dark-pink);
+  --input-border: var(--input-border-dark-pink);
+  --input-text: var(--input-text-dark-pink);
+  --header-background: var(--header-background-dark-pink);
+  --sidebar-background: var(--sidebar-background-dark-pink);
+  --sidebar-text: var(--sidebar-text-dark-pink);
+  --sidebar-hover: var(--sidebar-hover-dark-pink);
+  --sidebar-active: var(--sidebar-active-dark-pink);
+  --scrollbar-track-color: var(--scrollbar-track-color-dark-pink);
+  --scrollbar-thumb-color: var(--scrollbar-thumb-color-dark-pink);
+  --row-trace-bg: var(--row-trace-bg-dark-pink);
+  --row-trace-striped-bg: var(--row-trace-striped-bg-dark-pink);
+  --row-log-bg: var(--row-log-bg-dark-pink);
+  --row-log-striped-bg: var(--row-log-striped-bg-dark-pink);
+  --row-info-bg: var(--row-info-bg-dark-pink);
+  --row-info-striped-bg: var(--row-info-striped-bg-dark-pink);
+  --row-warning-bg: var(--row-warning-bg-dark-pink);
+  --row-warning-striped-bg: var(--row-warning-striped-bg-dark-pink);
+  --row-error-bg: var(--row-error-bg-dark-pink);
+  --row-error-striped-bg: var(--row-error-striped-bg-dark-pink);
+  --row-fatal-bg: var(--row-fatal-bg-dark-pink);
+  --row-fatal-striped-bg: var(--row-fatal-striped-bg-dark-pink);
+}
 
 @media (prefers-color-scheme: dark) {
   [data-theme="system"] {
