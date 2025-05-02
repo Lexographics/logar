@@ -35,7 +35,7 @@
   .base-container {
     display: flex;
     max-width: 100vw;
-    max-height: 100vh;
+    max-height: 100dvh;
     overflow: hidden;
     background: var(--background-color);
     color: var(--text-color);

@@ -258,7 +258,7 @@ func (l *Logger) GetSession(token string) (*models.Session, error) {
 
 func (l *Logger) GetActiveSessions(userID uint) ([]models.Session, error) {
 	var sessions []models.Session
-	err := l.db.Where("user_id = ? and expires_at > ?", userID, time.Now()).Find(&sessions).Error
+	err := l.db.Where("user_id = ? and expires_at > ?", userID, time.Now()).Order("last_activity DESC").Find(&sessions).Error
 	if err != nil {
 		return nil, err
 	}

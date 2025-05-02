@@ -110,7 +110,7 @@
 			{/if}
 			{#if result !== null}
 				<div class="output-box result-box">
-					<pre>{JSON.stringify(result, null, 2)}</pre>
+					<pre>{typeof result === 'string' ? result : JSON.stringify(result, null, 2)}</pre>
 				</div>
 			{/if}
 		</div>
