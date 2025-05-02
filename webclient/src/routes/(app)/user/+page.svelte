@@ -6,6 +6,7 @@
   import Modal from "$lib/widgets/Modal.svelte";
   import moment from "moment";
   import { onMount } from "svelte";
+  import LL from "../../../i18n/i18n-svelte";
 
   let myActiveSessions = $state([]);
   
@@ -61,31 +62,35 @@
       console.error(err);
     }
     users = usersData;
+    loaded = true;
   });
 
+  let loaded = $state(false);
   let users = $state([]);
 </script>
 
-<BaseView>
+<BaseView loaded={loaded}>
   <div class="content">
-    <h2 class="title">User / Sessions</h2>
+    <h2 class="title">{$LL.user_sessions.title()}</h2>
     
     
-    <h3 style="">My Active Sessions</h3>
+    <h3 style="">{$LL.user_sessions.my_active_sessions.title()}</h3>
     <ul class="item-list">
       {#each myActiveSessions as session}
       <li class="card" style="list-style: none; display: flex; justify-content: space-between; align-items: center;">
         <div>
-          <span><span class="bold">Device:</span> {session.device} <span class="bold">{session.is_current ? '(You)' : ''}</span></span> <br>
-          <span><span class="bold">Last Activity:</span> { moment(session.last_activity).fromNow() }</span> <br>
-          <span><span class="bold">Created At:</span> { moment(session.created_at).fromNow() }</span>
+          <span><span class="bold">{$LL.user_sessions.my_active_sessions.device()}:</span> {session.device} <span class="bold">{session.is_current ? $LL.user_sessions.my_active_sessions.you() : ''}</span></span> <br>
+          <span><span class="bold">{$LL.user_sessions.my_active_sessions.last_activity()}:</span> { moment(session.last_activity).fromNow() }</span> <br>
+          <span><span class="bold">{$LL.user_sessions.my_active_sessions.created_at()}:</span> { moment(session.created_at).fromNow() }</span>
         </div>
-        <button onclick={() => onRevokeSession(session)} class="danger-button"> Revoke </button>
+        <div>
+          <button onclick={() => onRevokeSession(session)} class="danger-button"> {$LL.user_sessions.my_active_sessions.revoke()} </button>
+        </div>
       </li>
       {/each}
     </ul>
 
-    <h3 style="margin-top: 2rem;">All Users</h3>
+    <h3 style="margin-top: 2rem;">{$LL.user_sessions.all_users.title()}</h3>
     <ul class="item-list">
       {#each users as user}
       <li class="card" style="list-style: none; display: flex; justify-content: space-between; align-items: center;">
@@ -94,16 +99,16 @@
 
           <div>
             <span>
-              <span>{user.display_name} (@{user.username}) {user.is_admin ? '(Admin)' : ''}</span>
+              <span>{user.display_name} (@{user.username}) {user.is_admin ? '(' + $LL.user_sessions.all_users.admin() + ')' : ''}</span>
             </span>
             <br>
             {#if moment(user.last_activity).isAfter(moment().subtract(10, 'second'))}
             <span style="color: var(--success-color);" class="blink">
               <div style="background-color: var(--success-color); padding: 0.3rem; margin: 0.1rem; border-radius: 50%; display: inline-block;"></div>
-              Online
+              {$LL.user_sessions.all_users.online()}
             </span>
             {:else}
-              <span style="color: var(--error-color);">Last seen: {moment(user.last_activity).fromNow()}</span>
+              <span style="color: var(--error-color);">{$LL.user_sessions.all_users.last_seen()}: {moment(user.last_activity).fromNow()}</span>
             {/if}
           </div>
         </div>

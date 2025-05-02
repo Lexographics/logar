@@ -74,6 +74,24 @@ const kk = {
 			year: "Жыл",
 		},
 	},
+	user_sessions: {
+		title: 'Сессиялар',
+		header: 'Сессиялар',
+		my_active_sessions: {
+			title: 'Белсенді сессияларым',
+			device: 'Құрылғы',
+			last_activity: 'Соңғы әрекет',
+			created_at: 'Құрылған уақыты',
+			you: '(Сіз)',
+			revoke: 'Тоқтату', // Аяқтау ?
+		},
+		all_users: {
+			title: 'Барлық пайдаланушылар',
+			online: 'Желіде',
+			last_seen: 'Соңғы көрінген уақыты',
+			admin: 'Әкімші',
+		}
+	},
 	settings: {
 		title: 'Баптаулар',
 		header: 'Баптаулар',

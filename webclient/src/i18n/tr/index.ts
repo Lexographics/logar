@@ -74,6 +74,24 @@ const tr = {
 			year: "Yıl",
 		},
 	},
+	user_sessions: {
+		title: 'Oturumlar',
+		header: 'Oturumlar',
+		my_active_sessions: {
+			title: 'Aktif Oturumlarım',
+			device: 'Cihaz',
+			last_activity: 'Son Aktiflik',
+			created_at: 'Oluşturulma Zamanı',
+			you: '(Siz)',
+			revoke: 'İptal Et',
+		},
+		all_users: {
+			title: 'Tüm Kullanıcılar',
+			online: 'Aktif',
+			last_seen: 'Son görülme',
+			admin: 'Yönetici',
+		}
+	},
 	settings: {
 		title: 'Ayarlar',
 		header: 'Ayarlar',

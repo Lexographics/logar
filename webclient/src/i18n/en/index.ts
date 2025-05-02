@@ -71,6 +71,24 @@ const en = {
 			year: "Year",
 		},
 	},
+	user_sessions: {
+		title: 'Sessions',
+		header: 'Sessions',
+		my_active_sessions: {
+			title: 'My Active Sessions',
+			device: 'Device',
+			last_activity: 'Last Activity',
+			created_at: 'Created At',
+			you: '(You)',
+			revoke: 'Revoke',
+		},
+		all_users: {
+			title: 'All Users',
+			online: 'Online',
+			last_seen: 'Last seen',
+			admin: 'Admin',
+		}
+	},
 	settings: {
 		title: 'Settings',
 		header: 'Settings',

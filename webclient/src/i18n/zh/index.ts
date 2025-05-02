@@ -74,6 +74,24 @@ const zh = {
 			year: '年',
 		},
 	},
+	user_sessions: {
+		title: '会话',
+		header: '会话',
+		my_active_sessions: {
+			title: '我的活跃会话',
+			device: '设备',
+			last_activity: '上次活动时间',
+			created_at: '创建时间',
+			you: '(你)',
+			revoke: '撤销',
+		},
+		all_users: {
+			title: '所有用户',
+			online: '在线',
+			last_seen: '上次在线',
+			admin: '管理员',
+		}
+	},
 	settings: {
 		title: '设置',
 		header: '设置',

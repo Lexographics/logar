@@ -74,6 +74,24 @@ const az = {
 			year: "İl",
 		},
 	},
+	user_sessions: {
+		title: 'Sessiyalar',
+		header: 'Sessiyalar',
+		my_active_sessions: {
+			title: 'Aktiv Sessiyalarım',
+			device: 'Cihaz',
+			last_activity: 'Son Aktivlik',
+			created_at: 'Yaradılma Tarixi',
+			you: '(Siz)',
+			revoke: 'Ləğv et',
+		},
+		all_users: {
+			title: 'Bütün İstifadəçilər',
+			online: 'Aktiv',
+			last_seen: 'Son görülüş',
+			admin: 'Admin',
+		}
+	},
 	settings: {
 		title: 'Ayarlar',
 		header: 'Ayarlar',

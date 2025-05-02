@@ -244,6 +244,60 @@ type RootTranslation = {
 			year: string
 		}
 	}
+	user_sessions: {
+		/**
+		 * S​e​s​s​i​o​n​s
+		 */
+		title: string
+		/**
+		 * S​e​s​s​i​o​n​s
+		 */
+		header: string
+		my_active_sessions: {
+			/**
+			 * M​y​ ​A​c​t​i​v​e​ ​S​e​s​s​i​o​n​s
+			 */
+			title: string
+			/**
+			 * D​e​v​i​c​e
+			 */
+			device: string
+			/**
+			 * L​a​s​t​ ​A​c​t​i​v​i​t​y
+			 */
+			last_activity: string
+			/**
+			 * C​r​e​a​t​e​d​ ​A​t
+			 */
+			created_at: string
+			/**
+			 * (​Y​o​u​)
+			 */
+			you: string
+			/**
+			 * R​e​v​o​k​e
+			 */
+			revoke: string
+		}
+		all_users: {
+			/**
+			 * A​l​l​ ​U​s​e​r​s
+			 */
+			title: string
+			/**
+			 * O​n​l​i​n​e
+			 */
+			online: string
+			/**
+			 * L​a​s​t​ ​s​e​e​n
+			 */
+			last_seen: string
+			/**
+			 * A​d​m​i​n
+			 */
+			admin: string
+		}
+	}
 	settings: {
 		/**
 		 * S​e​t​t​i​n​g​s
@@ -620,6 +674,60 @@ export type TranslationFunctions = {
 			 * Year
 			 */
 			year: () => LocalizedString
+		}
+	}
+	user_sessions: {
+		/**
+		 * Sessions
+		 */
+		title: () => LocalizedString
+		/**
+		 * Sessions
+		 */
+		header: () => LocalizedString
+		my_active_sessions: {
+			/**
+			 * My Active Sessions
+			 */
+			title: () => LocalizedString
+			/**
+			 * Device
+			 */
+			device: () => LocalizedString
+			/**
+			 * Last Activity
+			 */
+			last_activity: () => LocalizedString
+			/**
+			 * Created At
+			 */
+			created_at: () => LocalizedString
+			/**
+			 * (You)
+			 */
+			you: () => LocalizedString
+			/**
+			 * Revoke
+			 */
+			revoke: () => LocalizedString
+		}
+		all_users: {
+			/**
+			 * All Users
+			 */
+			title: () => LocalizedString
+			/**
+			 * Online
+			 */
+			online: () => LocalizedString
+			/**
+			 * Last seen
+			 */
+			last_seen: () => LocalizedString
+			/**
+			 * Admin
+			 */
+			admin: () => LocalizedString
 		}
 	}
 	settings: {

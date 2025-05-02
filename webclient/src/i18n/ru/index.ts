@@ -74,6 +74,24 @@ const ru = {
 			year: 'Год',
 		},
 	},
+	user_sessions: {
+		title: 'Сессии',
+		header: 'Сессии',
+		my_active_sessions: {
+			title: 'Мои активные сессии',
+			device: 'Устройство',
+			last_activity: 'Последняя активность',
+			created_at: 'Создано',
+			you: '(Вы)',
+			revoke: 'Отменить',
+		},
+		all_users: {
+			title: 'Все пользователи',
+			online: 'В сети',
+			last_seen: 'Последний визит',
+			admin: 'Администратор',
+		}
+	},
 	settings: {
 		title: 'Настройки',
 		header: 'Настройки',

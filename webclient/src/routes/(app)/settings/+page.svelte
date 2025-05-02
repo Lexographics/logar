@@ -3,11 +3,13 @@
   import userService from "$lib/service/userService";
   import { settingsStore, userStore } from "$lib/store";
   import LL, { setLocale } from "../../../i18n/i18n-svelte";
+  import { setMomentLocale } from "$lib/moment";
   
   let selectedLanguage = $state(settingsStore.current.selectedLanguage);
-  function languageChanged() {
+  async function languageChanged() {
     settingsStore.current.selectedLanguage = selectedLanguage;
     setLocale(settingsStore.current.selectedLanguage || "en");
+    await setMomentLocale(settingsStore.current.selectedLanguage);
   }
 
   let displayName = $state(userStore.current.user?.display_name || "");
@@ -71,7 +73,7 @@
       <h3>{$LL.settings.profile.title()}</h3>
       <div class="setting-item">
         <span>{$LL.settings.profile.username()}</span>
-        <span>@{userStore.current.user.username}</span>
+        <span>@{userStore.current.user?.username}</span>
       </div>
       <div class="setting-item">
         <label for="display-name">{$LL.settings.profile.display_name()}</label>

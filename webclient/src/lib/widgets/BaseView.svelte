@@ -4,7 +4,7 @@
   import Topbar from "./Topbar.svelte";
   import modelService from "$lib/service/modelService";
 
-  let { children } = $props();
+  let { children, loaded = true } = $props();
 
   let models = $state([]);
 
@@ -18,7 +18,7 @@
   });
 </script>
 
-
+{#if loaded}
 <div class="base-container">
   <Sidebar {models}></Sidebar>
   
@@ -29,6 +29,7 @@
     </div>
   </div>
 </div>
+{/if}
 
 <style>
   .base-container {
