@@ -7,6 +7,7 @@
   import moment from "moment";
   import { onMount } from "svelte";
   import LL from "../../../i18n/i18n-svelte";
+  import { setMomentLocale } from "$lib/moment";
 
   let myActiveSessions = $state([]);
   
@@ -62,14 +63,12 @@
       console.error(err);
     }
     users = usersData;
-    loaded = true;
   });
 
-  let loaded = $state(false);
   let users = $state([]);
 </script>
 
-<BaseView loaded={loaded}>
+<BaseView>
   <div class="content">
     <h2 class="title">{$LL.user_sessions.title()}</h2>
     
