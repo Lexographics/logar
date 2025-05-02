@@ -7,7 +7,7 @@
   import { setLocale } from '../i18n/i18n-svelte';
   import { setMomentLocale } from '$lib/moment';
   import type { Response } from '$lib/types/response';
-  import { PUBLIC_API_URL } from '$env/static/public';
+  import { getApiUrl } from '$lib/utils';
   import type { Locales } from '../i18n/i18n-types';
   import axios from 'axios';
 
@@ -25,7 +25,7 @@
       setLocale("en");
       await setMomentLocale("en");
 
-      axios.get<Response<string>>(`${PUBLIC_API_URL}/language`).then(async (res) => {
+      axios.get<Response<string>>(`${getApiUrl()}/language`).then(async (res) => {
         settingsStore.current.selectedLanguage = res.data.data;
         setLocale(res.data.data as Locales);
         await setMomentLocale(res.data.data);

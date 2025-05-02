@@ -1,9 +1,8 @@
-import { PUBLIC_API_URL } from "$env/static/public";
-import axios, { type AxiosInstance } from "axios";
+import { getApiUrl } from "$lib/utils";
+import { type AxiosInstance } from "axios";
 import type { User } from "$lib/types/user";
 import type { Session } from "$lib/types/session";
-import { userStore } from "$lib/store";
-import { checkSession, createAxiosInstance, getAuthHeaders } from "./utils";
+import { createAxiosInstance, getAuthHeaders } from "./utils";
 import type { Response } from "$lib/types/response";
 
 
@@ -25,7 +24,7 @@ class UserService {
       form.append("username", username);
       form.append("password", password);
 
-      const response = await this.axios.post<Response<LoginResponse>>("/auth/login", form);
+      const response = await this.axios.post<Response<LoginResponse>>(`${getApiUrl()}/auth/login`, form);
       return [response.data.data, null];
     } catch (error: any) {
       return [null, error];
@@ -34,7 +33,7 @@ class UserService {
 
   async logout(): Promise<Error | null> {
     try {
-      await this.axios.post("/auth/logout", null, {
+      await this.axios.post(`${getApiUrl()}/auth/logout`, null, {
         headers: { ...getAuthHeaders() },
       });
       return null;
@@ -47,7 +46,7 @@ class UserService {
     try {
       const form = new FormData();
       form.append("session_id", sessionId.toString());
-      await this.axios.post("/auth/revoke-session", form, {
+      await this.axios.post(`${getApiUrl()}/auth/revoke-session`, form, {
         headers: { ...getAuthHeaders() },
       });
       return null;
@@ -58,7 +57,7 @@ class UserService {
 
   async getActiveSessions(): Promise<[Session[], Error]> {
     try {
-      const response = await this.axios.get<Response<Session[]>>("/auth/sessions", {
+      const response = await this.axios.get<Response<Session[]>>(`${getApiUrl()}/auth/sessions`, {
         headers: { ...getAuthHeaders() },
       });
       return [response.data.data, null];
@@ -72,7 +71,7 @@ class UserService {
       const form = new FormData();
       form.append("display_name", displayName);
 
-      const response = await this.axios.put<Response<User>>("/user", form, {
+      const response = await this.axios.put<Response<User>>(`${getApiUrl()}/user`, form, {
         headers: { ...getAuthHeaders() },
       });
       return [response.data.data, null];
@@ -83,7 +82,7 @@ class UserService {
 
   async getAllUsers(): Promise<[User[], Error]> {
     try {
-      const response = await this.axios.get<Response<User[]>>("/user", {
+      const response = await this.axios.get<Response<User[]>>(`${getApiUrl()}/user`, {
         headers: { ...getAuthHeaders() },
       });
       return [response.data.data, null];
@@ -100,7 +99,7 @@ class UserService {
       form.append("display_name", displayName);
       form.append("is_admin", isAdmin.toString());
 
-      const response = await this.axios.post<Response<User>>("/user", form, {
+      const response = await this.axios.post<Response<User>>(`${getApiUrl()}/user`, form, {
         headers: { ...getAuthHeaders() },
       });
       return [response.data.data, null];

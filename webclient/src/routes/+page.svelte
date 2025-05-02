@@ -2,13 +2,13 @@
   import { goto } from '$app/navigation';
   import { userStore } from '$lib/store';
   import { onMount } from 'svelte';
-  import { base } from '$app/paths';
+  import { getBasePath } from '$lib/utils';
 
   onMount(() => {
     if (userStore.current.token) {
-      goto(`${base}/dashboard`);
+      goto(`${getBasePath()}/dashboard`);
     } else {
-      goto(`${base}/login`);
+      goto(`${getBasePath()}/login`);
     }
   });
 </script>

@@ -156,7 +156,7 @@ func main() {
 		},
 	}))
 
-	app.Any("/logger/*", echo.WrapHandler(logarweb.ServeHTTP("/logger", logger)))
+	app.Any("/logger/*", echo.WrapHandler(logarweb.ServeHTTP("http://localhost:3000", "/logger", logger)))
 	app.Any("/logger", func(c echo.Context) error {
 		return c.Redirect(http.StatusTemporaryRedirect, "/logger/")
 	})

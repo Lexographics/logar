@@ -1,6 +1,6 @@
 <script>
   import { goto } from '$app/navigation';
-  import { base } from '$app/paths';
+  import { getBasePath } from '$lib/utils';
   import userService from '$lib/service/userService';
   import { userStore } from '$lib/store';
   import { onMount } from 'svelte';
@@ -17,7 +17,7 @@
       console.error('Login error:', error);
     } else {
       userStore.current = data;
-      goto(`${base}/dashboard`);
+      goto(`${getBasePath()}/dashboard`);
     }
   }
 
@@ -32,7 +32,7 @@
 
   onMount(() => {
     if (userStore.current.token) {
-      goto(`${base}/dashboard`);
+      goto(`${getBasePath()}/dashboard`);
     }
   });
 

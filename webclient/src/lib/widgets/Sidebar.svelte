@@ -2,7 +2,7 @@
   import { onMount } from 'svelte';
   import { navigationStore } from '../store';
   import { page } from '$app/stores';
-  import { base } from '$app/paths';
+  import { getBasePath } from '$lib/utils';
   import LL from '../../i18n/i18n-svelte';
   let { models = [] } = $props();
 
@@ -31,7 +31,7 @@
   <div class="sidebar {navigationStore.current.isSidebarLocked || !loaded ? 'locked' : ''}">
     <div class="sidebar-header">
       <h2>
-        <a class="linktext" href={`${base}/`}>
+        <a class="linktext" href={`${getBasePath()}/`}>
           <i class="fas fa-truck"></i>
           <span class="text">Logar</span>
         </a>
@@ -44,9 +44,9 @@
     
     <nav>
       <ul>
-        <li><a class="link" href={`${base}/`} class:active={$page.url.pathname.startsWith(`${base}/dashboard`)}><i class="fas fa-home"></i>  <span class="text">{$LL.dashboard.title()}</span></a></li>
+        <li><a class="link" href={`${getBasePath()}/`} class:active={$page.url.pathname.startsWith(`${getBasePath()}/dashboard`)}><i class="fas fa-home"></i>  <span class="text">{$LL.dashboard.title()}</span></a></li>
         <li>
-          <a href={"javascript:void(0)"} onclick={toggleLogs} class="menu-item link" class:active={$page.url.pathname.startsWith(`${base}/logs`)}>
+          <a href={"javascript:void(0)"} onclick={toggleLogs} class="menu-item link" class:active={$page.url.pathname.startsWith(`${getBasePath()}/logs`)}>
             <i class="fas fa-list-alt"></i>
             <span class="text">{$LL.logs.title()}</span>
             <i class="fas {navigationStore.current.isLogsExpanded ? 'fa-chevron-down' : 'fa-chevron-right'} chevron"></i>
@@ -54,7 +54,7 @@
           <ul class="scrollbar submenu {navigationStore.current.isLogsExpanded ? 'expanded' : ''}">
             {#each models as model}
               <li>
-                <a class="link submenu-item" href={`${base}/logs?model=${model.identifier}`} class:active={$page.url.pathname.startsWith(`${base}/logs`) && $page.url.searchParams.get('model') === model.identifier}>
+                <a class="link submenu-item" href={`${getBasePath()}/logs?model=${model.identifier}`} class:active={$page.url.pathname.startsWith(`${getBasePath()}/logs`) && $page.url.searchParams.get('model') === model.identifier}>
                   <i class="{model.icon ? model.icon : 'fa-solid fa-cube'}"></i>
                   <span class="text">{model.displayName || model.identifier}</span>
                 </a>
@@ -62,11 +62,11 @@
             {/each}
           </ul>
         </li>
-        <li><a class="link" href={`${base}/analytics`} class:active={$page.url.pathname.startsWith(`${base}/analytics`)}><i class="fas fa-chart-bar"></i> <span class="text">{$LL.analytics.title()}</span></a></li>
-        <li><a class="link" href={`${base}/actions`} class:active={$page.url.pathname.startsWith(`${base}/actions`)}><i class="fa-solid fa-server"></i> <span class="text">{$LL.remote_actions.title()}</span></a></li>
-        <li><a class="link" href={`${base}/user`} class:active={$page.url.pathname.startsWith(`${base}/user`)}><i class="fa-solid fa-users"></i> <span class="text">{$LL.user_sessions.title()}</span></a></li>
-        <li><a class="link" href={`${base}/settings`} class:active={$page.url.pathname.startsWith(`${base}/settings`)}><i class="fas fa-cog"></i> <span class="text">{$LL.settings.title()}</span></a></li>
-        <li><a class="link" href={`${base}/help`} class:active={$page.url.pathname.startsWith(`${base}/help`)}><i class="fas fa-question-circle"></i> <span class="text">{$LL.help.title()}</span></a></li>
+        <li><a class="link" href={`${getBasePath()}/analytics`} class:active={$page.url.pathname.startsWith(`${getBasePath()}/analytics`)}><i class="fas fa-chart-bar"></i> <span class="text">{$LL.analytics.title()}</span></a></li>
+        <li><a class="link" href={`${getBasePath()}/actions`} class:active={$page.url.pathname.startsWith(`${getBasePath()}/actions`)}><i class="fa-solid fa-server"></i> <span class="text">{$LL.remote_actions.title()}</span></a></li>
+        <li><a class="link" href={`${getBasePath()}/user`} class:active={$page.url.pathname.startsWith(`${getBasePath()}/user`)}><i class="fa-solid fa-users"></i> <span class="text">{$LL.user_sessions.title()}</span></a></li>
+        <li><a class="link" href={`${getBasePath()}/settings`} class:active={$page.url.pathname.startsWith(`${getBasePath()}/settings`)}><i class="fas fa-cog"></i> <span class="text">{$LL.settings.title()}</span></a></li>
+        <li><a class="link" href={`${getBasePath()}/help`} class:active={$page.url.pathname.startsWith(`${getBasePath()}/help`)}><i class="fas fa-question-circle"></i> <span class="text">{$LL.help.title()}</span></a></li>
       </ul>
     </nav>
     

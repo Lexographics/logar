@@ -1,6 +1,6 @@
 <script>
   import { goto } from "$app/navigation";
-  import { base } from "$app/paths";
+  import { getBasePath } from "$lib/utils";
   import LL from "../../i18n/i18n-svelte";
   import userService from "../service/userService";
   import { userStore } from "../store";
@@ -16,7 +16,7 @@
     userStore.current = {
       token: null,
     };
-    goto(`${base}/login`);
+    goto(`${getBasePath()}/login`);
   }
 
   function handleClickOutside(event) {
@@ -40,7 +40,7 @@
     </button>
 
     <div class="dropdown-menu" class:active={isDropdownOpen}>
-      <button class="dropdown-item" onclick={() => { goto(`${base}/settings#profile`) }}> {$LL.topbar.my_account()} </button>
+      <button class="dropdown-item" onclick={() => { goto(`${getBasePath()}/settings#profile`) }}> {$LL.topbar.my_account()} </button>
       <button class="dropdown-item" onclick={handleLogout}> {$LL.topbar.sign_out()} </button>
     </div>
   </div>

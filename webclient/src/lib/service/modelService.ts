@@ -2,6 +2,7 @@ import type { AxiosInstance } from "axios";
 import { createAxiosInstance, getAuthHeaders } from "./utils";
 import type { Response } from "$lib/types/response";
 import { modelsStore } from "$lib/store";
+import { getApiUrl } from "$lib/utils";
 
 type Model = {
   displayName: string;
@@ -22,9 +23,12 @@ class ModelService {
     }
 
     try {
-      const response = await this.axios.get<Response<Model[]>>("/models", {
+      const response = await this.axios.get<Response<Model[]>>(`${getApiUrl()}/models`, {
         headers: { ...getAuthHeaders() }
       });
+      
+      modelsStore.current.models = response.data.data;
+      modelsStore.current.lastFetch = new Date().getTime();
       return [response.data.data, null];
     } catch (error) {
       return [null, error];

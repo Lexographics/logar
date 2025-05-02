@@ -1,6 +1,6 @@
 <script>
   import { goto } from '$app/navigation';
-  import { base } from '$app/paths';
+  import { getBasePath } from '$lib/utils';
   import { userStore } from '$lib/store';
   import ThemeProvider from '$lib/widgets/ThemeProvider.svelte';
   import { onMount } from 'svelte';
@@ -10,7 +10,7 @@
   
   onMount(() => {
     if(!userStore.current.token) {
-      goto(`${base}/login`);
+      goto(`${getBasePath()}/login`);
       return;
     }
     loaded = true;

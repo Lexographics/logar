@@ -18,6 +18,8 @@ import (
 )
 
 type HandlerConfig struct {
+	BasePath string
+	ApiURL   string
 }
 
 type InvokeActionRequest struct {
@@ -68,15 +70,43 @@ func (h *Handler) Router(mux *http.ServeMux) {
 	mux.HandleFunc("POST /user", h.AuthMiddleware(h.CreateUser))
 	mux.HandleFunc("GET /user", h.AuthMiddleware(h.GetAllUsers))
 	if dev {
-		mux.Handle("/", http.FileServer(http.Dir("webclient/build")))
+		mux.Handle("/", h.SetMetadataMiddleware(http.FileServer(http.Dir("webclient/build"))))
 	} else {
 		sub, err := fs.Sub(staticFiles, "build")
 		if err != nil {
 			h.logger.Error("logar-errors", fmt.Sprintf("Failed to create subdirectory: %v", err), "api")
 			return
 		}
-		mux.Handle("/", http.FileServer(http.FS(sub)))
+		mux.Handle("/", h.SetMetadataMiddleware(http.FileServer(http.FS(sub))))
 	}
+}
+
+func (h *Handler) SetMetadataMiddleware(next http.Handler) http.Handler {
+	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		basePath, err := r.Cookie("base-path")
+		if err != nil || basePath.Value != h.cfg.BasePath {
+			fmt.Println("Setting base-path cookie to", h.cfg.BasePath)
+			http.SetCookie(w, &http.Cookie{
+				Name:   "base-path",
+				Value:  h.cfg.BasePath,
+				Path:   "/",
+				MaxAge: 86400,
+			})
+		}
+
+		apiUrl, err := r.Cookie("api-url")
+		if err != nil || apiUrl.Value != h.cfg.ApiURL {
+			fmt.Println("Setting api-url cookie to", h.cfg.ApiURL)
+			http.SetCookie(w, &http.Cookie{
+				Name:   "api-url",
+				Value:  h.cfg.ApiURL,
+				Path:   "/",
+				MaxAge: 86400,
+			})
+		}
+
+		next.ServeHTTP(w, r)
+	})
 }
 
 func (h *Handler) AuthMiddleware(next http.HandlerFunc) http.HandlerFunc {

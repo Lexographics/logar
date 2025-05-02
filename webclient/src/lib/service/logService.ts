@@ -1,7 +1,7 @@
 import type { AxiosInstance } from "axios";
 import { createAxiosInstance, getAuthHeaders } from "./utils";
 import type { Response } from "$lib/types/response";
-import { PUBLIC_API_URL } from "$env/static/public";
+import { getApiUrl } from "$lib/utils";
 import { userStore } from "$lib/store";
 
 type Log = {
@@ -27,7 +27,7 @@ class LogService {
 
   async getLogs(model: string, cursor: number, filters: LogFilter[]) {
     try {
-      const response = await this.axios.get<Response<Log[]>>(`/logs/${model}`, {
+      const response = await this.axios.get<Response<Log[]>>(`${getApiUrl()}/logs/${model}`, {
         params: {
           cursor,
           filters: JSON.stringify(filters),
@@ -42,7 +42,7 @@ class LogService {
   }
 
   connectToLogStream(model: string, filters: LogFilter[], onLogsReceived: (logs: Log[]) => void, onError: (error: Error) => void, onCloseCallback: () => void) {
-    let url = `${PUBLIC_API_URL}/logs/${model}/sse?token=${userStore.current.token}`;
+    let url = `${getApiUrl()}/logs/${model}/sse?token=${userStore.current.token}`;
     if (filters.length > 0) {
       url += `&filters=${JSON.stringify(filters)}`;
     }

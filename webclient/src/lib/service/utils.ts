@@ -1,10 +1,9 @@
 import { goto } from "$app/navigation";
-import { base } from "$app/paths";
 import { userStore } from "$lib/store";
 import { showToast } from "$lib/toast";
 import type { AxiosError, AxiosInstance, AxiosResponse } from "axios";
 import axios from "axios";
-import { PUBLIC_API_URL } from "$env/static/public";
+import { getBasePath } from "$lib/utils";
 import { StatusCode, type Response } from "$lib/types/response";
 
 export async function checkSession(response : AxiosResponse) {
@@ -17,14 +16,12 @@ export async function checkSession(response : AxiosResponse) {
 
     showToast("Session expired, please login again");
 
-    goto(`${base}/login`);
+    goto(`${getBasePath()}/login`);
   }
 }
 
 export function createAxiosInstance() : AxiosInstance {
-  const axiosInstance = axios.create({
-    baseURL: PUBLIC_API_URL,
-  });
+  const axiosInstance = axios.create({});
 
   axiosInstance.interceptors.response.use(
     (response: AxiosResponse) => {

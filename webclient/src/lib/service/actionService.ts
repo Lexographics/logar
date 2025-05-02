@@ -1,6 +1,7 @@
 import type { AxiosInstance } from "axios";
 import { createAxiosInstance, getAuthHeaders } from "./utils";
 import type { Response } from "$lib/types/response";
+import { getApiUrl } from "$lib/utils";
 
 type ActionArg = {
   kind: string;
@@ -22,7 +23,7 @@ class ActionService {
 
   async getActions() {
     try {
-      const response = await this.axios.get<Response<Action[]>>(`/actions`, {
+      const response = await this.axios.get<Response<Action[]>>(`${getApiUrl()}/actions`, {
         headers: { ...getAuthHeaders() },
       });
   
@@ -50,7 +51,7 @@ class ActionService {
         return String(arg);
       });
 
-      const response = await this.axios.post<Response<any>>(`/actions/invoke`, {
+      const response = await this.axios.post<Response<any>>(`${getApiUrl()}/actions/invoke`, {
         path: path,
         args: stringArgs
       }, {

@@ -43,9 +43,16 @@
       <div class="setting-item">
         <label for="theme-select">{$LL.settings.theme.select_theme()}</label>
         <select id="theme-select" bind:value={settingsStore.current.currentTheme}>
+          <option value="system">{$LL.settings.theme.options.system()}</option>
           <option value="light">{$LL.settings.theme.options.light()}</option>
           <option value="dark">{$LL.settings.theme.options.dark()}</option>
-          <option value="system">{$LL.settings.theme.options.system()}</option>
+          <option value="dark-blue">{$LL.settings.theme.options.dark_blue()}</option>
+          <option value="light-green">{$LL.settings.theme.options.light_green()}</option>
+          <option value="dark-green">{$LL.settings.theme.options.dark_green()}</option>
+          <option value="light-purple">{$LL.settings.theme.options.light_purple()}</option>
+          <option value="dark-purple">{$LL.settings.theme.options.dark_purple()}</option>
+          <option value="light-pink">{$LL.settings.theme.options.light_pink()}</option>
+          <option value="dark-pink">{$LL.settings.theme.options.dark_pink()}</option>
         </select>
       </div>
       <div class="setting-info">

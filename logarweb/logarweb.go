@@ -7,10 +7,26 @@ import (
 	"github.com/Lexographics/logar/internal/api"
 )
 
-func ServeHTTP(basePath string, l *logar.Logger) http.Handler {
+// ServeHTTP serves the logarweb handler
+//
+// url: url of the logarweb server. e.g. "http://localhost:3000". should not end with a /
+//
+// basePath: should either start with / or be empty (""). e.g. "/logger" or ""
+//
+// returns: http.Handler
+//
+// example:
+//
+// logarweb.ServeHTTP("http://localhost:3000", "/logger", logger)
+//
+// logarweb.ServeHTTP("https://example.com", "/logs", logger)
+func ServeHTTP(url, basePath string, l *logar.Logger) http.Handler {
 	router := http.NewServeMux()
 
-	handler := api.NewHandler(l, api.HandlerConfig{})
+	handler := api.NewHandler(l, api.HandlerConfig{
+		BasePath: basePath,
+		ApiURL:   url + basePath,
+	})
 	handler.Router(router)
 
 	mux := http.NewServeMux()
