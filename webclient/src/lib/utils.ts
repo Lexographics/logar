@@ -1,18 +1,23 @@
-import { PUBLIC_FALLBACK_API_URL } from "$env/static/public";
 
 export function getApiUrl() : string {
+  if(process.env.PUBLIC_DEV_API) {
+    return process.env.PUBLIC_DEV_API;
+  }
+  
+
   const apiUrl = getCookie("api-url");
   if(apiUrl) {
     return apiUrl;
-  }
-  if (PUBLIC_FALLBACK_API_URL) { // For local development
-    return PUBLIC_FALLBACK_API_URL;
   }
 
   return "";
 }
 
 export function getBasePath() : string {
+  if(process.env.PUBLIC_DEV_API) {
+    return "";
+  }
+
   const basePath = getCookie("base-path");
   if(basePath) {
     return basePath;
