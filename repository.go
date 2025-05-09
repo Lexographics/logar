@@ -112,19 +112,19 @@ func WithIDGreaterThan(id uint) QueryOptFunc {
 	}
 }
 
-func (l *Logger) GetLogs(opts ...QueryOptFunc) ([]models.Log, error) {
+func (l *AppImpl) GetLogs(opts ...QueryOptFunc) ([]models.Log, error) {
 	var logs []models.Log
 	query := l.prepareQuery(opts...)
 	err := query.Find(&logs).Error
 	return logs, err
 }
 
-func (l *Logger) DeleteLogs(opts ...QueryOptFunc) error {
+func (l *AppImpl) DeleteLogs(opts ...QueryOptFunc) error {
 	query := l.prepareQuery(opts...)
 	return query.Delete(&models.Log{}).Error
 }
 
-func (l *Logger) prepareQuery(opts ...QueryOptFunc) *gorm.DB {
+func (l *AppImpl) prepareQuery(opts ...QueryOptFunc) *gorm.DB {
 	options := &QueryOptions{
 		Model:              "",
 		Category:           "",

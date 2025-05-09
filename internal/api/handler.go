@@ -33,12 +33,12 @@ type InvokeActionResponse struct {
 }
 
 type Handler struct {
-	logger  *logar.Logger
+	logger  *logar.AppImpl
 	service *Service
 	cfg     HandlerConfig
 }
 
-func NewHandler(logger *logar.Logger, cfg HandlerConfig) *Handler {
+func NewHandler(logger *logar.AppImpl, cfg HandlerConfig) *Handler {
 	return &Handler{
 		logger:  logger,
 		service: NewService(),

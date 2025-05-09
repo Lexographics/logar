@@ -8,13 +8,13 @@ import (
 )
 
 type writer struct {
-	lg       *logar.Logger
+	lg       logar.App
 	severity models.Severity
 	model    string
 	category string
 }
 
-func newWriter(logger *logar.Logger, model, category string) *writer {
+func newWriter(logger logar.App, model, category string) *writer {
 	return &writer{
 		lg:       logger,
 		severity: models.Severity_Info,

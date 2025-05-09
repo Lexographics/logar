@@ -7,10 +7,10 @@ import (
 
 type Timer struct {
 	start  time.Time
-	logger *Logger
+	logger *AppImpl
 }
 
-func (l *Logger) NewTimer() *Timer {
+func (l *AppImpl) NewTimer() *Timer {
 	return &Timer{
 		start:  time.Now(),
 		logger: l,

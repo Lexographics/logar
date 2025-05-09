@@ -7,7 +7,7 @@ import (
 	"gorm.io/gorm/logger"
 )
 
-func New(lg *logar.Logger, model, category string, stackTraceSkip int) logger.Interface {
+func New(lg logar.App, model, category string, stackTraceSkip int) logger.Interface {
 	return newInterface(
 		newWriter(lg, model, category),
 		logger.Config{
