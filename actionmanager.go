@@ -6,6 +6,9 @@ import (
 )
 
 type ActionManager interface {
+	Common
+	GetActionManager() ActionManager
+
 	InvokeAction(path string, args ...any) ([]any, error)
 	GetActionArgTypes(path string) ([]reflect.Type, error)
 	GetActionsMap() Actions
@@ -13,6 +16,10 @@ type ActionManager interface {
 	GetActionDetails(path string) (Action, bool)
 	AddAction(action Action)
 	RemoveAction(path string)
+}
+
+func (l *AppImpl) GetActionManager() ActionManager {
+	return l
 }
 
 func (l *AppImpl) InvokeAction(path string, args ...any) ([]any, error) {

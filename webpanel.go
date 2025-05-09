@@ -11,11 +11,18 @@ import (
 )
 
 type WebPanel interface {
+	Common
+	GetWebPanel() WebPanel
+
 	LoginUser(username, password string) (models.User, error)
 	CreateUser(username, displayName, password string, isAdmin bool) (models.User, error)
 	GetUser(id uint) (models.User, error)
 	GetDefaultLanguage() Language
 	Auth(r *http.Request) bool
+}
+
+func (l *AppImpl) GetWebPanel() WebPanel {
+	return l
 }
 
 func (l *AppImpl) LoginUser(username, password string) (models.User, error) {

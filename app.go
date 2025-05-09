@@ -11,8 +11,13 @@ import (
 	"gorm.io/gorm/logger"
 )
 
+type Common interface {
+	GetApp() App
+}
+
 // App is the main struct that contains library data for things like logging, actions, etc.
 type App interface {
+	Common
 	Logger
 	ActionManager
 	WebPanel
@@ -136,4 +141,8 @@ func (l *AppImpl) GetTypeKindString(type_ string) (TypeKind, bool) {
 
 func (l *AppImpl) SetTypeKindString(type_ string, kind TypeKind) {
 	l.typeKinds[type_] = kind
+}
+
+func (l *AppImpl) GetApp() App {
+	return l
 }

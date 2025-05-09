@@ -8,6 +8,9 @@ import (
 )
 
 type Logger interface {
+	Common
+	GetLogger() Logger
+
 	Print(model string, message any, category string, severity models.Severity) error
 	Log(model string, message any, category string) error
 	Info(model string, message any, category string) error
@@ -17,6 +20,10 @@ type Logger interface {
 	Trace(model string, message any, category string) error
 
 	NewTimer() *Timer
+}
+
+func (l *AppImpl) GetLogger() Logger {
+	return l
 }
 
 func (l *AppImpl) Print(model string, message any, category string, severity models.Severity) error {
