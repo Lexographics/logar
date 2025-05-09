@@ -24,8 +24,8 @@
     <section>
       <h3>{$LL.help.troubleshooting.title()}</h3>
       <p>
-        {$LL.help.troubleshooting.pre_twitter()}<a href="https://x.com/ibrsdk" target="_blank">@ibrsdk</a>
-        {$LL.help.troubleshooting.pre_github()}<a href="https://github.com/Lexographics/logar" target="_blank">{$LL.help.troubleshooting.github_text()}</a>.
+        {$LL.help.troubleshooting.pre_twitter()} <a href="https://x.com/ibrsdk" target="_blank">@ibrsdk</a>
+        {$LL.help.troubleshooting.pre_github()} <a href="https://github.com/Lexographics/logar" target="_blank">{$LL.help.troubleshooting.github_text()}</a>.
       </p>
     </section>
     
@@ -43,7 +43,9 @@
   .help-container {
     max-width: 800px;
     margin: 0 auto;
-    padding: 20px;
+    padding: 20px 50px;
+    height: 100%;
+    background-color: var(--card-background);
   }
   
   section {

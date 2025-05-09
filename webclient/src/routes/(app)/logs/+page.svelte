@@ -567,6 +567,7 @@
     display: flex;
     align-items: center;
     gap: 0.5rem;
+    border: 1px solid var(--border-color);
   }
 
   .remove-filter {

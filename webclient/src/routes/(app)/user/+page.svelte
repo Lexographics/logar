@@ -155,7 +155,7 @@
   .card {
     padding: 20px 40px;
     border-radius: 10px;
-    background-color: var(--background-color);
+    background-color: var(--card-background);
     box-shadow: rgba(0, 0, 0, 0.35) 0px 5px 15px;
   }
   .bold {
