@@ -77,9 +77,11 @@
 		{:else if Object.keys(actionsTree.children || {}).length === 0}
 			<div class="status-message">{$LL.remote_actions.no_actions()}</div>
 		{:else}
+		<div class="actions-tree">
 			{#each actionsTree.childrenOrder as name}
-				<ActionNode {name} node={actionsTree.children[name]} currentPath="" isOpen={actionsTree.childrenOrder.length <= 2} />
+			<ActionNode {name} node={actionsTree.children[name]} currentPath="" isOpen={actionsTree.childrenOrder.length <= 2} />
 			{/each}
+		</div>
 		{/if}
 	</div>
 </BaseView>
@@ -113,4 +115,9 @@
 		font-weight: 600;
 	}
 
+	.actions-tree {
+		background-color: var(--card-background);
+		padding: 2rem;
+		border-radius: 0.5rem;
+	}
 </style>
