@@ -34,6 +34,10 @@ class ModelService {
       return [null, error];
     }
   }
+
+  getCachedModels() {
+    return modelsStore.current.models;
+  }
 }
 
 export default new ModelService();

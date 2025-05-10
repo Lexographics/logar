@@ -9,6 +9,7 @@
   let models = $state([]);
 
   onMount(async () => {
+    models = modelService.getCachedModels();
     const [modelsData, error] = await modelService.getModels();
     if (error) {
       console.error(error);
