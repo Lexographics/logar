@@ -19,7 +19,7 @@ import (
 func main() {
 	app, err := logar.New(
 		logar.WithAppName("analytics"),
-		logar.WithMasterCredentials("admin", "admin"),
+		logar.WithAdminCredentials("admin", "admin"),
 	)
 	if err != nil {
 		log.Fatal(err)

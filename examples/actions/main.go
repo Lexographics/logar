@@ -23,7 +23,7 @@ func main() {
 
 	app, err := logar.New(
 		logar.WithAppName("actions"),
-		logar.WithMasterCredentials("admin", "admin"),
+		logar.WithAdminCredentials("admin", "admin"),
 
 		logar.WithAction("Server/Echo", "Echo the server", func(message string) string {
 			return message

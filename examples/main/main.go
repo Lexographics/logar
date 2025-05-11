@@ -46,7 +46,7 @@ func main() {
 		// logar.AddModel("Test10", "test10"),
 		logar.AddModel("All Logs", "__all__"),
 
-		logar.WithMasterCredentials("username", "password"),
+		logar.WithAdminCredentials("username", "password"),
 
 		// Example Actions
 		logar.WithAction("Server/Test", "Test action", func() (string, int, string) {

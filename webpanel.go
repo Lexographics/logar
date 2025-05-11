@@ -26,10 +26,10 @@ func (l *AppImpl) GetWebPanel() WebPanel {
 }
 
 func (l *AppImpl) LoginUser(username, password string) (models.User, error) {
-	if l.config.MasterUsername == username && l.config.MasterPassword == password {
+	if l.config.AdminUsername == username && l.config.AdminPassword == password {
 		return models.User{
 			Username:    username,
-			DisplayName: "Master",
+			DisplayName: "Admin",
 			IsAdmin:     true,
 		}, nil
 	}
@@ -77,8 +77,8 @@ func (l *AppImpl) GetUser(id uint) (models.User, error) {
 	if id == 0 {
 		return models.User{
 			ID:          0,
-			Username:    l.config.MasterUsername,
-			DisplayName: "Master",
+			Username:    l.config.AdminUsername,
+			DisplayName: "Admin",
 			IsAdmin:     true,
 		}, nil
 	}
