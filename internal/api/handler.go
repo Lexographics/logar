@@ -69,6 +69,8 @@ func (h *Handler) Router(mux *http.ServeMux) {
 	mux.HandleFunc("PUT /user", h.AuthMiddleware(h.UpdateUser))
 	mux.HandleFunc("POST /user", h.AuthMiddleware(h.CreateUser))
 	mux.HandleFunc("GET /user", h.AuthMiddleware(h.GetAllUsers))
+	mux.HandleFunc("GET /analytics", h.AuthMiddleware(h.GetAnalytics))
+
 	if dev {
 		mux.Handle("/", h.SetMetadataMiddleware(http.FileServer(http.Dir("webclient/build"))))
 	} else {
@@ -625,4 +627,15 @@ func (h *Handler) GetLogsSSE(w http.ResponseWriter, r *http.Request) {
 			return
 		}
 	}
+}
+
+func (h *Handler) GetAnalytics(w http.ResponseWriter, r *http.Request) {
+	analytics, err := h.logger.GetStatistics(time.Now().Add(-time.Hour*24*7), time.Now())
+	if err != nil {
+		w.WriteHeader(500)
+		json.NewEncoder(w).Encode(NewResponse(StatusCode_Error, err.Error()))
+		return
+	}
+
+	json.NewEncoder(w).Encode(NewResponse(StatusCode_Success, analytics))
 }

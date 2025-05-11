@@ -21,6 +21,7 @@ type App interface {
 	Logger
 	ActionManager
 	WebPanel
+	Analytics
 
 	Close() error
 	GetAllModels() LogModels
@@ -72,7 +73,7 @@ func New(opts ...ConfigOpt) (App, error) {
 		&models.Log{},
 		&models.Session{},
 		&models.User{},
-		&RouteVisit{},
+		&RequestLog{},
 	)
 	if err != nil {
 		return nil, err
