@@ -1,6 +1,7 @@
 package logar
 
 import (
+	"context"
 	"reflect"
 	"time"
 
@@ -29,6 +30,11 @@ type App interface {
 	SetTypeKindString(type_ string, kind TypeKind)
 	GetTypeKind(type_ reflect.Type) (TypeKind, bool)
 	GetTypeKindString(type_ string) (TypeKind, bool)
+
+	PrepareContext(parent context.Context, values Map) context.Context
+	GetContextValues(ctx context.Context) (Map, bool)
+	GetFromContext(ctx context.Context, key string) (any, bool)
+	AddContextValue(ctx context.Context, key string, value any) App
 }
 
 type AppImpl struct {
@@ -174,4 +180,50 @@ func (l *AppImpl) GetAnalytics() Analytics {
 
 func (l *AppImpl) GetFeatureFlags() FeatureFlags {
 	return l.featureFlags
+}
+
+func (l *AppImpl) PrepareContext(parent context.Context, values Map) context.Context {
+	if parent == nil {
+		parent = context.Background()
+	}
+	value := Map{}
+	for k, v := range values {
+		value[k] = v
+	}
+	return context.WithValue(parent, logarContextKey, &value)
+}
+
+func (l *AppImpl) AddContextValue(ctx context.Context, key string, value any) App {
+	if ctx == nil {
+		return l
+	}
+	values, ok := l.GetContextValues(ctx)
+	if !ok {
+		return l
+	}
+	values[key] = value
+	return l
+}
+
+func (l *AppImpl) GetContextValues(ctx context.Context) (Map, bool) {
+	if ctx == nil {
+		return nil, false
+	}
+	value, ok := ctx.Value(logarContextKey).(*Map)
+	if !ok {
+		return nil, false
+	}
+	return *value, true
+}
+
+func (l *AppImpl) GetFromContext(ctx context.Context, key string) (any, bool) {
+	if ctx == nil {
+		return nil, false
+	}
+	values, ok := l.GetContextValues(ctx)
+	if !ok {
+		return nil, false
+	}
+	value, ok := values[key]
+	return value, ok
 }
