@@ -12,21 +12,30 @@ import (
 
 type WebPanel interface {
 	Common
-	GetWebPanel() WebPanel
 
 	LoginUser(username, password string) (models.User, error)
 	CreateUser(username, displayName, password string, isAdmin bool) (models.User, error)
 	GetUser(id uint) (models.User, error)
+	GetAllUsers() ([]models.User, error)
+	UpdateUser(user models.User) error
+	CreateSession(user models.User, device string) (string, error)
+	DeleteSession(token string) error
+	GetSession(token string) (*models.Session, error)
+	GetActiveSessions(userID uint) ([]models.Session, error)
 	GetDefaultLanguage() Language
 	Auth(r *http.Request) bool
 }
 
-func (l *AppImpl) GetWebPanel() WebPanel {
-	return l
+type WebPanelImpl struct {
+	core *AppImpl
 }
 
-func (l *AppImpl) LoginUser(username, password string) (models.User, error) {
-	if l.config.AdminUsername == username && l.config.AdminPassword == password {
+func (w *WebPanelImpl) GetApp() App {
+	return w.core
+}
+
+func (w *WebPanelImpl) LoginUser(username, password string) (models.User, error) {
+	if w.core.config.AdminUsername == username && w.core.config.AdminPassword == password {
 		return models.User{
 			Username:    username,
 			DisplayName: "Admin",
@@ -35,7 +44,7 @@ func (l *AppImpl) LoginUser(username, password string) (models.User, error) {
 	}
 
 	var user models.User
-	err := l.db.Where("username = ?", username).First(&user).Error
+	err := w.core.db.Where("username = ?", username).First(&user).Error
 	if err != nil {
 		return models.User{}, err
 	}
@@ -44,7 +53,7 @@ func (l *AppImpl) LoginUser(username, password string) (models.User, error) {
 		return models.User{}, fmt.Errorf("invalid password")
 	}
 
-	err = l.db.Table("users").Where("id = ?", user.ID).Update("last_activity", time.Now()).Error
+	err = w.core.db.Table("users").Where("id = ?", user.ID).Update("last_activity", time.Now()).Error
 	if err != nil {
 		return models.User{}, err
 	}
@@ -52,7 +61,7 @@ func (l *AppImpl) LoginUser(username, password string) (models.User, error) {
 	return user, nil
 }
 
-func (l *AppImpl) CreateUser(username, displayName, password string, isAdmin bool) (models.User, error) {
+func (w *WebPanelImpl) CreateUser(username, displayName, password string, isAdmin bool) (models.User, error) {
 	hashedPassword, err := bcrypt.GenerateFromPassword([]byte(password), bcrypt.DefaultCost)
 	if err != nil {
 		return models.User{}, err
@@ -65,7 +74,7 @@ func (l *AppImpl) CreateUser(username, displayName, password string, isAdmin boo
 		IsAdmin:     isAdmin,
 	}
 
-	err = l.db.Create(&user).Error
+	err = w.core.db.Create(&user).Error
 	if err != nil {
 		return models.User{}, err
 	}
@@ -73,38 +82,38 @@ func (l *AppImpl) CreateUser(username, displayName, password string, isAdmin boo
 	return user, nil
 }
 
-func (l *AppImpl) GetUser(id uint) (models.User, error) {
+func (w *WebPanelImpl) GetUser(id uint) (models.User, error) {
 	if id == 0 {
 		return models.User{
 			ID:          0,
-			Username:    l.config.AdminUsername,
+			Username:    w.core.config.AdminUsername,
 			DisplayName: "Admin",
 			IsAdmin:     true,
 		}, nil
 	}
 
 	var user models.User
-	err := l.db.Where("id = ?", id).First(&user).Error
+	err := w.core.db.Where("id = ?", id).First(&user).Error
 	if err != nil {
 		return models.User{}, err
 	}
 	return user, nil
 }
 
-func (l *AppImpl) GetAllUsers() ([]models.User, error) {
+func (w *WebPanelImpl) GetAllUsers() ([]models.User, error) {
 	var users []models.User
-	err := l.db.Find(&users).Error
+	err := w.core.db.Find(&users).Error
 	if err != nil {
 		return nil, err
 	}
 	return users, nil
 }
 
-func (l *AppImpl) UpdateUser(user models.User) error {
-	return l.db.Save(&user).Error
+func (w *WebPanelImpl) UpdateUser(user models.User) error {
+	return w.core.db.Save(&user).Error
 }
 
-func (l *AppImpl) CreateSession(user models.User, device string) (string, error) {
+func (w *WebPanelImpl) CreateSession(user models.User, device string) (string, error) {
 	session := models.Session{
 		UserID:    user.ID,
 		ExpiresAt: time.Now().Add(time.Hour * 24),
@@ -112,37 +121,37 @@ func (l *AppImpl) CreateSession(user models.User, device string) (string, error)
 		Device:    device,
 	}
 
-	err := l.db.Create(&session).Error
+	err := w.core.db.Create(&session).Error
 	if err != nil {
 		return "", err
 	}
 	return session.Token, nil
 }
 
-func (l *AppImpl) DeleteSession(token string) error {
-	return l.db.Where("token = ?", token).Delete(&models.Session{}).Error
+func (w *WebPanelImpl) DeleteSession(token string) error {
+	return w.core.db.Where("token = ?", token).Delete(&models.Session{}).Error
 }
 
-func (l *AppImpl) GetSession(token string) (*models.Session, error) {
+func (w *WebPanelImpl) GetSession(token string) (*models.Session, error) {
 	var session models.Session
-	err := l.db.Where("token = ?", token).First(&session).Error
+	err := w.core.db.Where("token = ?", token).First(&session).Error
 	if err != nil {
 		return nil, err
 	}
 
 	if session.ExpiresAt.Before(time.Now()) {
-		l.DeleteSession(token)
+		w.DeleteSession(token)
 		return nil, fmt.Errorf("session expired")
 	}
 
 	now := time.Now()
 	session.LastActivity = now
 	session.ExpiresAt = now.Add(time.Hour * 24)
-	err = l.db.Save(&session).Error
+	err = w.core.db.Save(&session).Error
 	if err != nil {
 		return nil, err
 	}
-	err = l.db.Model(&models.User{}).Where("id = ?", session.UserID).Update("last_activity", now).Error
+	err = w.core.db.Model(&models.User{}).Where("id = ?", session.UserID).Update("last_activity", now).Error
 	if err != nil {
 		return nil, err
 	}
@@ -150,9 +159,9 @@ func (l *AppImpl) GetSession(token string) (*models.Session, error) {
 	return &session, nil
 }
 
-func (l *AppImpl) GetActiveSessions(userID uint) ([]models.Session, error) {
+func (w *WebPanelImpl) GetActiveSessions(userID uint) ([]models.Session, error) {
 	var sessions []models.Session
-	err := l.db.Where("user_id = ? and expires_at > ?", userID, time.Now()).Order("last_activity DESC").Find(&sessions).Error
+	err := w.core.db.Where("user_id = ? and expires_at > ?", userID, time.Now()).Order("last_activity DESC").Find(&sessions).Error
 	if err != nil {
 		return nil, err
 	}
@@ -160,14 +169,14 @@ func (l *AppImpl) GetActiveSessions(userID uint) ([]models.Session, error) {
 	return sessions, nil
 }
 
-func (l *AppImpl) GetDefaultLanguage() Language {
-	return l.config.DefaultLanguage
+func (w *WebPanelImpl) GetDefaultLanguage() Language {
+	return w.core.config.DefaultLanguage
 }
 
-func (l *AppImpl) Auth(r *http.Request) bool {
-	if l.config.AuthFunc == nil {
+func (w *WebPanelImpl) Auth(r *http.Request) bool {
+	if w.core.config.AuthFunc == nil {
 		return true
 	}
 
-	return l.config.AuthFunc(r)
+	return w.core.config.AuthFunc(r)
 }

@@ -30,5 +30,5 @@ func (w *writer) SetSeverity(severity models.Severity) {
 func (w *writer) Printf(format string, args ...interface{}) {
 	msg := fmt.Sprintf("\n"+""+format+"\n", args...)
 
-	w.lg.Print(w.model, msg, w.category, w.severity)
+	w.lg.GetLogger().Print(w.model, msg, w.category, w.severity)
 }

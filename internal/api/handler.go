@@ -76,7 +76,7 @@ func (h *Handler) Router(mux *http.ServeMux) {
 	} else {
 		sub, err := fs.Sub(staticFiles, "build")
 		if err != nil {
-			h.logger.Error("logar-errors", fmt.Sprintf("Failed to create subdirectory: %v", err), "api")
+			h.logger.GetLogger().Error("logar-errors", fmt.Sprintf("Failed to create subdirectory: %v", err), "api")
 			return
 		}
 		mux.Handle("/", h.SetMetadataMiddleware(http.FileServer(http.FS(sub))))
@@ -125,7 +125,7 @@ func (h *Handler) AuthMiddleware(next http.HandlerFunc) http.HandlerFunc {
 
 		token := strings.TrimPrefix(authorization, "Bearer ")
 
-		_, err := h.logger.GetSession(token)
+		_, err := h.logger.GetWebPanel().GetSession(token)
 		if err != nil {
 			WriteSessionExpired(w)
 			return
@@ -136,11 +136,11 @@ func (h *Handler) AuthMiddleware(next http.HandlerFunc) http.HandlerFunc {
 }
 
 func (h *Handler) GetLanguage(w http.ResponseWriter, r *http.Request) {
-	json.NewEncoder(w).Encode(NewResponse(StatusCode_Success, h.logger.GetDefaultLanguage()))
+	json.NewEncoder(w).Encode(NewResponse(StatusCode_Success, h.logger.GetWebPanel().GetDefaultLanguage()))
 }
 
 func (h *Handler) Login(w http.ResponseWriter, r *http.Request) {
-	if !h.logger.Auth(r) {
+	if !h.logger.GetWebPanel().Auth(r) {
 		WriteSessionExpired(w)
 		return
 	}
@@ -148,7 +148,7 @@ func (h *Handler) Login(w http.ResponseWriter, r *http.Request) {
 	username := r.FormValue("username")
 	password := r.FormValue("password")
 
-	user, err := h.logger.LoginUser(username, password)
+	user, err := h.logger.GetWebPanel().LoginUser(username, password)
 	if err != nil {
 		w.WriteHeader(500)
 		json.NewEncoder(w).Encode(NewResponse(StatusCode_Error, err.Error()))
@@ -157,7 +157,7 @@ func (h *Handler) Login(w http.ResponseWriter, r *http.Request) {
 
 	ua := useragent.Parse(r.UserAgent())
 	device := ua.Name + "/" + ua.OS
-	token, err := h.logger.CreateSession(user, device)
+	token, err := h.logger.GetWebPanel().CreateSession(user, device)
 	if err != nil {
 		w.WriteHeader(500)
 		json.NewEncoder(w).Encode(NewResponse(StatusCode_Error, err.Error()))
@@ -186,7 +186,7 @@ func (h *Handler) RevokeSession(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	h.logger.DeleteSession(sessionId)
+	h.logger.GetWebPanel().DeleteSession(sessionId)
 	w.WriteHeader(http.StatusOK)
 	json.NewEncoder(w).Encode(NewResponse(StatusCode_Success, nil))
 }
@@ -200,14 +200,14 @@ func (h *Handler) GetActiveSessions(w http.ResponseWriter, r *http.Request) {
 	}
 
 	token := strings.TrimPrefix(authorization, "Bearer ")
-	session, err := h.logger.GetSession(token)
+	session, err := h.logger.GetWebPanel().GetSession(token)
 	if err != nil {
 		w.WriteHeader(401)
 		json.NewEncoder(w).Encode(NewResponse(StatusCode_InvalidRequest, "Missing authorization header"))
 		return
 	}
 
-	activeSessions, err := h.logger.GetActiveSessions(session.UserID)
+	activeSessions, err := h.logger.GetWebPanel().GetActiveSessions(session.UserID)
 	if err != nil {
 		w.WriteHeader(500)
 		json.NewEncoder(w).Encode(NewResponse(StatusCode_Error, "Failed to get active sessions"))
@@ -238,14 +238,14 @@ func (h *Handler) UpdateUser(w http.ResponseWriter, r *http.Request) {
 	}
 
 	token := strings.TrimPrefix(authorization, "Bearer ")
-	session, err := h.logger.GetSession(token)
+	session, err := h.logger.GetWebPanel().GetSession(token)
 	if err != nil {
 		w.WriteHeader(401)
 		json.NewEncoder(w).Encode(NewResponse(StatusCode_InvalidRequest, "Missing authorization header"))
 		return
 	}
 
-	user, err := h.logger.GetUser(session.UserID)
+	user, err := h.logger.GetWebPanel().GetUser(session.UserID)
 	if err != nil {
 		w.WriteHeader(500)
 		json.NewEncoder(w).Encode(NewResponse(StatusCode_Error, "Failed to get user"))
@@ -263,7 +263,7 @@ func (h *Handler) UpdateUser(w http.ResponseWriter, r *http.Request) {
 		user.DisplayName = displayName
 	}
 
-	err = h.logger.UpdateUser(user)
+	err = h.logger.GetWebPanel().UpdateUser(user)
 	if err != nil {
 		w.WriteHeader(500)
 		json.NewEncoder(w).Encode(NewResponse(StatusCode_Error, "Failed to update user"))
@@ -282,14 +282,14 @@ func (h *Handler) Logout(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	session, err := h.logger.GetSession(strings.TrimPrefix(authorization, "Bearer "))
+	session, err := h.logger.GetWebPanel().GetSession(strings.TrimPrefix(authorization, "Bearer "))
 	if err != nil {
 		w.WriteHeader(401)
 		json.NewEncoder(w).Encode(NewResponse(StatusCode_InvalidRequest, "Missing authorization header"))
 		return
 	}
 
-	h.logger.DeleteSession(session.Token)
+	h.logger.GetWebPanel().DeleteSession(session.Token)
 	w.WriteHeader(http.StatusOK)
 }
 
@@ -338,13 +338,13 @@ func (h *Handler) GetLogs(w http.ResponseWriter, r *http.Request) {
 }
 
 func (h *Handler) ListActions(w http.ResponseWriter, r *http.Request) {
-	actionsMap := h.logger.GetActionsMap()
+	actionsMap := h.logger.GetActionManager().GetActionsMap()
 	details := []ActionDetails{}
 
 	for _, action := range actionsMap {
-		argTypes, err := h.logger.GetActionArgTypes(action.Path)
+		argTypes, err := h.logger.GetActionManager().GetActionArgTypes(action.Path)
 		if err != nil {
-			h.logger.Error("logar-errors", fmt.Sprintf("Error getting arg types for action %s: %v", action.Path, err), "api")
+			h.logger.GetLogger().Error("logar-errors", fmt.Sprintf("Error getting arg types for action %s: %v", action.Path, err), "api")
 			continue
 		}
 
@@ -386,7 +386,7 @@ func (h *Handler) InvokeActionHandler(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	expectedTypes, err := h.logger.GetActionArgTypes(req.Path)
+	expectedTypes, err := h.logger.GetActionManager().GetActionArgTypes(req.Path)
 	if err != nil {
 		w.WriteHeader(404)
 		json.NewEncoder(w).Encode(NewResponse(StatusCode_Error, fmt.Sprintf("Error finding action '%s': %v", req.Path, err)))
@@ -411,7 +411,7 @@ func (h *Handler) InvokeActionHandler(w http.ResponseWriter, r *http.Request) {
 		parsedArgs[i] = val
 	}
 
-	result, err := h.logger.InvokeAction(req.Path, parsedArgs...)
+	result, err := h.logger.GetActionManager().InvokeAction(req.Path, parsedArgs...)
 
 	w.Header().Set("Content-Type", "application/json")
 	resp := InvokeActionResponse{}
@@ -431,7 +431,7 @@ func (h *Handler) InvokeActionHandler(w http.ResponseWriter, r *http.Request) {
 }
 
 func (h *Handler) GetAllUsers(w http.ResponseWriter, r *http.Request) {
-	users, err := h.logger.GetAllUsers()
+	users, err := h.logger.GetWebPanel().GetAllUsers()
 	if err != nil {
 		w.WriteHeader(500)
 		json.NewEncoder(w).Encode(NewResponse(StatusCode_Error, "Failed to get all users"))
@@ -450,14 +450,14 @@ func (h *Handler) CreateUser(w http.ResponseWriter, r *http.Request) {
 	}
 
 	token := strings.TrimPrefix(authorization, "Bearer ")
-	session, err := h.logger.GetSession(token)
+	session, err := h.logger.GetWebPanel().GetSession(token)
 	if err != nil {
 		w.WriteHeader(401)
 		json.NewEncoder(w).Encode(NewResponse(StatusCode_InvalidRequest, "Missing authorization header"))
 		return
 	}
 
-	selfUser, err := h.logger.GetUser(session.UserID)
+	selfUser, err := h.logger.GetWebPanel().GetUser(session.UserID)
 	if err != nil {
 		w.WriteHeader(401)
 		json.NewEncoder(w).Encode(NewResponse(StatusCode_InvalidRequest, "Missing authorization header"))
@@ -479,7 +479,7 @@ func (h *Handler) CreateUser(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	user, err := h.logger.CreateUser(username, display_name, password, isAdmin)
+	user, err := h.logger.GetWebPanel().CreateUser(username, display_name, password, isAdmin)
 	if err != nil {
 		w.WriteHeader(500)
 		json.NewEncoder(w).Encode(NewResponse(StatusCode_Error, "Failed to create user"))
@@ -598,7 +598,7 @@ func (h *Handler) GetLogsSSE(w http.ResponseWriter, r *http.Request) {
 
 			logs, err := h.logger.GetLogs(opts...)
 			if err != nil {
-				h.logger.Error("logar-errors", "Error fetching logs for SSE: "+err.Error(), "sse")
+				h.logger.GetLogger().Error("logar-errors", "Error fetching logs for SSE: "+err.Error(), "sse")
 				continue
 			}
 
@@ -616,7 +616,7 @@ func (h *Handler) GetLogsSSE(w http.ResponseWriter, r *http.Request) {
 				})
 
 				if err != nil {
-					h.logger.Error("logar-errors", "Error marshaling logs for SSE: "+err.Error(), "sse")
+					h.logger.GetLogger().Error("logar-errors", "Error marshaling logs for SSE: "+err.Error(), "sse")
 					continue
 				}
 
@@ -630,7 +630,7 @@ func (h *Handler) GetLogsSSE(w http.ResponseWriter, r *http.Request) {
 }
 
 func (h *Handler) GetAnalytics(w http.ResponseWriter, r *http.Request) {
-	analytics, err := h.logger.GetStatistics(time.Now().Add(-time.Hour*24*7), time.Now())
+	analytics, err := h.logger.GetAnalytics().GetStatistics(time.Now().Add(-time.Hour*24*7), time.Now())
 	if err != nil {
 		w.WriteHeader(500)
 		json.NewEncoder(w).Encode(NewResponse(StatusCode_Error, err.Error()))

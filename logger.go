@@ -9,7 +9,6 @@ import (
 
 type Logger interface {
 	Common
-	GetLogger() Logger
 
 	Print(model string, message any, category string, severity models.Severity) error
 	Log(model string, message any, category string) error
@@ -22,16 +21,20 @@ type Logger interface {
 	NewTimer() *Timer
 }
 
-func (l *AppImpl) GetLogger() Logger {
-	return l
+type LoggerImpl struct {
+	core *AppImpl
 }
 
-func (l *AppImpl) Print(model string, message any, category string, severity models.Severity) error {
+func (l *LoggerImpl) GetApp() App {
+	return l.core
+}
+
+func (l *LoggerImpl) Print(model string, message any, category string, severity models.Severity) error {
 	var msg string
 
-	switch message := message.(type) {
+	switch m := message.(type) {
 	case string:
-		msg = message
+		msg = m
 	default:
 		msgBytes, err := json.Marshal(message)
 		if err != nil {
@@ -41,45 +44,49 @@ func (l *AppImpl) Print(model string, message any, category string, severity mod
 	}
 
 	now := time.Now()
-	log := models.Log{
+	logEntry := models.Log{
 		CreatedAt: now,
 		Model:     model,
 		Message:   msg,
 		Category:  category,
 		Severity:  severity,
 	}
-	err := l.db.Create(&log).Error
+	err := l.core.db.Create(&logEntry).Error
 	if err != nil {
 		return err
 	}
 
-	for _, proxy := range l.proxies {
-		proxy.TrySend(log, msg)
+	for _, p := range l.core.proxies {
+		p.TrySend(logEntry, msg)
 	}
 
 	return nil
 }
 
-func (l *AppImpl) Log(model string, message any, category string) error {
+func (l *LoggerImpl) Log(model string, message any, category string) error {
 	return l.Print(model, message, category, models.Severity_Log)
 }
 
-func (l *AppImpl) Info(model string, message any, category string) error {
+func (l *LoggerImpl) Info(model string, message any, category string) error {
 	return l.Print(model, message, category, models.Severity_Info)
 }
 
-func (l *AppImpl) Warn(model string, message any, category string) error {
+func (l *LoggerImpl) Warn(model string, message any, category string) error {
 	return l.Print(model, message, category, models.Severity_Warning)
 }
 
-func (l *AppImpl) Error(model string, message any, category string) error {
+func (l *LoggerImpl) Error(model string, message any, category string) error {
 	return l.Print(model, message, category, models.Severity_Error)
 }
 
-func (l *AppImpl) Fatal(model string, message any, category string) error {
+func (l *LoggerImpl) Fatal(model string, message any, category string) error {
 	return l.Print(model, message, category, models.Severity_Fatal)
 }
 
-func (l *AppImpl) Trace(model string, message any, category string) error {
+func (l *LoggerImpl) Trace(model string, message any, category string) error {
 	return l.Print(model, message, category, models.Severity_Trace)
+}
+
+func (l *LoggerImpl) NewTimer() *Timer {
+	return l.core.NewTimer()
 }

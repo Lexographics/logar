@@ -49,7 +49,7 @@ func main() {
 	iteration := 0
 	go func() {
 		for range ticker.C {
-			app.Info("logs", logar.Map{
+			app.GetLogger().Info("logs", logar.Map{
 				"iteration": iteration + 1,
 				"message":   "every fifth iteration will be ignored",
 			}, "app-log")

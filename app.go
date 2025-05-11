@@ -17,11 +17,11 @@ type Common interface {
 
 // App is the main struct that contains library data for things like logging, actions, etc.
 type App interface {
-	Common
-	Logger
-	ActionManager
-	WebPanel
-	Analytics
+	GetLogger() Logger
+	GetActionManager() ActionManager
+	GetWebPanel() WebPanel
+	GetAnalytics() Analytics
+	GetFeatureFlags() FeatureFlags
 
 	Close() error
 	GetAllModels() LogModels
@@ -32,6 +32,12 @@ type App interface {
 }
 
 type AppImpl struct {
+	logger        Logger
+	actionManager ActionManager
+	webPanel      WebPanel
+	analytics     Analytics
+	featureFlags  FeatureFlags
+
 	db        *gorm.DB
 	config    Config
 	proxies   []proxy.Proxy
@@ -93,6 +99,12 @@ func New(opts ...ConfigOpt) (App, error) {
 		typeKinds: map[string]TypeKind{},
 	}
 
+	logger.logger = &LoggerImpl{core: logger}
+	logger.actionManager = &ActionManagerImpl{core: logger}
+	logger.webPanel = &WebPanelImpl{core: logger}
+	logger.analytics = &AnalyticsImpl{core: logger}
+	logger.featureFlags = &FeatureFlagsImpl{core: logger}
+
 	// Default type kinds
 	logger.SetTypeKind(reflect.TypeOf(string("")), TypeKind_Text)
 	logger.SetTypeKind(reflect.TypeOf(int(0)), TypeKind_Int)
@@ -144,6 +156,22 @@ func (l *AppImpl) SetTypeKindString(type_ string, kind TypeKind) {
 	l.typeKinds[type_] = kind
 }
 
-func (l *AppImpl) GetApp() App {
-	return l
+func (l *AppImpl) GetLogger() Logger {
+	return l.logger
+}
+
+func (l *AppImpl) GetActionManager() ActionManager {
+	return l.actionManager
+}
+
+func (l *AppImpl) GetWebPanel() WebPanel {
+	return l.webPanel
+}
+
+func (l *AppImpl) GetAnalytics() Analytics {
+	return l.analytics
+}
+
+func (l *AppImpl) GetFeatureFlags() FeatureFlags {
+	return l.featureFlags
 }

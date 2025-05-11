@@ -55,12 +55,20 @@ type Analytics interface {
 	GetStatistics(startTime time.Time, endTime time.Time) (AnalyticsSummary, error)
 }
 
-func (l *AppImpl) RegisterRequest(log RequestLog) error {
-	result := l.db.Create(&log)
+type AnalyticsImpl struct {
+	core *AppImpl
+}
+
+func (a *AnalyticsImpl) GetApp() App {
+	return a.core
+}
+
+func (a *AnalyticsImpl) RegisterRequest(log RequestLog) error {
+	result := a.core.db.Create(&log)
 	return result.Error
 }
 
-func (l *AppImpl) GetStatistics(startTime time.Time, endTime time.Time) (AnalyticsSummary, error) {
+func (a *AnalyticsImpl) GetStatistics(startTime time.Time, endTime time.Time) (AnalyticsSummary, error) {
 	summary := AnalyticsSummary{
 		OSUsage:       map[string]float64{},
 		BrowserUsage:  map[string]float64{},
@@ -69,7 +77,7 @@ func (l *AppImpl) GetStatistics(startTime time.Time, endTime time.Time) (Analyti
 	}
 
 	var totalVisits int64
-	if err := l.db.Model(&RequestLog{}).Where("timestamp BETWEEN ? AND ?", startTime, endTime).Count(&totalVisits).Error; err != nil {
+	if err := a.core.db.Model(&RequestLog{}).Where("timestamp BETWEEN ? AND ?", startTime, endTime).Count(&totalVisits).Error; err != nil {
 		return summary, err
 	}
 	summary.TotalVisits = totalVisits
@@ -79,13 +87,13 @@ func (l *AppImpl) GetStatistics(startTime time.Time, endTime time.Time) (Analyti
 	}
 
 	var uniqueVisitors int64
-	if err := l.db.Model(&RequestLog{}).Where("timestamp BETWEEN ? AND ?", startTime, endTime).Distinct("visitor_id").Count(&uniqueVisitors).Error; err != nil {
+	if err := a.core.db.Model(&RequestLog{}).Where("timestamp BETWEEN ? AND ?", startTime, endTime).Distinct("visitor_id").Count(&uniqueVisitors).Error; err != nil {
 		return summary, err
 	}
 	summary.UniqueVisitors = uniqueVisitors
 
 	var errorCount int64
-	if err := l.db.Model(&RequestLog{}).Where("timestamp BETWEEN ? AND ?", startTime, endTime).Where("status_code >= ?", 400).Count(&errorCount).Error; err != nil {
+	if err := a.core.db.Model(&RequestLog{}).Where("timestamp BETWEEN ? AND ?", startTime, endTime).Where("status_code >= ?", 400).Count(&errorCount).Error; err != nil {
 		return summary, err
 	}
 	if totalVisits > 0 {
@@ -93,7 +101,7 @@ func (l *AppImpl) GetStatistics(startTime time.Time, endTime time.Time) (Analyti
 	}
 
 	var allLatenciesNano []int64
-	if err := l.db.Model(&RequestLog{}).Where("timestamp BETWEEN ? AND ?", startTime, endTime).Pluck("latency", &allLatenciesNano).Error; err != nil {
+	if err := a.core.db.Model(&RequestLog{}).Where("timestamp BETWEEN ? AND ?", startTime, endTime).Pluck("latency", &allLatenciesNano).Error; err != nil {
 		return summary, err
 	}
 
@@ -133,7 +141,7 @@ func (l *AppImpl) GetStatistics(startTime time.Time, endTime time.Time) (Analyti
 
 	var activeVisitorCount int64
 	fiveMinutesAgo := time.Now().Add(-5 * time.Minute)
-	err := l.db.Model(&RequestLog{}).Where("timestamp BETWEEN ? AND ?", startTime, endTime).Where("timestamp > ?", fiveMinutesAgo).Distinct("visitor_id").Count(&activeVisitorCount).Error
+	err := a.core.db.Model(&RequestLog{}).Where("timestamp BETWEEN ? AND ?", startTime, endTime).Where("timestamp > ?", fiveMinutesAgo).Distinct("visitor_id").Count(&activeVisitorCount).Error
 	if err != nil {
 		return summary, err
 	}
@@ -144,7 +152,7 @@ func (l *AppImpl) GetStatistics(startTime time.Time, endTime time.Time) (Analyti
 		Count int64
 	}
 	var pageCounts []PageCount
-	if err := l.db.Model(&RequestLog{}).
+	if err := a.core.db.Model(&RequestLog{}).
 		Select("path, count(*) as count").
 		Where("timestamp BETWEEN ? AND ?", startTime, endTime).
 		Group("path").
@@ -168,7 +176,7 @@ func (l *AppImpl) GetStatistics(startTime time.Time, endTime time.Time) (Analyti
 		Count int64
 	}
 	var osCounts []OSCount
-	if err := l.db.Model(&RequestLog{}).
+	if err := a.core.db.Model(&RequestLog{}).
 		Select("os, count(*) as count").
 		Where("timestamp BETWEEN ? AND ?", startTime, endTime).
 		Group("os").
@@ -185,7 +193,7 @@ func (l *AppImpl) GetStatistics(startTime time.Time, endTime time.Time) (Analyti
 		Count   int64
 	}
 	var browserCounts []BrowserCount
-	if err := l.db.Model(&RequestLog{}).
+	if err := a.core.db.Model(&RequestLog{}).
 		Select("browser, count(*) as count").
 		Where("timestamp BETWEEN ? AND ?", startTime, endTime).
 		Group("browser").
@@ -198,7 +206,7 @@ func (l *AppImpl) GetStatistics(startTime time.Time, endTime time.Time) (Analyti
 	}
 
 	var totalBytesSent, totalBytesRecv int64
-	if err := l.db.Model(&RequestLog{}).
+	if err := a.core.db.Model(&RequestLog{}).
 		Where("timestamp BETWEEN ? AND ?", startTime, endTime).
 		Select("COALESCE(SUM(bytes_sent), 0), COALESCE(SUM(bytes_recv), 0)").
 		Row().
@@ -213,7 +221,7 @@ func (l *AppImpl) GetStatistics(startTime time.Time, endTime time.Time) (Analyti
 		Count    int64
 	}
 	var instanceCounts []InstanceCount
-	if err := l.db.Model(&RequestLog{}).
+	if err := a.core.db.Model(&RequestLog{}).
 		Select("instance, count(*) as count").
 		Where("timestamp BETWEEN ? AND ?", startTime, endTime).
 		Group("instance").
@@ -230,7 +238,7 @@ func (l *AppImpl) GetStatistics(startTime time.Time, endTime time.Time) (Analyti
 		Count   int64
 	}
 	var refererCounts []RefererCount
-	if err := l.db.Model(&RequestLog{}).
+	if err := a.core.db.Model(&RequestLog{}).
 		Select("referer, count(*) as count").
 		Where("timestamp BETWEEN ? AND ?", startTime, endTime).
 		Group("referer").

@@ -56,7 +56,7 @@ func main() {
 			contentLength, _ := strconv.ParseInt(c.Request().Header.Get(echo.HeaderContentLength), 10, 64)
 			ua := useragent.Parse(c.Request().UserAgent())
 
-			app.RegisterRequest(logar.RequestLog{
+			app.GetAnalytics().RegisterRequest(logar.RequestLog{
 				Timestamp:  time.Now(),
 				VisitorID:  userID,
 				Instance:   "eu-east-1",

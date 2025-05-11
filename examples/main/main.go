@@ -26,7 +26,7 @@ var name string = "Example application"
 func main() {
 	needAuth := false
 
-	logger, err := logar.New(
+	app, err := logar.New(
 		logar.WithAppName(name),
 		logar.WithDatabase("logs.db"),
 		logar.WithDefaultLanguage(logar.English),
@@ -37,13 +37,6 @@ func main() {
 		logar.AddModel("Test2", "test2"),
 		logar.AddModel("Test3", "test3"),
 		logar.AddModel("Test4", "test4"),
-		// logar.AddModel("Test5", "test5"),
-		// logar.AddModel("Test6", "test6"),
-		// logar.AddModel("Test7", "test7"),
-		// logar.AddModel("Test6", "test6"),
-		// logar.AddModel("Test8", "test8"),
-		// logar.AddModel("Test9", "test9"),
-		// logar.AddModel("Test10", "test10"),
 		logar.AddModel("All Logs", "__all__"),
 
 		logar.WithAdminCredentials("username", "password"),
@@ -112,21 +105,21 @@ func main() {
 		panic(err)
 	}
 
-	res, err := logger.InvokeAction("Math/Div", 4.0, 3.0)
+	res, err := app.GetActionManager().InvokeAction("Math/Div", 4.0, 3.0)
 	if err != nil {
 		panic(err)
 	}
 
 	fmt.Printf("add res: %v\n", res)
 
-	res, err = logger.InvokeAction("Server/Ping")
+	res, err = app.GetActionManager().InvokeAction("Server/Ping")
 	if err != nil {
 		panic(err)
 	}
 
 	fmt.Printf("ping res: %v\n", res)
 
-	res, err = logger.InvokeAction("Greet", "John")
+	res, err = app.GetActionManager().InvokeAction("Greet", "John")
 	if err != nil {
 		panic(err)
 	}
@@ -134,7 +127,7 @@ func main() {
 	fmt.Printf("greet res: %v\n", res)
 
 	db, err := gorm.Open(sqlite.Open("app.db"), &gorm.Config{
-		Logger: gormlogger.New(logger, "user-trace", "db-log", 1),
+		Logger: gormlogger.New(app, "user-trace", "db-log", 1),
 	})
 	if err != nil {
 		panic(err)
@@ -144,10 +137,10 @@ func main() {
 		panic(err)
 	}
 
-	app := echo.New()
-	app.Use(middleware.CORS())
-	app.Use(middleware.Recover())
-	app.Use(middleware.RequestIDWithConfig(middleware.RequestIDConfig{
+	e := echo.New()
+	e.Use(middleware.CORS())
+	e.Use(middleware.Recover())
+	e.Use(middleware.RequestIDWithConfig(middleware.RequestIDConfig{
 		Generator: func() string {
 			return uuid.New().String()
 		},
@@ -156,12 +149,12 @@ func main() {
 		},
 	}))
 
-	app.Any("/logger/*", echo.WrapHandler(logarweb.ServeHTTP("http://localhost:3000", "/logger", logger)))
-	app.Any("/logger", func(c echo.Context) error {
+	e.Any("/logger/*", echo.WrapHandler(logarweb.ServeHTTP("http://localhost:3000", "/logger", app)))
+	e.Any("/logger", func(c echo.Context) error {
 		return c.Redirect(http.StatusTemporaryRedirect, "/logger/")
 	})
 
-	app.Use(func(next echo.HandlerFunc) echo.HandlerFunc {
+	e.Use(func(next echo.HandlerFunc) echo.HandlerFunc {
 		return func(c echo.Context) error {
 			if strings.HasPrefix(c.Request().URL.Path, "/logger") {
 				return next(c)
@@ -171,7 +164,7 @@ func main() {
 			userid := 4
 			c.Set("userid", userid)
 
-			logger.Trace("user-trace", map[string]interface{}{
+			app.GetLogger().Trace("user-trace", map[string]interface{}{
 				"requestid": requestid,
 				"url":       c.Request().Method + " " + c.Request().URL.Path,
 				"user_id":   userid,
@@ -185,7 +178,7 @@ func main() {
 
 			if err != nil {
 				fmt.Printf("err: %v\n", err)
-				logger.Error("user-trace", map[string]interface{}{
+				app.GetLogger().Error("user-trace", map[string]interface{}{
 					"requestid": requestid,
 					"status":    status,
 					"user_id":   userid,
@@ -195,7 +188,7 @@ func main() {
 				return err
 			}
 
-			logger.Trace("user-trace", map[string]interface{}{
+			app.GetLogger().Trace("user-trace", map[string]interface{}{
 				"requestid": requestid,
 				"status":    status,
 				"user_id":   userid,
@@ -206,7 +199,7 @@ func main() {
 		}
 	})
 
-	app.GET("/", func(c echo.Context) error {
+	e.GET("/", func(c echo.Context) error {
 		errorText := c.QueryParam("error")
 
 		if errorText != "" {
@@ -221,8 +214,8 @@ func main() {
 		})
 	})
 
-	app.GET("/timer", func(c echo.Context) error {
-		timer := logger.NewTimer()
+	e.GET("/timer", func(c echo.Context) error {
+		timer := app.GetLogger().NewTimer()
 		defer timer.Log("user-trace", "Handler done", "handler")
 
 		time.Sleep(time.Second * 1)
@@ -236,9 +229,9 @@ func main() {
 		return c.String(http.StatusOK, "Timer test!")
 	})
 
-	logger.Info("system-logs", logar.Map{"message": "App Started"}, "app-start")
+	app.GetLogger().Info("system-logs", logar.Map{"message": "App Started"}, "app-start")
 
-	err = app.Start(":3000")
+	err = e.Start(":3000")
 	if err != nil {
 		panic(err)
 	}

@@ -7,7 +7,6 @@ import (
 
 type ActionManager interface {
 	Common
-	GetActionManager() ActionManager
 
 	InvokeAction(path string, args ...any) ([]any, error)
 	GetActionArgTypes(path string) ([]reflect.Type, error)
@@ -18,12 +17,16 @@ type ActionManager interface {
 	RemoveAction(path string)
 }
 
-func (l *AppImpl) GetActionManager() ActionManager {
-	return l
+type ActionManagerImpl struct {
+	core *AppImpl
 }
 
-func (l *AppImpl) InvokeAction(path string, args ...any) ([]any, error) {
-	action, ok := l.GetActionDetails(path)
+func (a *ActionManagerImpl) GetApp() App {
+	return a.core
+}
+
+func (a *ActionManagerImpl) InvokeAction(path string, args ...any) ([]any, error) {
+	action, ok := a.GetActionDetails(path)
 	if !ok {
 		return nil, fmt.Errorf("action '%s' not found", path)
 	}
@@ -53,8 +56,8 @@ func (l *AppImpl) InvokeAction(path string, args ...any) ([]any, error) {
 	return result, nil
 }
 
-func (l *AppImpl) GetActionArgTypes(path string) ([]reflect.Type, error) {
-	action, ok := l.GetActionDetails(path)
+func (a *ActionManagerImpl) GetActionArgTypes(path string) ([]reflect.Type, error) {
+	action, ok := a.GetActionDetails(path)
 	if !ok {
 		return nil, fmt.Errorf("action '%s' not found", path)
 	}
@@ -74,20 +77,20 @@ func (l *AppImpl) GetActionArgTypes(path string) ([]reflect.Type, error) {
 	return argTypes, nil
 }
 
-func (l *AppImpl) GetActionsMap() Actions {
-	return l.actions
+func (a *ActionManagerImpl) GetActionsMap() Actions {
+	return a.core.actions
 }
 
-func (l *AppImpl) GetAllActions() []string {
+func (a *ActionManagerImpl) GetAllActions() []string {
 	actions := []string{}
-	for _, action := range l.actions {
+	for _, action := range a.core.actions {
 		actions = append(actions, action.Path)
 	}
 	return actions
 }
 
-func (l *AppImpl) GetActionDetails(path string) (Action, bool) {
-	for _, action := range l.actions {
+func (a *ActionManagerImpl) GetActionDetails(path string) (Action, bool) {
+	for _, action := range a.core.actions {
 		if action.Path == path {
 			return action, true
 		}
@@ -95,20 +98,20 @@ func (l *AppImpl) GetActionDetails(path string) (Action, bool) {
 	return Action{}, false
 }
 
-func (l *AppImpl) AddAction(action Action) {
-	for i, existingAction := range l.actions {
+func (a *ActionManagerImpl) AddAction(action Action) {
+	for i, existingAction := range a.core.actions {
 		if existingAction.Path == action.Path {
-			l.actions[i] = action
+			a.core.actions[i] = action
 			return
 		}
 	}
-	l.actions = append(l.actions, action)
+	a.core.actions = append(a.core.actions, action)
 }
 
-func (l *AppImpl) RemoveAction(path string) {
-	for i, action := range l.actions {
+func (a *ActionManagerImpl) RemoveAction(path string) {
+	for i, action := range a.core.actions {
 		if action.Path == path {
-			l.actions = append(l.actions[:i], l.actions[i+1:]...)
+			a.core.actions = append(a.core.actions[:i], a.core.actions[i+1:]...)
 			return
 		}
 	}
