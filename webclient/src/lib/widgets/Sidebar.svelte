@@ -64,6 +64,7 @@
         </li>
         <li><a class="link" href={`${getBasePath()}/analytics`} class:active={$page.url.pathname.startsWith(`${getBasePath()}/analytics`)}><i class="fas fa-chart-bar"></i> <span class="text">{$LL.analytics.title()}</span></a></li>
         <li><a class="link" href={`${getBasePath()}/actions`} class:active={$page.url.pathname.startsWith(`${getBasePath()}/actions`)}><i class="fa-solid fa-server"></i> <span class="text">{$LL.remote_actions.title()}</span></a></li>
+        <li><a class="link" href={`${getBasePath()}/featureflags`} class:active={$page.url.pathname.startsWith(`${getBasePath()}/featureflags`)}><i class="fa-solid fa-flag"></i> <span class="text">{$LL.featureflags.title()}</span></a></li>
         <li><a class="link" href={`${getBasePath()}/user`} class:active={$page.url.pathname.startsWith(`${getBasePath()}/user`)}><i class="fa-solid fa-users"></i> <span class="text">{$LL.user_sessions.title()}</span></a></li>
         <li><a class="link" href={`${getBasePath()}/settings`} class:active={$page.url.pathname.startsWith(`${getBasePath()}/settings`)}><i class="fas fa-cog"></i> <span class="text">{$LL.settings.title()}</span></a></li>
         <li><a class="link" href={`${getBasePath()}/help`} class:active={$page.url.pathname.startsWith(`${getBasePath()}/help`)}><i class="fas fa-question-circle"></i> <span class="text">{$LL.help.title()}</span></a></li>

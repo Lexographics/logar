@@ -4,6 +4,7 @@
   import { Chart, registerables } from 'chart.js/auto';
   import type { AnalyticsSummary } from '$lib/service/analyticsService';
   import analyticsService from "$lib/service/analyticsService";
+  import LL from "../../../i18n/i18n-svelte";
 
   let metrics : AnalyticsSummary = $state({
     total_visits: 0,
@@ -217,39 +218,39 @@
       <h2 class="section-title">Metrics</h2>
       <div class="metrics-grid">
         <div class="card">
-          <h3 class="metric-title">Total Visits</h3>
+          <h3 class="metric-title">{$LL.analytics.metrics.total_visits()}</h3>
           <p class="metric-value">{metrics.total_visits?.toString() ?? 'N/A'}</p>
         </div>
         <div class="card">
-          <h3 class="metric-title">Unique Visitors</h3>
+          <h3 class="metric-title">{$LL.analytics.metrics.unique_visitors()}</h3>
           <p class="metric-value">{metrics.unique_visitors?.toString() ?? 'N/A'}</p>
         </div>
         <div class="card">
-          <h3 class="metric-title">Active Visitors</h3>
+          <h3 class="metric-title">{$LL.analytics.metrics.active_visitors()}</h3>
           <p class="metric-value">{metrics.active_visitors?.toString() ?? 'N/A'}</p>
         </div>
         <div class="card">
-          <h3 class="metric-title">Error Rate</h3>
+          <h3 class="metric-title">{$LL.analytics.metrics.error_rate()}</h3>
           <p class="metric-value">%{((metrics.error_rate ?? 0) * 100).toFixed(2).toString() ?? 'N/A'}</p>
         </div>
         <div class="card">
-          <h3 class="metric-title">Average Latency</h3>
+          <h3 class="metric-title">{$LL.analytics.metrics.average_latency()}</h3>
           <p class="metric-value">{formatMilliseconds(metrics.average_latency_ms ?? 0)}</p>
         </div>
         <div class="card">
-          <h3 class="metric-title">95th Percentile Latency</h3>
+          <h3 class="metric-title">{$LL.analytics.metrics.latency_95th_percentile()}</h3>
           <p class="metric-value">{formatMilliseconds(metrics.p95_latency_ms ?? 0)}</p>
         </div>
         <div class="card">
-          <h3 class="metric-title">99th Percentile Latency</h3>
+          <h3 class="metric-title">{$LL.analytics.metrics.latency_99th_percentile()}</h3>
           <p class="metric-value">{formatMilliseconds(metrics.p99_latency_ms ?? 0)}</p>
         </div>
         <div class="card">
-          <h3 class="metric-title">Outgoing Traffic</h3>
+          <h3 class="metric-title">{$LL.analytics.metrics.outgoing_traffic()}</h3>
           <p class="metric-value">{formatBytes(metrics.total_bytes_sent ?? 0)}</p>
         </div>
         <div class="card">
-          <h3 class="metric-title">Incoming Traffic</h3>
+          <h3 class="metric-title">{$LL.analytics.metrics.incoming_traffic()}</h3>
           <p class="metric-value">{formatBytes(metrics.total_bytes_recv ?? 0)}</p>
         </div>
       </div>
@@ -257,12 +258,12 @@
 
     <section class="grid-container">
       <div style="width: 100%;">
-          <h2 class="section-title">Top Pages</h2>
+          <h2 class="section-title">{$LL.analytics.top_pages.title()}</h2>
           <div class="card">
             {#each metrics.top_pages as page}
               <div class="list-item">
                 <span class="link-style">{page.path}</span>
-                <span class="list-value">{page.visits} views ({page.percentage.toFixed(0)}%)</span>
+                <span class="list-value">{$LL.analytics.top_pages.page_text(page.visits, page.percentage.toFixed(0))}</span>
               </div>
             {/each}
           </div>
@@ -272,10 +273,10 @@
 
     <section class="grid-container">
       <div>
-        <h2 class="section-title">Browser Distribution</h2>
+        <h2 class="section-title">{$LL.analytics.browser_distribution.title()}</h2>
           <div class="chart-card-split">
             <div class="list-section">
-              <h3 class="card-title">Browser</h3>
+              <h3 class="card-title">{$LL.analytics.browser_distribution.header()}</h3>
               {#each Object.entries(metrics.browser_usage).sort((a, b) => b[1] - a[1]).slice(0, 4) as [browser, percentage]}
                 <div class="list-item">
                   <span style="margin-right: 10px;">{browser}</span>
@@ -290,10 +291,10 @@
       </div>
 
       <div>
-        <h2 class="section-title">Device Distribution</h2>
+        <h2 class="section-title">{$LL.analytics.device_distribution.title()}</h2>
           <div class="chart-card-split">
             <div class="list-section">
-              <h3 class="card-title">Device</h3>
+              <h3 class="card-title">{$LL.analytics.device_distribution.header()}</h3>
               {#each Object.entries(metrics.os_usage).sort((a, b) => b[1] - a[1]).slice(0, 4) as [os, percentage]}
                 <div class="list-item">
                   <span style="margin-right: 10px;">{os}</span>
@@ -308,10 +309,10 @@
       </div>
 
       <div>
-        <h2 class="section-title">Referer Distribution</h2>
+        <h2 class="section-title">{$LL.analytics.referer_distribution.title()}</h2>
           <div class="chart-card-split">
             <div class="list-section">
-              <h3 class="card-title">Referer</h3>
+              <h3 class="card-title">{$LL.analytics.referer_distribution.header()}</h3>
               {#each Object.entries(metrics.referer_usage).sort((a, b) => b[1] - a[1]).slice(0, 4) as [referer, percentage]}
                 <div class="list-item">
                   <span style="margin-right: 10px;">{referer}</span>
@@ -326,10 +327,10 @@
       </div>
 
       <div>
-        <h2 class="section-title">Instance Distribution</h2>
+        <h2 class="section-title">{$LL.analytics.instance_distribution.title()}</h2>
           <div class="chart-card-split">
             <div class="list-section">
-              <h3 class="card-title">Instance</h3>
+              <h3 class="card-title">{$LL.analytics.instance_distribution.header()}</h3>
               {#each Object.entries(metrics.instance_stats).sort((a, b) => b[1] - a[1]).slice(0, 4) as [instance, percentage]}
                 <div class="list-item">
                   <span style="margin-right: 10px;">{instance}</span>

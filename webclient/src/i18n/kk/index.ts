@@ -51,7 +51,39 @@ const kk = {
 	},
 	analytics: {
 		title: 'Аналитика',
-		header: 'Аналитика панелі',
+		header: 'Аналитика тақтасы',
+		metrics: {
+			title: 'Метрикалық көрсеткіштер',
+			total_visits: 'Жалпы көру саны',
+			unique_visitors: 'Бірегей келушілер',
+			active_visitors: 'Белсенді келушілер',
+			error_rate: 'Қате пайызы',
+			average_latency: 'Орташа кідіріс',
+			latency_95th_percentile: '95-процентиль кідірісі',
+			latency_99th_percentile: '99-процентиль кідірісі',
+			outgoing_traffic: 'Шығыс трафик',
+			incoming_traffic: 'Кіріс трафик',
+		},
+		top_pages: {
+			title: 'Ең танымал беттер',
+			page_text: '{0} қаралым (%{1})',
+		},
+		browser_distribution: {
+			title: 'Браузер бойынша бөлу',
+			header: 'Браузер',
+		},
+		device_distribution: {
+			title: 'Құрылғылар бойынша бөлу',
+			header: 'Құрылғы',
+		},
+		referer_distribution: {
+			title: 'Сілтеме көздері бойынша бөлу',
+			header: 'Сілтеме',
+		},
+		instance_distribution: {
+			title: 'Серверлер бойынша бөлу',
+			header: 'Сервер',
+		},
 	},
 	remote_actions: {
 		title: 'Қашықтан әрекеттер',

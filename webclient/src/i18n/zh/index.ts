@@ -51,7 +51,39 @@ const zh = {
 	},
 	analytics: {
 		title: '分析',
-		header: '分析仪表板',
+		header: '分析仪表盘',
+		metrics: {
+			title: '指标',
+			total_visits: '总访问量',
+			unique_visitors: '独立访客数',
+			active_visitors: '活跃访客数',
+			error_rate: '错误率',
+			average_latency: '平均延迟',
+			latency_95th_percentile: '95百分位延迟',
+			latency_99th_percentile: '99百分位延迟',
+			outgoing_traffic: '出站流量',
+			incoming_traffic: '入站流量',
+		},
+		top_pages: {
+			title: '热门页面',
+			page_text: '{0} 次浏览（{1}%）',
+		},
+		browser_distribution: {
+			title: '浏览器分布',
+			header: '浏览器',
+		},
+		device_distribution: {
+			title: '设备分布',
+			header: '设备',
+		},
+		referer_distribution: {
+			title: '来源分布',
+			header: '来源',
+		},
+		instance_distribution: {
+			title: '服务器分布',
+			header: '服务器',
+		},
 	},
 	remote_actions: {
 		title: '远程操作',

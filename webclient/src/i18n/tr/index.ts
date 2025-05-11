@@ -52,6 +52,38 @@ const tr = {
 	analytics: {
 		title: 'Analitik',
 		header: 'Analitik Paneli',
+		metrics: {
+			title: 'Ölçümler',
+			total_visits: 'Toplam Ziyaretler',
+			unique_visitors: 'Benzersiz Ziyaretçiler',
+			active_visitors: 'Aktif Ziyaretçiler',
+			error_rate: 'Hata Oranı',
+			average_latency: 'Ortalama Gecikme',
+			latency_95th_percentile: 'Gecikme %95',
+			latency_99th_percentile: 'Gecikme %99',
+			outgoing_traffic: 'Giden Trafik',
+			incoming_traffic: 'Gelen Trafik',
+		},
+		top_pages: {
+			title: 'En Çok Ziyaret Edilen Sayfalar',
+			page_text: '{0} görüntüleme (%{1})',
+		},
+		browser_distribution: {
+			title: 'Tarayıcı Dağılımı',
+			header: 'Tarayıcı',
+		},
+		device_distribution: {
+			title: 'Cihaz Dağılımı',
+			header: 'Cihaz',
+		},
+		referer_distribution: {
+			title: 'Referans Dağılımı',
+			header: 'Referans',
+		},
+		instance_distribution: {
+			title: 'Sunucu Dağılımı',
+			header: 'Sunucu',
+		},
 	},
 	remote_actions: {
 		title: 'Uzak Eylemler',

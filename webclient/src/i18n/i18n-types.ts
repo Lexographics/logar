@@ -171,6 +171,100 @@ type RootTranslation = {
 		 * A​n​a​l​y​t​i​c​s​ ​D​a​s​h​b​o​a​r​d
 		 */
 		header: string
+		metrics: {
+			/**
+			 * M​e​t​r​i​c​s
+			 */
+			title: string
+			/**
+			 * T​o​t​a​l​ ​V​i​s​i​t​s
+			 */
+			total_visits: string
+			/**
+			 * U​n​i​q​u​e​ ​V​i​s​i​t​o​r​s
+			 */
+			unique_visitors: string
+			/**
+			 * A​c​t​i​v​e​ ​V​i​s​i​t​o​r​s
+			 */
+			active_visitors: string
+			/**
+			 * E​r​r​o​r​ ​R​a​t​e
+			 */
+			error_rate: string
+			/**
+			 * A​v​e​r​a​g​e​ ​L​a​t​e​n​c​y
+			 */
+			average_latency: string
+			/**
+			 * 9​5​t​h​ ​P​e​r​c​e​n​t​i​l​e​ ​L​a​t​e​n​c​y
+			 */
+			latency_95th_percentile: string
+			/**
+			 * 9​9​t​h​ ​P​e​r​c​e​n​t​i​l​e​ ​L​a​t​e​n​c​y
+			 */
+			latency_99th_percentile: string
+			/**
+			 * O​u​t​g​o​i​n​g​ ​T​r​a​f​f​i​c
+			 */
+			outgoing_traffic: string
+			/**
+			 * I​n​c​o​m​i​n​g​ ​T​r​a​f​f​i​c
+			 */
+			incoming_traffic: string
+		}
+		top_pages: {
+			/**
+			 * T​o​p​ ​P​a​g​e​s
+			 */
+			title: string
+			/**
+			 * {​0​}​ ​v​i​e​w​s​ ​(​{​1​}​%​)
+			 * @param {unknown} 0
+			 * @param {unknown} 1
+			 */
+			page_text: RequiredParams<'0' | '1'>
+		}
+		browser_distribution: {
+			/**
+			 * B​r​o​w​s​e​r​ ​D​i​s​t​r​i​b​u​t​i​o​n
+			 */
+			title: string
+			/**
+			 * B​r​o​w​s​e​r
+			 */
+			header: string
+		}
+		device_distribution: {
+			/**
+			 * D​e​v​i​c​e​ ​D​i​s​t​r​i​b​u​t​i​o​n
+			 */
+			title: string
+			/**
+			 * D​e​v​i​c​e
+			 */
+			header: string
+		}
+		referer_distribution: {
+			/**
+			 * R​e​f​e​r​e​r​ ​D​i​s​t​r​i​b​u​t​i​o​n
+			 */
+			title: string
+			/**
+			 * R​e​f​e​r​e​r
+			 */
+			header: string
+		}
+		instance_distribution: {
+			/**
+			 * S​e​r​v​e​r​ ​D​i​s​t​r​i​b​u​t​i​o​n
+			 */
+			title: string
+			/**
+			 * S​e​r​v​e​r
+			 */
+			header: string
+		}
 	}
 	remote_actions: {
 		/**
@@ -243,6 +337,16 @@ type RootTranslation = {
 			 */
 			year: string
 		}
+	}
+	featureflags: {
+		/**
+		 * F​e​a​t​u​r​e​ ​F​l​a​g​s
+		 */
+		title: string
+		/**
+		 * F​e​a​t​u​r​e​ ​F​l​a​g​s
+		 */
+		header: string
 	}
 	user_sessions: {
 		/**
@@ -631,6 +735,98 @@ export type TranslationFunctions = {
 		 * Analytics Dashboard
 		 */
 		header: () => LocalizedString
+		metrics: {
+			/**
+			 * Metrics
+			 */
+			title: () => LocalizedString
+			/**
+			 * Total Visits
+			 */
+			total_visits: () => LocalizedString
+			/**
+			 * Unique Visitors
+			 */
+			unique_visitors: () => LocalizedString
+			/**
+			 * Active Visitors
+			 */
+			active_visitors: () => LocalizedString
+			/**
+			 * Error Rate
+			 */
+			error_rate: () => LocalizedString
+			/**
+			 * Average Latency
+			 */
+			average_latency: () => LocalizedString
+			/**
+			 * 95th Percentile Latency
+			 */
+			latency_95th_percentile: () => LocalizedString
+			/**
+			 * 99th Percentile Latency
+			 */
+			latency_99th_percentile: () => LocalizedString
+			/**
+			 * Outgoing Traffic
+			 */
+			outgoing_traffic: () => LocalizedString
+			/**
+			 * Incoming Traffic
+			 */
+			incoming_traffic: () => LocalizedString
+		}
+		top_pages: {
+			/**
+			 * Top Pages
+			 */
+			title: () => LocalizedString
+			/**
+			 * {0} views ({1}%)
+			 */
+			page_text: (arg0: unknown, arg1: unknown) => LocalizedString
+		}
+		browser_distribution: {
+			/**
+			 * Browser Distribution
+			 */
+			title: () => LocalizedString
+			/**
+			 * Browser
+			 */
+			header: () => LocalizedString
+		}
+		device_distribution: {
+			/**
+			 * Device Distribution
+			 */
+			title: () => LocalizedString
+			/**
+			 * Device
+			 */
+			header: () => LocalizedString
+		}
+		referer_distribution: {
+			/**
+			 * Referer Distribution
+			 */
+			title: () => LocalizedString
+			/**
+			 * Referer
+			 */
+			header: () => LocalizedString
+		}
+		instance_distribution: {
+			/**
+			 * Server Distribution
+			 */
+			title: () => LocalizedString
+			/**
+			 * Server
+			 */
+			header: () => LocalizedString
+		}
 	}
 	remote_actions: {
 		/**
@@ -703,6 +899,16 @@ export type TranslationFunctions = {
 			 */
 			year: () => LocalizedString
 		}
+	}
+	featureflags: {
+		/**
+		 * Feature Flags
+		 */
+		title: () => LocalizedString
+		/**
+		 * Feature Flags
+		 */
+		header: () => LocalizedString
 	}
 	user_sessions: {
 		/**

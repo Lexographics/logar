@@ -49,6 +49,38 @@ const en = {
 	analytics: {
 		title: 'Analytics',
 		header: 'Analytics Dashboard',
+		metrics: {
+			title: 'Metrics',
+			total_visits: 'Total Visits',
+			unique_visitors: 'Unique Visitors',
+			active_visitors: 'Active Visitors',
+			error_rate: 'Error Rate',
+			average_latency: 'Average Latency',
+			latency_95th_percentile: '95th Percentile Latency',
+			latency_99th_percentile: '99th Percentile Latency',
+			outgoing_traffic: 'Outgoing Traffic',
+			incoming_traffic: 'Incoming Traffic',
+		},
+		top_pages: {
+			title: 'Top Pages',
+			page_text: '{0} views ({1}%)',
+		},
+		browser_distribution: {
+			title: 'Browser Distribution',
+			header: 'Browser',
+		},
+		device_distribution: {
+			title: 'Device Distribution',
+			header: 'Device',
+		},
+		referer_distribution: {
+			title: 'Referer Distribution',
+			header: 'Referer',
+		},
+		instance_distribution: {
+			title: 'Server Distribution',
+			header: 'Server',
+		},
 	},
 	remote_actions: {
 		title: 'Remote Actions',
@@ -70,6 +102,10 @@ const en = {
 			month: "Month",
 			year: "Year",
 		},
+	},
+	featureflags: {
+		title: 'Feature Flags',
+		header: 'Feature Flags',
 	},
 	user_sessions: {
 		title: 'Sessions',

@@ -52,6 +52,38 @@ const ru = {
 	analytics: {
 		title: 'Аналитика',
 		header: 'Панель аналитики',
+		metrics: {
+			title: 'Метрики',
+			total_visits: 'Всего посещений',
+			unique_visitors: 'Уникальные посетители',
+			active_visitors: 'Активные посетители',
+			error_rate: 'Процент ошибок',
+			average_latency: 'Средняя задержка',
+			latency_95th_percentile: '95-й процентиль задержки',
+			latency_99th_percentile: '99-й процентиль задержки',
+			outgoing_traffic: 'Исходящий трафик',
+			incoming_traffic: 'Входящий трафик',
+		},
+		top_pages: {
+			title: 'Популярные страницы',
+			page_text: '{0} просмотров ({1}%)',
+		},
+		browser_distribution: {
+			title: 'Распределение по браузерам',
+			header: 'Браузер',
+		},
+		device_distribution: {
+			title: 'Распределение по устройствам',
+			header: 'Устройство',
+		},
+		referer_distribution: {
+			title: 'Распределение по реферерам',
+			header: 'Реферер',
+		},
+		instance_distribution: {
+			title: 'Распределение по серверам',
+			header: 'Сервер',
+		},
 	},
 	remote_actions: {
 		title: 'Удаленные действия',

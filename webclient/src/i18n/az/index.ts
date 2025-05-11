@@ -52,6 +52,38 @@ const az = {
 	analytics: {
 		title: 'Analitika',
 		header: 'Analitika Paneli',
+		metrics: {
+			title: 'Metriklər',
+			total_visits: 'Ümumi Ziyarətlər',
+			unique_visitors: 'Unikal Ziyarətçilər',
+			active_visitors: 'Aktiv Ziyarətçilər',
+			error_rate: 'Səhv Faizi',
+			average_latency: 'Orta Gecikmə',
+			latency_95th_percentile: '95-ci Faiz Gecikməsi',
+			latency_99th_percentile: '99-cu Faiz Gecikməsi',
+			outgoing_traffic: 'Gedən Trafik',
+			incoming_traffic: 'Gələn Trafik',
+		},
+		top_pages: {
+			title: 'Ən Populyar Səhifələr',
+			page_text: '{0} baxış (%{1})',
+		},
+		browser_distribution: {
+			title: 'Brauzer Dağılımı',
+			header: 'Brauzer',
+		},
+		device_distribution: {
+			title: 'Cihaz Dağılımı',
+			header: 'Cihaz',
+		},
+		referer_distribution: {
+			title: 'İstinad Dağılımı',
+			header: 'İstinad',
+		},
+		instance_distribution: {
+			title: 'Server Dağılımı',
+			header: 'Server',
+		},
 	},
 	remote_actions: {
 		title: 'Uzaqdan Əmrlər',
