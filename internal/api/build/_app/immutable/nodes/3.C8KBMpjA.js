@@ -1,0 +1,1 @@
+import"../chunks/CWj6FrbW.js";import"../chunks/CACHlnBC.js";import{p as a,o as s,a as p}from"../chunks/EFB-SWyS.js";import{i as e}from"../chunks/De4FbAEP.js";import{g as o}from"../chunks/76V20tqp.js";import{u as i,g as r}from"../chunks/LjJPEWw8.js";function $(m,t){a(t,!1),s(()=>{i.current.token?o(`${r()}/dashboard`):o(`${r()}/login`)}),e(),p()}export{$ as component};

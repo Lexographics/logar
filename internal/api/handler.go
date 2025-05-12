@@ -87,7 +87,6 @@ func (h *Handler) SetMetadataMiddleware(next http.Handler) http.Handler {
 	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		basePath, err := r.Cookie("base-path")
 		if err != nil || basePath.Value != h.cfg.BasePath {
-			fmt.Println("Setting base-path cookie to", h.cfg.BasePath)
 			http.SetCookie(w, &http.Cookie{
 				Name:   "base-path",
 				Value:  h.cfg.BasePath,
@@ -98,7 +97,6 @@ func (h *Handler) SetMetadataMiddleware(next http.Handler) http.Handler {
 
 		apiUrl, err := r.Cookie("api-url")
 		if err != nil || apiUrl.Value != h.cfg.ApiURL {
-			fmt.Println("Setting api-url cookie to", h.cfg.ApiURL)
 			http.SetCookie(w, &http.Cookie{
 				Name:   "api-url",
 				Value:  h.cfg.ApiURL,

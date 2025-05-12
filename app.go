@@ -68,7 +68,7 @@ func New(opts ...ConfigOpt) (App, error) {
 	}
 
 	db, err := gorm.Open(sqlite.Open("file:"+cfg.Database+"?cache=shared&mode=rwc&_journal_mode=WAL"), &gorm.Config{
-		Logger: logger.Default,
+		Logger: logger.Discard,
 	})
 	if err != nil {
 		return nil, err

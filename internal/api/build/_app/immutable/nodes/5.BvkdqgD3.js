@@ -1,1 +1,0 @@
-import"../chunks/CWj6FrbW.js";import"../chunks/Bj_6Qs7F.js";import{t as r,a as e}from"../chunks/DaIljfVv.js";import{B as p}from"../chunks/BTvZcNQX.js";var s=r("<h2>Analytics</h2>");function f(t){p(t,{children:(o,i)=>{var a=s();e(o,a)},$$slots:{default:!0}})}export{f as component};
