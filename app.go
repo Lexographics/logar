@@ -42,7 +42,7 @@ type AppImpl struct {
 	actionManager ActionManager
 	webPanel      WebPanel
 	analytics     Analytics
-	featureFlags  FeatureFlags
+	// featureFlags  FeatureFlags
 
 	db        *gorm.DB
 	config    Config
@@ -110,7 +110,7 @@ func New(opts ...ConfigOpt) (App, error) {
 	logger.actionManager = &ActionManagerImpl{core: logger}
 	logger.webPanel = &WebPanelImpl{core: logger}
 	logger.analytics = &AnalyticsImpl{core: logger}
-	logger.featureFlags = &FeatureFlagsImpl{core: logger}
+	// logger.featureFlags = &FeatureFlagsImpl{core: logger}
 
 	// Default type kinds
 	logger.SetTypeKind(reflect.TypeOf(string("")), TypeKind_Text)
