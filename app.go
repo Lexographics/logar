@@ -22,7 +22,7 @@ type App interface {
 	GetActionManager() ActionManager
 	GetWebPanel() WebPanel
 	GetAnalytics() Analytics
-	GetFeatureFlags() FeatureFlags
+	// GetFeatureFlags() FeatureFlags
 
 	Close() error
 	GetAllModels() LogModels
@@ -86,6 +86,7 @@ func New(opts ...ConfigOpt) (App, error) {
 		&models.Session{},
 		&models.User{},
 		&RequestLog{},
+		// &FeatureFlag{},
 	)
 	if err != nil {
 		return nil, err
@@ -178,9 +179,9 @@ func (l *AppImpl) GetAnalytics() Analytics {
 	return l.analytics
 }
 
-func (l *AppImpl) GetFeatureFlags() FeatureFlags {
-	return l.featureFlags
-}
+// func (l *AppImpl) GetFeatureFlags() FeatureFlags {
+// 	return l.featureFlags
+// }
 
 func (l *AppImpl) PrepareContext(parent context.Context, values Map) context.Context {
 	if parent == nil {
