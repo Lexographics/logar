@@ -54,7 +54,7 @@ type AppImpl struct {
 func New(opts ...ConfigOpt) (App, error) {
 	cfg := Config{
 		AppName:         "logger",
-		Database:        "logs.db",
+		Database:        nil,
 		RequireAuth:     false,
 		AuthFunc:        nil,
 		Models:          LogModels{},
@@ -67,7 +67,12 @@ func New(opts ...ConfigOpt) (App, error) {
 		opt(&cfg)
 	}
 
-	db, err := gorm.Open(sqlite.Open("file:"+cfg.Database+"?cache=shared&mode=rwc&_journal_mode=WAL"), &gorm.Config{
+	if cfg.Database == nil {
+		// cfg.Database = sqlite.Open("file:" + cfg.AppName + ".db?cache=shared&mode=rwc&_journal_mode=WAL")
+		cfg.Database = sqlite.Open("file::memory:?cache=shared")
+	}
+
+	db, err := gorm.Open(cfg.Database, &gorm.Config{
 		Logger: logger.Discard,
 	})
 	if err != nil {

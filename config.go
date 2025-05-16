@@ -4,6 +4,7 @@ import (
 	"net/http"
 
 	"github.com/Lexographics/logar/proxy"
+	"gorm.io/gorm"
 )
 
 type Config struct {
@@ -43,7 +44,7 @@ func WithAppName(appName string) ConfigOpt {
 	}
 }
 
-func WithDatabase(database string) ConfigOpt {
+func WithDatabase(database gorm.Dialector) ConfigOpt {
 	return func(cfg *Config) {
 		cfg.Database = database
 	}
