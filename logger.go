@@ -6,7 +6,7 @@ import (
 	"encoding/json"
 	"time"
 
-	"github.com/Lexographics/logar/internal/domain/models"
+	"github.com/Lexographics/logar/models"
 )
 
 type Logger interface {

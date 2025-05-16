@@ -5,7 +5,7 @@ import (
 	"slices"
 	"time"
 
-	"github.com/Lexographics/logar/internal/domain/models"
+	"github.com/Lexographics/logar/models"
 	"gorm.io/gorm"
 )
 

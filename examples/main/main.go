@@ -28,7 +28,7 @@ func main() {
 
 	app, err := logar.New(
 		logar.WithAppName(name),
-		logar.WithDatabase("logs.db"),
+		logar.WithDatabase(sqlite.Open("logs.db")),
 		logar.WithDefaultLanguage(logar.English),
 		logar.AddModel("System Logs", "system-logs"),
 		logar.AddModel("User Trace", "user-trace"),

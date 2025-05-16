@@ -5,7 +5,7 @@ import (
 	"reflect"
 	"time"
 
-	"github.com/Lexographics/logar/internal/domain/models"
+	"github.com/Lexographics/logar/models"
 	"github.com/Lexographics/logar/proxy"
 	"gorm.io/driver/sqlite"
 	"gorm.io/gorm"
@@ -85,8 +85,8 @@ func New(opts ...ConfigOpt) (App, error) {
 		&models.Log{},
 		&models.Session{},
 		&models.User{},
-		&RequestLog{},
-		// &FeatureFlag{},
+		&models.RequestLog{},
+		&models.FeatureFlag{},
 	)
 	if err != nil {
 		return nil, err

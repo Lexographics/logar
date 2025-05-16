@@ -4,7 +4,7 @@ import (
 	"fmt"
 
 	"github.com/Lexographics/logar"
-	"github.com/Lexographics/logar/internal/domain/models"
+	"github.com/Lexographics/logar/models"
 )
 
 type writer struct {

@@ -2,6 +2,8 @@ package models
 
 import (
 	"time"
+
+	"github.com/Lexographics/logar/internal/tableprefix"
 )
 
 type Log struct {
@@ -11,6 +13,10 @@ type Log struct {
 	Message   string
 	Category  string
 	Severity  Severity
+}
+
+func (Log) TableName() string {
+	return tableprefix.Get() + "logs"
 }
 
 func (l Log) FieldNames() []string {

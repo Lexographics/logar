@@ -11,6 +11,7 @@ import (
 
 	"github.com/Lexographics/logar"
 	"github.com/Lexographics/logar/logarweb"
+	"github.com/Lexographics/logar/models"
 	"github.com/labstack/echo/v4"
 	"github.com/labstack/echo/v4/middleware"
 	"github.com/mileusna/useragent"
@@ -56,7 +57,7 @@ func main() {
 			contentLength, _ := strconv.ParseInt(c.Request().Header.Get(echo.HeaderContentLength), 10, 64)
 			ua := useragent.Parse(c.Request().UserAgent())
 
-			app.GetAnalytics().RegisterRequest(logar.RequestLog{
+			app.GetAnalytics().RegisterRequest(models.RequestLog{
 				Timestamp:  time.Now(),
 				VisitorID:  userID,
 				Instance:   "eu-east-1",

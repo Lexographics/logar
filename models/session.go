@@ -1,6 +1,10 @@
 package models
 
-import "time"
+import (
+	"time"
+
+	"github.com/Lexographics/logar/internal/tableprefix"
+)
 
 type Session struct {
 	ID           uint `gorm:"primary_key"`
@@ -11,4 +15,8 @@ type Session struct {
 
 	UserID uint   `gorm:"not null"`
 	Token  string `gorm:"not null;unique"`
+}
+
+func (Session) TableName() string {
+	return tableprefix.Get() + "sessions"
 }

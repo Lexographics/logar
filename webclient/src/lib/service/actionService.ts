@@ -21,7 +21,7 @@ class ActionService {
     this.axios = createAxiosInstance();
   }
 
-  async getActions() {
+  async getActions(): Promise<[Action[], Error | null]> {
     try {
       const response = await this.axios.get<Response<Action[]>>(`${getApiUrl()}/actions`, {
         headers: { ...getAuthHeaders() },

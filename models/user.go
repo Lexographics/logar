@@ -1,6 +1,10 @@
 package models
 
-import "time"
+import (
+	"time"
+
+	"github.com/Lexographics/logar/internal/tableprefix"
+)
 
 type User struct {
 	ID        uint      `gorm:"primary_key"`
@@ -11,4 +15,8 @@ type User struct {
 	Password     string    `json:"-" gorm:"not null"`
 	IsAdmin      bool      `json:"is_admin" gorm:"not null;default:false"`
 	LastActivity time.Time `json:"last_activity"`
+}
+
+func (User) TableName() string {
+	return tableprefix.Get() + "users"
 }

@@ -13,7 +13,7 @@ import (
 	"time"
 
 	"github.com/Lexographics/logar"
-	"github.com/Lexographics/logar/internal/domain/models"
+	"github.com/Lexographics/logar/models"
 	"github.com/mileusna/useragent"
 )
 

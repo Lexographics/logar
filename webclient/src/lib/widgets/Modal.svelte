@@ -19,7 +19,7 @@
   <div class="modal-content">
     <div style="display: flex; align-items: center; justify-content: space-between;">
       <h2>{title}</h2>
-      <button class="button" onclick={closeModal} aria-label="Close">
+      <button class="button" onclick={closeModal} aria-label="Close" style="color: var(--text-color);">
         <i class="fa-solid fa-xmark fs-4"></i>
       </button>
     </div>
@@ -58,7 +58,7 @@
   }
 
   .modal-content {
-    background-color: #fff;
+    background-color: var(--card-background);
     padding: 20px;
     border-radius: 5px;
     position: relative;

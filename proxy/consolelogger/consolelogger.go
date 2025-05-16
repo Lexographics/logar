@@ -5,7 +5,7 @@ import (
 	"strings"
 	"time"
 
-	"github.com/Lexographics/logar/internal/domain/models"
+	"github.com/Lexographics/logar/models"
 	"github.com/Lexographics/logar/proxy"
 )
 

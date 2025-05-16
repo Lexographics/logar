@@ -9,6 +9,7 @@ import (
 	"github.com/Lexographics/logar/logfilter"
 	"github.com/Lexographics/logar/proxy"
 	"github.com/Lexographics/logar/proxy/consolelogger"
+	"gorm.io/driver/sqlite"
 
 	"github.com/labstack/echo/v4"
 	"github.com/labstack/echo/v4/middleware"
@@ -16,9 +17,11 @@ import (
 
 func main() {
 
+	logar.SetTablePrefix("minimal_")
 	app, err := logar.New(
 		logar.WithAppName("minimal"),
 		logar.WithAdminCredentials("admin", "admin"),
+		logar.WithDatabase(sqlite.Open("minimal.db")),
 
 		logar.AddModel("User Trace", "user-trace", "fa-solid fa-users"),
 		logar.AddModel("Logs", "logs", "fa-solid fa-file-lines"),
