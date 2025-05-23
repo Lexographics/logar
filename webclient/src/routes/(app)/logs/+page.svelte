@@ -9,6 +9,7 @@
   import { mount, onMount, untrack } from "svelte";
   import { fade, fly } from 'svelte/transition';
   import LL from "../../../i18n/i18n-svelte";
+  import MessageView from "./MessageView.svelte";
 
   let model = $state("");
   let filters = $state([]);
@@ -386,8 +387,10 @@
               >
                 <td style="width: 1%;">{log.ID}</td>
                 <td style="width: 1%;">{getSeverityClass(log.Severity).toUpperCase()}</td>
-                <td style="width: 24ch;">{moment(log.CreatedAt).format("DD-MM-YYYY HH:mm:ss.SSS")}</td>
-                <td style="width: 60%; word-break: break-all; text-align: left;">{log.Message}</td>
+                <td style="width: 24ch; white-space: nowrap;">{moment(log.CreatedAt).format("DD-MM-YYYY HH:mm:ss.SSS")}</td>
+                <td style="width: 100%; word-break: break-all; text-align: left;">
+                  <MessageView message={log.Message} />
+                </td>
                 <td style="width: 1%; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">{log.Category}</td>
               </tr>
             {/each}
