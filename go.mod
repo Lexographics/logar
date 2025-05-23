@@ -3,6 +3,7 @@ module github.com/Lexographics/logar
 go 1.23.3
 
 require (
+	github.com/expr-lang/expr v1.17.2
 	github.com/google/uuid v1.6.0
 	github.com/labstack/echo/v4 v4.13.3
 	golang.org/x/crypto v0.36.0

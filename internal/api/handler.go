@@ -70,6 +70,10 @@ func (h *Handler) Router(mux *http.ServeMux) {
 	mux.HandleFunc("POST /user", h.AuthMiddleware(h.CreateUser))
 	mux.HandleFunc("GET /user", h.AuthMiddleware(h.GetAllUsers))
 	mux.HandleFunc("GET /analytics", h.AuthMiddleware(h.GetAnalytics))
+	mux.HandleFunc("GET /feature-flags", h.AuthMiddleware(h.GetFeatureFlags))
+	mux.HandleFunc("PUT /feature-flags", h.AuthMiddleware(h.UpdateFeatureFlag))
+	mux.HandleFunc("POST /feature-flags", h.AuthMiddleware(h.CreateFeatureFlag))
+	mux.HandleFunc("DELETE /feature-flags", h.AuthMiddleware(h.DeleteFeatureFlag))
 
 	if dev {
 		mux.Handle("/", h.SetMetadataMiddleware(http.FileServer(http.Dir("webclient/build"))))
@@ -636,4 +640,100 @@ func (h *Handler) GetAnalytics(w http.ResponseWriter, r *http.Request) {
 	}
 
 	json.NewEncoder(w).Encode(NewResponse(StatusCode_Success, analytics))
+}
+
+func (h *Handler) GetFeatureFlags(w http.ResponseWriter, r *http.Request) {
+	flags, err := h.logger.GetFeatureFlags().GetFeatureFlags()
+	if err != nil {
+		w.WriteHeader(500)
+		json.NewEncoder(w).Encode(NewResponse(StatusCode_Error, err.Error()))
+		return
+	}
+
+	json.NewEncoder(w).Encode(NewResponse(StatusCode_Success, flags))
+}
+
+func (h *Handler) UpdateFeatureFlag(w http.ResponseWriter, r *http.Request) {
+	flagID := r.FormValue("id")
+	if flagID == "" {
+		w.WriteHeader(422)
+		json.NewEncoder(w).Encode(NewResponse(StatusCode_InvalidRequest, "Missing 'id' in request body"))
+		return
+	}
+
+	flagIDUint, err := strconv.ParseUint(flagID, 10, 64)
+	if err != nil {
+		w.WriteHeader(422)
+		json.NewEncoder(w).Encode(NewResponse(StatusCode_InvalidRequest, "Invalid 'id' in request body"))
+		return
+	}
+
+	flag, err := h.logger.GetFeatureFlags().GetFeatureFlag(uint(flagIDUint))
+	if err != nil {
+		w.WriteHeader(500)
+		json.NewEncoder(w).Encode(NewResponse(StatusCode_Error, err.Error()))
+		return
+	}
+
+	flag.Name = r.FormValue("name")
+	flag.Enabled = r.FormValue("enabled") == "true"
+	flag.Condition = r.FormValue("condition")
+
+	err = h.logger.GetFeatureFlags().UpdateFeatureFlag(&flag)
+	if err != nil {
+		w.WriteHeader(500)
+		json.NewEncoder(w).Encode(NewResponse(StatusCode_Error, err.Error()))
+		return
+	}
+
+	json.NewEncoder(w).Encode(NewResponse(StatusCode_Success, flag))
+}
+
+func (h *Handler) CreateFeatureFlag(w http.ResponseWriter, r *http.Request) {
+	flagName := r.FormValue("name")
+	if flagName == "" {
+		w.WriteHeader(422)
+		json.NewEncoder(w).Encode(NewResponse(StatusCode_InvalidRequest, "Missing 'name' in request body"))
+		return
+	}
+
+	flag := models.FeatureFlag{
+		Name:      flagName,
+		Enabled:   r.FormValue("enabled") == "true",
+		Condition: r.FormValue("condition"),
+	}
+
+	err := h.logger.GetFeatureFlags().CreateFeatureFlag(&flag)
+	if err != nil {
+		w.WriteHeader(500)
+		json.NewEncoder(w).Encode(NewResponse(StatusCode_Error, err.Error()))
+		return
+	}
+
+	json.NewEncoder(w).Encode(NewResponse(StatusCode_Success, flag))
+}
+
+func (h *Handler) DeleteFeatureFlag(w http.ResponseWriter, r *http.Request) {
+	flagID := r.URL.Query().Get("id")
+	if flagID == "" {
+		w.WriteHeader(422)
+		json.NewEncoder(w).Encode(NewResponse(StatusCode_InvalidRequest, "Missing 'id' in request body"))
+		return
+	}
+
+	flagIDUint, err := strconv.ParseUint(flagID, 10, 64)
+	if err != nil {
+		w.WriteHeader(422)
+		json.NewEncoder(w).Encode(NewResponse(StatusCode_InvalidRequest, "Invalid 'id' in request body"))
+		return
+	}
+
+	err = h.logger.GetFeatureFlags().DeleteFeatureFlag(uint(flagIDUint))
+	if err != nil {
+		w.WriteHeader(500)
+		json.NewEncoder(w).Encode(NewResponse(StatusCode_Error, err.Error()))
+		return
+	}
+
+	json.NewEncoder(w).Encode(NewResponse(StatusCode_Success, "Feature flag deleted"))
 }

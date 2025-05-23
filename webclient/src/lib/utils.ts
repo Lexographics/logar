@@ -1,9 +1,15 @@
+import { LocalStorage } from "./storage.svelte";
+
+export const apiUrlStore = new LocalStorage<string>("api-url", "");
 
 export function getApiUrl() : string {
+  if (apiUrlStore.current) {
+    return apiUrlStore.current;
+  }
+
   if(process.env.PUBLIC_DEV_API) {
     return process.env.PUBLIC_DEV_API;
   }
-  
 
   const apiUrl = getCookie("api-url");
   if(apiUrl) {

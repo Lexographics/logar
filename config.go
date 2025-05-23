@@ -9,7 +9,7 @@ import (
 
 type Config struct {
 	AppName         string
-	Database        string
+	Database        gorm.Dialector
 	RequireAuth     bool
 	AuthFunc        AuthFunc
 	Models          LogModels
