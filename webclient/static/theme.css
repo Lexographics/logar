@@ -37,6 +37,8 @@
   --row-error-striped-bg-light: #eccccf;
   --row-fatal-bg-light: #d68c8c;
   --row-fatal-striped-bg-light: #e6b1b1;
+  --skeleton-base-light: #f0f0f0;
+  --skeleton-highlight-light: #e0e0e0;
   
   /* ********************* Dark theme ********************* */
   --background-color-dark: #121212;
@@ -73,6 +75,8 @@
   --row-error-striped-bg-dark: #4d2024;
   --row-fatal-bg-dark: #4d1515;
   --row-fatal-striped-bg-dark: #661a1a;
+  --skeleton-base-dark: #2a2a2a;
+  --skeleton-highlight-dark: #3a3a3a;
 
 
   /* ********************* Default theme (Light) ********************* */
@@ -110,6 +114,8 @@
   --row-error-striped-bg: var(--row-error-striped-bg-light);
   --row-fatal-bg: var(--row-fatal-bg-light);
   --row-fatal-striped-bg: var(--row-fatal-striped-bg-light);
+  --skeleton-base: var(--skeleton-base-light);
+  --skeleton-highlight: var(--skeleton-highlight-light);
 
   /* ********************* Dark Blue theme ********************* */
   --background-color-dark-blue: #0f172a;
@@ -146,6 +152,8 @@
   --row-error-striped-bg-dark-blue: #631010;
   --row-fatal-bg-dark-blue: #5e0c0c;
   --row-fatal-striped-bg-dark-blue: #7f1d1d;
+  --skeleton-base-dark-blue: #1e293b;
+  --skeleton-highlight-dark-blue: #334155;
 
   /* ********************* Light Green theme ********************* */
   --background-color-light-green: linear-gradient(135deg, #e0fcfc, #e0f7f0);
@@ -182,6 +190,8 @@
   --row-error-striped-bg-light-green: #fecaca;
   --row-fatal-bg-light-green: #ffcdd2;
   --row-fatal-striped-bg-light-green: #ef9a9a;
+  --skeleton-base-light-green: #f0fdfa;
+  --skeleton-highlight-light-green: #ccfbf1;
 
   /* ********************* Dark Green theme ********************* */
   --background-color-dark-green: #061a14;
@@ -218,6 +228,8 @@
   --row-error-striped-bg-dark-green: #5a0828;
   --row-fatal-bg-dark-green: #6b0f31;
   --row-fatal-striped-bg-dark-green: #831843;
+  --skeleton-base-dark-green: #0f2e24;
+  --skeleton-highlight-dark-green: #133a2e;
 
   /* ********************* Light Purple theme ********************* */
   --background-color-light-purple: #f5f3ff;
@@ -254,6 +266,8 @@
   --row-error-striped-bg-light-purple: #fecaca;
   --row-fatal-bg-light-purple: #ffcdd2;
   --row-fatal-striped-bg-light-purple: #ef9a9a;
+  --skeleton-base-light-purple: #f5f3ff;
+  --skeleton-highlight-light-purple: #ede9fe;
 
   /* ********************* Dark Purple theme ********************* */
   --background-color-dark-purple: #1e1b4b;
@@ -290,6 +304,8 @@
   --row-error-striped-bg-dark-purple: #631010;
   --row-fatal-bg-dark-purple: #5e0c0c;
   --row-fatal-striped-bg-dark-purple: #7f1d1d;
+  --skeleton-base-dark-purple: #2e225f;
+  --skeleton-highlight-dark-purple: #3a2b7a;
 
   /* ********************* Light Pink Theme ********************* */
   --background-color-light-pink: linear-gradient(135deg, #d8b4fe, #fda4af);
@@ -326,6 +342,8 @@
   --row-error-striped-bg-light-pink: #ffe4e6;
   --row-fatal-bg-light-pink: #fecdd3;
   --row-fatal-striped-bg-light-pink: #fda4af;
+  --skeleton-base-light-pink: #fdf4ff;
+  --skeleton-highlight-light-pink: #fae8ff;
 
   /* ********************* Dark Pink Theme ********************* */
   --background-color-dark-pink: linear-gradient(135deg, #2a0547, #41061d);
@@ -362,6 +380,8 @@
   --row-error-striped-bg-dark-pink: #5a0828;
   --row-fatal-bg-dark-pink: #6b0f31;
   --row-fatal-striped-bg-dark-pink: #831843;
+  --skeleton-base-dark-pink: #1f0b33;
+  --skeleton-highlight-dark-pink: #2a0e44;
 }
 
 [data-theme="light"] {
@@ -400,6 +420,8 @@
   --row-error-striped-bg: var(--row-error-striped-bg-light);
   --row-fatal-bg: var(--row-fatal-bg-light);
   --row-fatal-striped-bg: var(--row-fatal-striped-bg-light);
+  --skeleton-base: var(--skeleton-base-light);
+  --skeleton-highlight: var(--skeleton-highlight-light);
 }
 
 [data-theme="dark"] {
@@ -438,6 +460,8 @@
   --row-error-striped-bg: var(--row-error-striped-bg-dark);
   --row-fatal-bg: var(--row-fatal-bg-dark);
   --row-fatal-striped-bg: var(--row-fatal-striped-bg-dark);
+  --skeleton-base: var(--skeleton-base-dark);
+  --skeleton-highlight: var(--skeleton-highlight-dark);
 }
 
 [data-theme="dark-blue"] {
@@ -476,6 +500,8 @@
   --row-error-striped-bg: var(--row-error-striped-bg-dark-blue);
   --row-fatal-bg: var(--row-fatal-bg-dark-blue);
   --row-fatal-striped-bg: var(--row-fatal-striped-bg-dark-blue);
+  --skeleton-base: var(--skeleton-base-dark-blue);
+  --skeleton-highlight: var(--skeleton-highlight-dark-blue);
 }
 
 [data-theme="light-green"] {
@@ -514,6 +540,8 @@
   --row-error-striped-bg: var(--row-error-striped-bg-light-green);
   --row-fatal-bg: var(--row-fatal-bg-light-green);
   --row-fatal-striped-bg: var(--row-fatal-striped-bg-light-green);
+  --skeleton-base: var(--skeleton-base-light-green);
+  --skeleton-highlight: var(--skeleton-highlight-light-green);
 }
 
 [data-theme="dark-green"] {
@@ -551,6 +579,8 @@
   --row-error-striped-bg: var(--row-error-striped-bg-dark-green);
   --row-fatal-bg: var(--row-fatal-bg-dark-green);
   --row-fatal-striped-bg: var(--row-fatal-striped-bg-dark-green);
+  --skeleton-base: var(--skeleton-base-dark-green);
+  --skeleton-highlight: var(--skeleton-highlight-dark-green);
 }
 
 [data-theme="light-purple"] {
@@ -588,6 +618,8 @@
   --row-error-striped-bg: var(--row-error-striped-bg-light-purple);
   --row-fatal-bg: var(--row-fatal-bg-light-purple);
   --row-fatal-striped-bg: var(--row-fatal-striped-bg-light-purple);
+  --skeleton-base: var(--skeleton-base-light-purple);
+  --skeleton-highlight: var(--skeleton-highlight-light-purple);
 }
 
 [data-theme="dark-purple"] {
@@ -625,6 +657,8 @@
   --row-error-striped-bg: var(--row-error-striped-bg-dark-purple);
   --row-fatal-bg: var(--row-fatal-bg-dark-purple);
   --row-fatal-striped-bg: var(--row-fatal-striped-bg-dark-purple);
+  --skeleton-base: var(--skeleton-base-dark-purple);
+  --skeleton-highlight: var(--skeleton-highlight-dark-purple);
 }
 
 [data-theme="light-pink"] {
@@ -662,6 +696,8 @@
   --row-error-striped-bg: var(--row-error-striped-bg-light-pink);
   --row-fatal-bg: var(--row-fatal-bg-light-pink);
   --row-fatal-striped-bg: var(--row-fatal-striped-bg-light-pink);
+  --skeleton-base: var(--skeleton-base-light-pink);
+  --skeleton-highlight: var(--skeleton-highlight-light-pink);
 }
 
 [data-theme="dark-pink"] {
@@ -699,6 +735,8 @@
   --row-error-striped-bg: var(--row-error-striped-bg-dark-pink);
   --row-fatal-bg: var(--row-fatal-bg-dark-pink);
   --row-fatal-striped-bg: var(--row-fatal-striped-bg-dark-pink);
+  --skeleton-base: var(--skeleton-base-dark-pink);
+  --skeleton-highlight: var(--skeleton-highlight-dark-pink);
 }
 
 @media (prefers-color-scheme: dark) {
@@ -738,6 +776,8 @@
     --row-error-striped-bg: var(--row-error-striped-bg-dark);
     --row-fatal-bg: var(--row-fatal-bg-dark);
     --row-fatal-striped-bg: var(--row-fatal-striped-bg-dark);
+    --skeleton-base: var(--skeleton-base-dark);
+    --skeleton-highlight: var(--skeleton-highlight-dark);
   }
 }
 
@@ -778,6 +818,8 @@
     --row-error-striped-bg: var(--row-error-striped-bg-light);
     --row-fatal-bg: var(--row-fatal-bg-light);
     --row-fatal-striped-bg: var(--row-fatal-striped-bg-light);
+    --skeleton-base: var(--skeleton-base-light);
+    --skeleton-highlight: var(--skeleton-highlight-light);
   }
 }
 
