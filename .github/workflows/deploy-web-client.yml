@@ -38,6 +38,7 @@ jobs:
       - name: Clone build repo
         run: |
           git clone https://x-access-token:${{ secrets.BUILD_REPO_TOKEN }}@github.com/Lexographics/logar-web.git logar-web
+          cd logar-web
           git config user.name "github-actions"
           git config user.email "github-actions@github.com"
         
