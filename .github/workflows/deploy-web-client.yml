@@ -4,6 +4,7 @@ on:
   push:
     tags:
       - 'v*'
+  workflow_dispatch:
 
 jobs:
   build-and-deploy:
@@ -18,14 +19,21 @@ jobs:
           node-version: 22
 
       - name: Install dependencies
+        working-directory: webclient
         run: npm ci
 
       - name: Build web client
+        working-directory: webclient
         run: npm run build
 
-      - name: Get tag name (version)
+      - name: Get version
         id: vars
-        run: echo "tag=${GITHUB_REF#refs/tags/}" >> $GITHUB_OUTPUT
+        run: |
+          if [[ $GITHUB_REF == refs/tags/* ]]; then
+            echo "tag=${GITHUB_REF#refs/tags/}" >> $GITHUB_OUTPUT
+          else
+            echo "tag=manual-$(date +%Y%m%d-%H%M%S)" >> $GITHUB_OUTPUT
+          fi
       
       - name: Clone build repo
         run: |
@@ -35,7 +43,7 @@ jobs:
         run: |
           mkdir -p logar-web/build/
           rm -rf logar-web/build/*
-          cp -r build/* logar-web/build/
+          cp -r webclient/build/* logar-web/build/
 
       - name: Commit and push to build repo
         run: |
