@@ -1,5 +1,10 @@
 name: Build and deploy web client
 
+on:
+  push:
+    tags:
+      - 'v*'
+
 jobs:
   build-and-deploy:
     runs-on: ubuntu-latest
