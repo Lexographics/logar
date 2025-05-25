@@ -10,11 +10,11 @@ import (
 type writer struct {
 	lg       logar.App
 	severity models.Severity
-	model    string
+	model    logar.Model
 	category string
 }
 
-func newWriter(logger logar.App, model, category string) *writer {
+func newWriter(logger logar.App, model logar.Model, category string) *writer {
 	return &writer{
 		lg:       logger,
 		severity: models.Severity_Info,

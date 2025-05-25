@@ -13,13 +13,13 @@ type Logger interface {
 	Common
 	WithContext(ctx context.Context) Logger
 
-	Print(model string, message any, category string, severity models.Severity) error
-	Log(model string, message any, category string) error
-	Info(model string, message any, category string) error
-	Warn(model string, message any, category string) error
-	Error(model string, message any, category string) error
-	Fatal(model string, message any, category string) error
-	Trace(model string, message any, category string) error
+	Print(model Model, message any, category string, severity models.Severity) error
+	Log(model Model, message any, category string) error
+	Info(model Model, message any, category string) error
+	Warn(model Model, message any, category string) error
+	Error(model Model, message any, category string) error
+	Fatal(model Model, message any, category string) error
+	Trace(model Model, message any, category string) error
 
 	NewTimer() *Timer
 }
@@ -37,7 +37,7 @@ func (l *LoggerImpl) WithContext(ctx context.Context) Logger {
 	return &LoggerImpl{core: l.core, ctx: ctx}
 }
 
-func (l *LoggerImpl) Print(model string, message any, category string, severity models.Severity) error {
+func (l *LoggerImpl) Print(model Model, message any, category string, severity models.Severity) error {
 	var contextualMessage any
 
 	values, ok := l.core.GetContextValues(l.ctx)
@@ -76,7 +76,7 @@ func (l *LoggerImpl) Print(model string, message any, category string, severity 
 	now := time.Now()
 	logEntry := models.Log{
 		CreatedAt: now,
-		Model:     model,
+		Model:     models.Model(model),
 		Message:   msg,
 		Category:  category,
 		Severity:  severity,
@@ -93,27 +93,27 @@ func (l *LoggerImpl) Print(model string, message any, category string, severity 
 	return nil
 }
 
-func (l *LoggerImpl) Log(model string, message any, category string) error {
+func (l *LoggerImpl) Log(model Model, message any, category string) error {
 	return l.Print(model, message, category, models.Severity_Log)
 }
 
-func (l *LoggerImpl) Info(model string, message any, category string) error {
+func (l *LoggerImpl) Info(model Model, message any, category string) error {
 	return l.Print(model, message, category, models.Severity_Info)
 }
 
-func (l *LoggerImpl) Warn(model string, message any, category string) error {
+func (l *LoggerImpl) Warn(model Model, message any, category string) error {
 	return l.Print(model, message, category, models.Severity_Warning)
 }
 
-func (l *LoggerImpl) Error(model string, message any, category string) error {
+func (l *LoggerImpl) Error(model Model, message any, category string) error {
 	return l.Print(model, message, category, models.Severity_Error)
 }
 
-func (l *LoggerImpl) Fatal(model string, message any, category string) error {
+func (l *LoggerImpl) Fatal(model Model, message any, category string) error {
 	return l.Print(model, message, category, models.Severity_Fatal)
 }
 
-func (l *LoggerImpl) Trace(model string, message any, category string) error {
+func (l *LoggerImpl) Trace(model Model, message any, category string) error {
 	return l.Print(model, message, category, models.Severity_Trace)
 }
 

@@ -42,11 +42,11 @@ func CategoryContains(substr string) Condition {
 
 func ModelContains(substr string) Condition {
 	return func(log models.Log) bool {
-		return strings.Contains(log.Model, substr)
+		return strings.Contains(string(log.Model), substr)
 	}
 }
 
-func IsModel(model string) Condition {
+func IsModel(model models.Model) Condition {
 	return func(log models.Log) bool {
 		return log.Model == model
 	}

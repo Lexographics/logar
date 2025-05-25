@@ -21,7 +21,7 @@ func (t *Timer) Elapsed() time.Duration {
 	return time.Since(t.start)
 }
 
-func (t *Timer) Log(model string, message string, category string) error {
+func (t *Timer) Log(model Model, message string, category string) error {
 	return t.logger.GetLogger().Log(
 		model,
 		fmt.Sprintf("\"%s\" took %s", message, t.Elapsed().String()),

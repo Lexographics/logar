@@ -9,7 +9,7 @@ import (
 type Log struct {
 	ID        uint `gorm:"primarykey"`
 	CreatedAt time.Time
-	Model     string
+	Model     Model
 	Message   string
 	Category  string
 	Severity  Severity
