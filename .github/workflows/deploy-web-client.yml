@@ -47,14 +47,10 @@ jobs:
           mkdir -p logar-web/build/
           rm -rf logar-web/build/*
           cp -r webclient/build/* logar-web/build/
-          cd logar-web
-          git status
 
       - name: Commit and push to build repo
         run: |
           cd logar-web
-          git status
-          git add .
-          git status
+          git add -f build/
           git commit -m "Add build for ${{ steps.vars.outputs.tag }}"
           git push
