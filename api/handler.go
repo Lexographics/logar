@@ -1,7 +1,6 @@
 package api
 
 import (
-	"embed"
 	"encoding/json"
 	"fmt"
 	"io/fs"
@@ -18,8 +17,9 @@ import (
 )
 
 type HandlerConfig struct {
-	BasePath string
-	ApiURL   string
+	BasePath       string
+	ApiURL         string
+	WebClientFiles fs.FS
 }
 
 type InvokeActionRequest struct {
@@ -52,9 +52,6 @@ func init() {
 	dev = os.Getenv("LOGAR_DEV") == "true"
 }
 
-//go:embed build/*
-var staticFiles embed.FS
-
 func (h *Handler) Router(mux *http.ServeMux) {
 	mux.HandleFunc("GET /language", h.GetLanguage)
 	mux.HandleFunc("POST /auth/login", h.Login)
@@ -75,15 +72,15 @@ func (h *Handler) Router(mux *http.ServeMux) {
 	mux.HandleFunc("POST /feature-flags", h.AuthMiddleware(h.CreateFeatureFlag))
 	mux.HandleFunc("DELETE /feature-flags", h.AuthMiddleware(h.DeleteFeatureFlag))
 
-	if dev {
-		mux.Handle("/", h.SetMetadataMiddleware(http.FileServer(http.Dir("webclient/build"))))
-	} else {
-		sub, err := fs.Sub(staticFiles, "build")
+	if h.cfg.WebClientFiles != nil && !dev {
+		sub, err := fs.Sub(h.cfg.WebClientFiles, "build")
 		if err != nil {
 			h.logger.GetLogger().Error("logar-errors", fmt.Sprintf("Failed to create subdirectory: %v", err), "api")
 			return
 		}
 		mux.Handle("/", h.SetMetadataMiddleware(http.FileServer(http.FS(sub))))
+	} else {
+		mux.Handle("/", h.SetMetadataMiddleware(http.FileServer(http.Dir("webclient/build"))))
 	}
 }
 
@@ -632,7 +629,7 @@ func (h *Handler) GetLogsSSE(w http.ResponseWriter, r *http.Request) {
 }
 
 func (h *Handler) GetAnalytics(w http.ResponseWriter, r *http.Request) {
-	analytics, err := h.logger.GetAnalytics().GetStatistics(time.Now().Add(-time.Hour*24*7), time.Now())
+	analytics, err := h.logger.GetAnalytics().GetStatistics(time.Now().Add(-time.Hour*24*30), time.Now())
 	if err != nil {
 		w.WriteHeader(500)
 		json.NewEncoder(w).Encode(NewResponse(StatusCode_Error, err.Error()))

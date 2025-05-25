@@ -10,7 +10,7 @@ import (
 	"time"
 
 	"github.com/Lexographics/logar"
-	"github.com/Lexographics/logar/logarweb"
+	logarweb "github.com/Lexographics/logar-web"
 	"github.com/Lexographics/logar/models"
 	"github.com/labstack/echo/v4"
 	"github.com/labstack/echo/v4/middleware"

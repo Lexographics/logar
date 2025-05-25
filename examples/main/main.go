@@ -8,8 +8,8 @@ import (
 	"time"
 
 	"github.com/Lexographics/logar"
+	logarweb "github.com/Lexographics/logar-web"
 	"github.com/Lexographics/logar/gormlogger"
-	"github.com/Lexographics/logar/logarweb"
 	"github.com/Lexographics/logar/logfilter"
 	"github.com/Lexographics/logar/proxy"
 	"github.com/Lexographics/logar/proxy/consolelogger"

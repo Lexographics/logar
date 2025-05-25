@@ -3,6 +3,7 @@ module github.com/Lexographics/logar
 go 1.23.3
 
 require (
+	github.com/Lexographics/logar-web v0.0.0-00010101000000-000000000000
 	github.com/expr-lang/expr v1.17.2
 	github.com/google/uuid v1.6.0
 	github.com/labstack/echo/v4 v4.13.3
@@ -10,6 +11,8 @@ require (
 	gorm.io/driver/sqlite v1.5.7
 	gorm.io/gorm v1.25.12
 )
+
+replace github.com/Lexographics/logar-web => ../logar-web
 
 require (
 	github.com/labstack/gommon v0.4.2 // indirect

@@ -6,7 +6,7 @@ import (
 	"net/http"
 
 	"github.com/Lexographics/logar"
-	"github.com/Lexographics/logar/logarweb"
+	logarweb "github.com/Lexographics/logar-web"
 	"github.com/Lexographics/logar/logfilter"
 	"github.com/Lexographics/logar/proxy"
 	"github.com/Lexographics/logar/proxy/consolelogger"

@@ -1,0 +1,40 @@
+name: Build and deploy web client
+
+jobs:
+  build-and-deploy:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v3
+
+      - name: Set up Node.js
+        uses: actions/setup-node@v3
+        with:
+          node-version: 22
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Build web client
+        run: npm run build
+
+      - name: Get tag name (version)
+        id: vars
+        run: echo "tag=${GITHUB_REF#refs/tags/}" >> $GITHUB_OUTPUT
+      
+      - name: Clone build repo
+        run: |
+          git clone https://x-access-token:${{ secrets.BUILD_REPO_TOKEN }}@github.com/Lexographics/logar-web.git logar-web
+        
+      - name: Copy build to build repo
+        run: |
+          mkdir -p logar-web/build/
+          rm -rf logar-web/build/*
+          cp -r build/* logar-web/build/
+
+      - name: Commit and push to build repo
+        run: |
+          cd logar-web
+          git add .
+          git commit -m "Add build for ${{ steps.vars.outputs.tag }}"
+          git push
