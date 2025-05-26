@@ -4,6 +4,8 @@
   import { page } from '$app/stores';
   import { getBasePath } from '$lib/utils';
   import LL from '../../i18n/i18n-svelte';
+  import SideBarButton from './SideBarButton.svelte';
+
   let { models = [] } = $props();
 
   let loaded = $state(false);
@@ -44,30 +46,26 @@
     
     <nav>
       <ul>
-        <li><a class="link" href={`${getBasePath()}/`} class:active={$page.url.pathname.startsWith(`${getBasePath()}/dashboard`)}><i class="fas fa-home"></i>  <span class="text">{$LL.dashboard.title()}</span></a></li>
-        <li>
-          <a href={"javascript:void(0)"} onclick={toggleLogs} class="menu-item link" class:active={$page.url.pathname.startsWith(`${getBasePath()}/logs`)}>
-            <i class="fas fa-list-alt"></i>
-            <span class="text">{$LL.logs.title()}</span>
+        <SideBarButton href={`/dashboard`} icon="fas fa-home" text={$LL.dashboard.title()}/>
+        <SideBarButton href={`javascript:void(0)`} icon="fas fa-list-alt" text={$LL.logs.title()} onclick={toggleLogs} active={$page.url.pathname.startsWith(`${getBasePath()}/logs`)}>
+          {#snippet end()}
             <i class="fas {navigationStore.current.isLogsExpanded ? 'fa-chevron-down' : 'fa-chevron-right'} chevron"></i>
-          </a>
+          {/snippet}
+
           <ul class="scrollbar submenu {navigationStore.current.isLogsExpanded ? 'expanded' : ''}">
             {#each models as model}
-              <li>
-                <a class="link submenu-item" href={`${getBasePath()}/logs?model=${model.identifier}`} class:active={$page.url.pathname.startsWith(`${getBasePath()}/logs`) && $page.url.searchParams.get('model') === model.identifier}>
-                  <i class="{model.icon ? model.icon : 'fa-solid fa-cube'}"></i>
-                  <span class="text">{model.displayName || model.identifier}</span>
-                </a>
-              </li>
+              <SideBarButton href={`${getBasePath()}/logs?model=${model.identifier}`} icon={model.icon ? model.icon : 'fa-solid fa-cube'} text={model.displayName || model.identifier} active={$page.url.pathname.startsWith(`${getBasePath()}/logs`) && $page.url.searchParams.get('model') === model.identifier} />
+            {:else}
+              <p style="color: var(--sidebar-text); text-align: center; font-size: 0.8rem; padding: 10px;">No models found</p>
             {/each}
           </ul>
-        </li>
-        <li><a class="link" href={`${getBasePath()}/analytics`} class:active={$page.url.pathname.startsWith(`${getBasePath()}/analytics`)}><i class="fas fa-chart-bar"></i> <span class="text">{$LL.analytics.title()}</span></a></li>
-        <li><a class="link" href={`${getBasePath()}/actions`} class:active={$page.url.pathname.startsWith(`${getBasePath()}/actions`)}><i class="fa-solid fa-server"></i> <span class="text">{$LL.remote_actions.title()}</span></a></li>
-        <li><a class="link" href={`${getBasePath()}/featureflags`} class:active={$page.url.pathname.startsWith(`${getBasePath()}/featureflags`)}><i class="fa-solid fa-flag"></i> <span class="text">{$LL.featureflags.title()}</span></a></li>
-        <li><a class="link" href={`${getBasePath()}/user`} class:active={$page.url.pathname.startsWith(`${getBasePath()}/user`)}><i class="fa-solid fa-users"></i> <span class="text">{$LL.user_sessions.title()}</span></a></li>
-        <li><a class="link" href={`${getBasePath()}/settings`} class:active={$page.url.pathname.startsWith(`${getBasePath()}/settings`)}><i class="fas fa-cog"></i> <span class="text">{$LL.settings.title()}</span></a></li>
-        <li><a class="link" href={`${getBasePath()}/help`} class:active={$page.url.pathname.startsWith(`${getBasePath()}/help`)}><i class="fas fa-question-circle"></i> <span class="text">{$LL.help.title()}</span></a></li>
+        </SideBarButton>
+        <SideBarButton href={`/analytics`} icon="fas fa-chart-bar" text={$LL.analytics.title()}/>
+        <SideBarButton href={`/actions`} icon="fa-solid fa-server" text={$LL.remote_actions.title()}/>
+        <SideBarButton href={`/featureflags`} icon="fa-solid fa-flag" text={$LL.featureflags.title()}/>
+        <SideBarButton href={`/user`} icon="fa-solid fa-users" text={$LL.user_sessions.title()}/>
+        <SideBarButton href={`/settings`} icon="fas fa-cog" text={$LL.settings.title()}/>
+        <SideBarButton href={`/help`} icon="fas fa-question-circle" text={$LL.help.title()}/>
       </ul>
     </nav>
     
@@ -140,9 +138,6 @@
     list-style: none;
     padding: 0;
   }
-  .sidebar li {
-    margin: 10px 0;
-  }
   
   .sidebar-header {
     margin-bottom: 20px;
@@ -167,26 +162,6 @@
     color: var(--sidebar-text);
   }
   
-  .link {
-    text-decoration: none;
-    color: var(--sidebar-text);
-    display: flex;
-    align-items: center;
-    padding: 8px 10px;
-    border-radius: 4px;
-    transition: background-color 0.2s;
-    white-space: nowrap;
-  }
-  
-  .link:hover {
-    background-color: var(--sidebar-hover);
-  }
-
-  .link.active {
-    background-color: var(--sidebar-active);
-    font-weight: bold;
-  }
-  
   i {
     min-width: 20px;
     text-align: center;
@@ -197,12 +172,6 @@
     display: flex;
     align-items: center;
     white-space: nowrap;
-  }
-
-  .menu-item {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
   }
 
   .chevron {
@@ -232,21 +201,5 @@
   .submenu.expanded {
     /* overflow-y: auto; */
     max-height: 300px;
-  }
-
-  .submenu li {
-    margin: 5px 0;
-    padding-left: 0;
-    transition: padding-left 0.3s ease;
-  }
-
-  .sidebar.locked .submenu li,
-  .sidebar:hover .submenu li {
-    padding-left: 1rem;
-  }
-
-  .submenu a {
-    font-size: 0.9em;
-    padding: 5px 10px;
   }
 </style>

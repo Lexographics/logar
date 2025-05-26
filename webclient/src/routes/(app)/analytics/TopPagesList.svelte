@@ -16,7 +16,7 @@
 
   let displayPages = $state<TopPage[]>([]);
   $effect(() => {
-    displayPages = pages.length > 0 ? pages : Array(5).fill({path: 'N/A', visits: 0, percentage: 0});
+    displayPages = (pages?.length ?? 0) > 0 ? pages : Array(5).fill({path: 'N/A', visits: 0, percentage: 0});
   });
 </script>
 
