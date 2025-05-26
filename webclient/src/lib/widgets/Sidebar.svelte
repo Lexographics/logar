@@ -63,6 +63,7 @@
         <SideBarButton href={`/analytics`} icon="fas fa-chart-bar" text={$LL.analytics.title()}/>
         <SideBarButton href={`/actions`} icon="fa-solid fa-server" text={$LL.remote_actions.title()}/>
         <SideBarButton href={`/featureflags`} icon="fa-solid fa-flag" text={$LL.featureflags.title()}/>
+        <SideBarButton href={`/globals`} icon="fa-solid fa-earth-asia" text="Globals"/>
         <SideBarButton href={`/user`} icon="fa-solid fa-users" text={$LL.user_sessions.title()}/>
         <SideBarButton href={`/settings`} icon="fas fa-cog" text={$LL.settings.title()}/>
         <SideBarButton href={`/help`} icon="fas fa-question-circle" text={$LL.help.title()}/>

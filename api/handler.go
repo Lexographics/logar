@@ -74,6 +74,10 @@ func (h *Handler) Router(mux *http.ServeMux) {
 	mux.HandleFunc("POST /feature-flags", h.AuthMiddleware(h.CreateFeatureFlag))
 	mux.HandleFunc("DELETE /feature-flags", h.AuthMiddleware(h.DeleteFeatureFlag))
 
+	mux.HandleFunc("GET /globals", h.AuthMiddleware(h.GetGlobals))
+	mux.HandleFunc("PUT /globals", h.AuthMiddleware(h.UpdateGlobal))
+	mux.HandleFunc("DELETE /globals", h.AuthMiddleware(h.DeleteGlobal))
+
 	if h.cfg.WebClientFiles != nil && !dev {
 		sub, err := fs.Sub(h.cfg.WebClientFiles, "build")
 		if err != nil {

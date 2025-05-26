@@ -2,6 +2,7 @@ package logar
 
 import (
 	"context"
+	"encoding/json"
 	"reflect"
 	"time"
 
@@ -92,6 +93,7 @@ func New(opts ...ConfigOpt) (App, error) {
 		&models.User{},
 		&models.RequestLog{},
 		&models.FeatureFlag{},
+		&models.Global{},
 	)
 	if err != nil {
 		return nil, err
@@ -232,4 +234,96 @@ func (l *AppImpl) GetFromContext(ctx context.Context, key string) (any, bool) {
 	}
 	value, ok := values[key]
 	return value, ok
+}
+
+func (l *AppImpl) DeleteGlobal(key string) error {
+	return l.db.Model(&models.Global{}).Where("key = ?", key).Delete(&models.Global{}).Error
+}
+
+func (l *AppImpl) SetGlobal(key string, value any) error {
+	data, err := json.Marshal(value)
+	if err != nil {
+		return err
+	}
+
+	global, err := l.GetGlobal(key)
+	if err != nil {
+		global = models.Global{
+			Key:   key,
+			Value: string(data),
+		}
+		err = l.db.Create(&global).Error
+		if err != nil {
+			return err
+		}
+	}
+
+	return l.db.Model(&models.Global{}).Where("id = ?", global.ID).Update("value", string(data)).Error
+}
+
+func (l *AppImpl) GetAllGlobals() ([]models.Global, error) {
+	var globals []models.Global
+	err := l.db.Model(&models.Global{}).Find(&globals).Error
+	if err != nil {
+		return nil, err
+	}
+	return globals, nil
+}
+
+func (l *AppImpl) GetGlobal(key string) (models.Global, error) {
+	var global models.Global
+	err := l.db.Model(&models.Global{}).FirstOrCreate(&global, models.Global{Key: key}).Error
+	if err != nil {
+		return models.Global{}, err
+	}
+	return global, nil
+}
+
+func (l *AppImpl) GetGlobalValue(key string, out any) error {
+	global, err := l.GetGlobal(key)
+	if err != nil {
+		return err
+	}
+
+	err = json.Unmarshal([]byte(global.Value), out)
+	if err != nil {
+		return err
+	}
+	return nil
+}
+
+func (l *AppImpl) GetGlobalString(key string) (string, error) {
+	var value string
+	err := l.GetGlobalValue(key, &value)
+	if err != nil {
+		return "", err
+	}
+	return value, nil
+}
+
+func (l *AppImpl) GetGlobalInt(key string) (int64, error) {
+	var value int64
+	err := l.GetGlobalValue(key, &value)
+	if err != nil {
+		return 0, err
+	}
+	return value, nil
+}
+
+func (l *AppImpl) GetGlobalFloat(key string) (float64, error) {
+	var value float64
+	err := l.GetGlobalValue(key, &value)
+	if err != nil {
+		return 0, err
+	}
+	return value, nil
+}
+
+func (l *AppImpl) GetGlobalBool(key string) (bool, error) {
+	var value bool
+	err := l.GetGlobalValue(key, &value)
+	if err != nil {
+		return false, err
+	}
+	return value, nil
 }
