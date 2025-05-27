@@ -43,13 +43,14 @@
   }
 
   .main-content {
-    height: 100vh;
+    height: 100dvh;
+    overflow-y: hidden;
     flex-grow: 1;
     min-width: 0;
   }
 
   .content-area {
-    height: calc(100vh - 60px);
+    height: calc(100dvh - 60px);
     overflow-y: auto;
     padding: 0;
   }

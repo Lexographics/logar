@@ -3,7 +3,6 @@ package api
 import (
 	"encoding/json"
 	"net/http"
-	"strings"
 	"time"
 
 	"github.com/mileusna/useragent"
@@ -42,14 +41,7 @@ func (h *Handler) Login(w http.ResponseWriter, r *http.Request) {
 }
 
 func (h *Handler) Logout(w http.ResponseWriter, r *http.Request) {
-	authorization := r.Header.Get("Authorization")
-	if authorization == "" {
-		w.WriteHeader(401)
-		json.NewEncoder(w).Encode(NewResponse(StatusCode_InvalidRequest, "Missing authorization header"))
-		return
-	}
-
-	session, err := h.logger.GetWebPanel().GetSession(strings.TrimPrefix(authorization, "Bearer "))
+	session, err := h.getSession(r)
 	if err != nil {
 		w.WriteHeader(401)
 		json.NewEncoder(w).Encode(NewResponse(StatusCode_InvalidRequest, "Missing authorization header"))
@@ -61,15 +53,7 @@ func (h *Handler) Logout(w http.ResponseWriter, r *http.Request) {
 }
 
 func (h *Handler) GetActiveSessions(w http.ResponseWriter, r *http.Request) {
-	authorization := r.Header.Get("Authorization")
-	if authorization == "" {
-		w.WriteHeader(401)
-		json.NewEncoder(w).Encode(NewResponse(StatusCode_InvalidRequest, "Missing authorization header"))
-		return
-	}
-
-	token := strings.TrimPrefix(authorization, "Bearer ")
-	session, err := h.logger.GetWebPanel().GetSession(token)
+	session, err := h.getSession(r)
 	if err != nil {
 		w.WriteHeader(401)
 		json.NewEncoder(w).Encode(NewResponse(StatusCode_InvalidRequest, "Missing authorization header"))
@@ -84,13 +68,13 @@ func (h *Handler) GetActiveSessions(w http.ResponseWriter, r *http.Request) {
 	}
 
 	sessionData := []SessionData{}
-	for _, session := range activeSessions {
+	for _, s := range activeSessions {
 		sessionData = append(sessionData, SessionData{
-			Device:       session.Device,
-			LastActivity: session.LastActivity.Format(time.DateTime),
-			CreatedAt:    session.CreatedAt.Format(time.DateTime),
-			IsCurrent:    session.Token == token,
-			Token:        session.Token,
+			Device:       s.Device,
+			LastActivity: s.LastActivity.Format(time.DateTime),
+			CreatedAt:    s.CreatedAt.Format(time.DateTime),
+			IsCurrent:    s.Token == session.Token,
+			Token:        s.Token,
 		})
 	}
 
@@ -99,13 +83,6 @@ func (h *Handler) GetActiveSessions(w http.ResponseWriter, r *http.Request) {
 }
 
 func (h *Handler) RevokeSession(w http.ResponseWriter, r *http.Request) {
-	authorization := r.Header.Get("Authorization")
-	if authorization == "" {
-		w.WriteHeader(422)
-		json.NewEncoder(w).Encode(NewResponse(StatusCode_InvalidRequest, "Missing authorization header"))
-		return
-	}
-
 	sessionId := r.FormValue("session_id")
 	if sessionId == "" {
 		w.WriteHeader(422)

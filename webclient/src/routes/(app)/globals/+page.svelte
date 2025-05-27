@@ -240,6 +240,13 @@
 
   .value {
     color: var(--text-secondary-color);
+    background-color: var(--input-background);
+    padding: 0.4rem 0.6rem;
+    border-radius: 4px;
+    border: 1px solid var(--border-color);
+    font-family: monospace;
+    white-space: pre-wrap;
+    word-break: break-all;
   }
 
   .action-buttons {
@@ -289,5 +296,55 @@
 
   .cancel-button:hover {
     background-color: #7f8c8d;
+  }
+
+  @media (max-width: 768px) {
+    .page {
+      margin: 1rem auto;
+    }
+
+    h1 {
+      font-size: 1.5rem;
+      margin-bottom: 1.5rem;
+    }
+
+    .add-form {
+      flex-direction: column;
+      gap: 0.5rem;
+    }
+
+    .input {
+      width: 100%;
+    }
+
+    .add-button {
+      width: 100%;
+    }
+
+    .item {
+      flex-direction: column;
+      align-items: stretch;
+    }
+
+    .content {
+      margin-bottom: 1rem;
+    }
+
+    .value {
+      width: 100%;
+      box-sizing: border-box;
+    }
+
+    .action-buttons {
+      flex-direction: column;
+      width: 100%;
+    }
+
+    .edit-button,
+    .save-button,
+    .delete-button,
+    .cancel-button {
+      width: 100%;
+    }
   }
 </style>

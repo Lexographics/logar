@@ -131,11 +131,13 @@
 {/if}
 
 <style>
-
 	.action-node,
 	.directory-node {
 		padding: 0.6rem 0;
 		border-top: 1px solid var(--border-color);
+		width: 100%;
+		box-sizing: border-box;
+		max-width: 100%;
 	}
 
 	:global(.actions-page > .action-node:first-child),
@@ -149,22 +151,30 @@
 		align-items: baseline;
 		gap: 0.4rem;
 		margin-bottom: 0.4rem;
+		width: 100%;
+		box-sizing: border-box;
+		max-width: 100%;
 	}
 	.action-icon {
 		font-size: 0.8rem;
 		color: var(--text-secondary-color);
 		line-height: 1.2;
+		flex-shrink: 0;
 	}
 	.action-name {
 		font-weight: 500;
 		font-size: 1rem;
 		color: var(--text-color);
+		word-break: break-word;
 	}
 	.action-body {
 		padding-left: 1.2rem;
 		display: flex;
 		flex-direction: column;
 		gap: 0.6rem;
+		width: 100%;
+		box-sizing: border-box;
+		max-width: 100%;
 	}
 
 	.input-row {
@@ -172,6 +182,9 @@
 		flex-wrap: wrap;
 		align-items: center;
 		gap: 0.75rem;
+		width: 100%;
+		box-sizing: border-box;
+		max-width: 100%;
 	}
 
 	.args-container {
@@ -179,6 +192,9 @@
 		flex-wrap: wrap;
 		gap: 0.75rem;
 		flex-grow: 1;
+		width: 100%;
+		box-sizing: border-box;
+		max-width: 100%;
 	}
 
 	.no-args-message {
@@ -186,6 +202,7 @@
 		color: var(--text-secondary-color);
 		font-style: italic;
 		flex-grow: 1;
+		width: 100%;
 	}
 
 	.invoke-button {
@@ -197,11 +214,17 @@
 		border-radius: 4px;
 		font-size: 0.8rem;
 		border: 1px solid;
+		width: 100%;
+		box-sizing: border-box;
+		max-width: 100%;
+		overflow-x: auto;
 	}
 	.output-box pre {
 		white-space: pre-wrap;
 		word-break: break-all;
 		font-family: monospace;
+		max-width: 100%;
+		overflow-x: auto;
 	}
 	.result-box {
 		background-color: var(--card-background);
@@ -256,9 +279,12 @@
 		user-select: none;
 	}
 	.directory-content {
-		margin-left: 0.5rem; 
+		margin-left: 0;
 		padding-left: 1.5rem;
 		border-left: 1px solid var(--border-color);
+		width: 100%;
+		box-sizing: border-box;
+		max-width: 100%;
 	}
 
 	.action-description {
@@ -267,6 +293,10 @@
 		margin-left: 1.2rem;
 		margin-top: -0.2rem;
 		margin-bottom: 0.4rem;
+		width: calc(100% - 1.2rem);
+		box-sizing: border-box;
+		max-width: 100%;
+		word-break: break-word;
 	}
 
 	button {
@@ -288,5 +318,77 @@
   button:active {
     transform: translateY(1px);
   }
+
+	@media (max-width: 768px) {
+		.action-node,
+		.directory-node {
+			padding: 0.5rem 0;
+			width: 100%;
+			max-width: 100%;
+		}
+
+		.action-header {
+			gap: 0.3rem;
+			margin-bottom: 0.3rem;
+			width: 100%;
+			max-width: 100%;
+		}
+
+		.action-name {
+			font-size: 0.95rem;
+			word-break: break-word;
+		}
+
+		.action-body {
+			padding-left: 0.8rem;
+			gap: 0.5rem;
+			width: 100%;
+			max-width: 100%;
+		}
+
+		.input-row {
+			flex-direction: column;
+			align-items: stretch;
+			gap: 0.5rem;
+			width: 100%;
+			max-width: 100%;
+		}
+
+		.args-container {
+			flex-direction: column;
+			gap: 0.5rem;
+			width: 100%;
+			max-width: 100%;
+		}
+
+		.invoke-button {
+			width: 100%;
+			margin-top: 0.5rem;
+		}
+
+		.output-box {
+			padding: 0.3rem 0.5rem;
+			font-size: 0.75rem;
+			width: 100%;
+			max-width: 100%;
+		}
+
+		.directory-summary {
+			padding: 0.3rem 0;
+			width: 100%;
+		}
+
+		.directory-content {
+			padding-left: 0.8rem;
+			width: 100%;
+			max-width: 100%;
+		}
+
+		.action-description {
+			width: calc(100% - 0.8rem);
+			margin-left: 0.8rem;
+			max-width: 100%;
+		}
+	}
 
 </style> 

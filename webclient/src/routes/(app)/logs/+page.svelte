@@ -7,12 +7,13 @@
   import { SessionStorage } from "$lib/storage.svelte";
   import moment from "moment";
   import { mount, onMount, untrack } from "svelte";
-  import { fade, fly } from 'svelte/transition';
+  import { fade, fly, slide } from 'svelte/transition';
   import LL from "../../../i18n/i18n-svelte";
   import MessageView from "./MessageView.svelte";
 
   let model = $state("");
   let filters = $state([]);
+  let showFilters = $state(true);
   
   function ModelChanged() {
     model = $page.url.searchParams.get("model") || "";
@@ -250,7 +251,7 @@
     connectionAttempted = false;
   }
 
-  let observerTarget;
+  let observerTarget = $state(null);
   onMount(() => {
     const observer = new IntersectionObserver(
       (entries) => {
@@ -275,143 +276,160 @@
 
 <BaseView>
   <div class="page-content">
-     <div style="padding-bottom: 2.5rem;"></div>
+     <div style="padding-bottom: 0rem;"></div>
 
-    <div class="filter-creator">
-      <select bind:value={selectedField} class="filter-select">
-        {#each FILTER_FIELDS as field}
-          <option value={field.value}>{field.label}</option>
-        {/each}
-      </select>
-
-      {#if selectedField === 'created_at'}
-        <p class="filter-tip">{$LL.logs.time_format_tip()}</p>
-      {:else if selectedField === 'severity'}
-        <p class="filter-tip">{$LL.logs.severity_tip()}</p>
-      {/if}
-
-      <select bind:value={selectedOperator} class="filter-select">
-        {#each FILTER_OPERATORS as operator}
-          <option value={operator.value}>{operator.label}</option>
-        {/each}
-      </select>
-
-      {#if currentOperatorInfo?.requires === 1}
-        <input
-          type="text"
-          bind:value={filterValue1}
-          placeholder={$LL.logs.value()}
-          class="filter-input"
-          onkeydown={(e) => e.key === 'Enter' && handleAddFilter()}
-        />
-        {#if selectedField === 'created_at'}
-          <button class="now-button" onclick={() => filterValue1 = getCurrentTimestamp()}>{$LL.logs.now()}</button>
-        {/if}
-      {:else if currentOperatorInfo?.requires === 2}
-        <input
-          type="text"
-          bind:value={filterValue1}
-          placeholder={$LL.logs.from()}
-          class="filter-input filter-input-range"
-        />
-        {#if selectedField === 'created_at'}
-          <button class="now-button" onclick={() => filterValue1 = getCurrentTimestamp()}>{$LL.logs.now()}</button>
-        {/if}
-        <input
-          type="text"
-          bind:value={filterValue2}
-          placeholder={$LL.logs.to()}
-          class="filter-input filter-input-range"
-          onkeydown={(e) => e.key === 'Enter' && handleAddFilter()}
-        />
-        {#if selectedField === 'created_at'}
-          <button class="now-button" onclick={() => filterValue2 = getCurrentTimestamp()}>{$LL.logs.now()}</button>
-        {/if}
-      {:else if currentOperatorInfo?.requires === 'multi'}
-        <input
-          type="text"
-          bind:value={filterValuesMulti}
-          placeholder={$LL.logs.values_comma_separated()}
-          class="filter-input filter-input-multi"
-          onkeydown={(e) => e.key === 'Enter' && handleAddFilter()}
-        />
-      {/if}
-
-      <button class="filter-button" onclick={handleAddFilter}>
-        {$LL.logs.add_filter()}
+    <div class="filters-section">
+      <button class="toggle-filters" onclick={() => showFilters = !showFilters}>
+        <i class="fa-solid {showFilters ? 'fa-chevron-up' : 'fa-chevron-down'}"></i>
+        {$LL.logs.filters()}
       </button>
-    </div>
 
-    {#if filters.length > 0}
-      <div class="active-filters">
-        {#each filters as filter, i}
-          {@const fieldLabel = FILTER_FIELDS.find(f => f.value === filter.field)?.label || filter.field}
-          {@const operatorLabel = FILTER_OPERATORS.find(op => op.value === filter.operator)?.label || filter.operator}
-          {@const valueDisplay = Array.isArray(filter.value) ? filter.value.join(', ') : filter.value}
-          <div class="filter-tag">
-            <span>{fieldLabel} {operatorLabel} {valueDisplay}</span>
-            <button class="remove-filter" onclick={() => removeFilter(i)}>×</button>
+      {#if showFilters}
+        <div class="filters-panel" transition:slide={{ duration: 200 }}>
+          <div class="filter-creator">
+            <div class="filter-selects-row">
+              <select bind:value={selectedField} class="filter-select">
+                {#each FILTER_FIELDS as field}
+                  <option value={field.value}>{field.label}</option>
+                {/each}
+              </select>
+
+              <select bind:value={selectedOperator} class="filter-select">
+                {#each FILTER_OPERATORS as operator}
+                  <option value={operator.value}>{operator.label}</option>
+                {/each}
+              </select>
+              
+              {#if currentOperatorInfo?.requires === 1}
+              <div class="input-with-button">
+                <input
+                  type="text"
+                  bind:value={filterValue1}
+                  placeholder={$LL.logs.value()}
+                  class="filter-input"
+                  onkeydown={(e) => e.key === 'Enter' && handleAddFilter()}
+                />
+                {#if selectedField === 'created_at'}
+                  <button class="now-button" onclick={() => filterValue1 = getCurrentTimestamp()}>{$LL.logs.now()}</button>
+                {/if}
+              </div>
+            {:else if currentOperatorInfo?.requires === 2}
+              <div class="input-with-button">
+                <input
+                  type="text"
+                  bind:value={filterValue1}
+                  placeholder={$LL.logs.from()}
+                  class="filter-input filter-input-range"
+                />
+                {#if selectedField === 'created_at'}
+                <button class="now-button" onclick={() => filterValue1 = getCurrentTimestamp()}>{$LL.logs.now()}</button>
+                {/if}
+              </div>
+              <div class="input-with-button">
+                <input
+                type="text"
+                bind:value={filterValue2}
+                placeholder={$LL.logs.to()}
+                class="filter-input filter-input-range"
+                  onkeydown={(e) => e.key === 'Enter' && handleAddFilter()}
+                />
+                {#if selectedField === 'created_at'}
+                  <button class="now-button" onclick={() => filterValue2 = getCurrentTimestamp()}>{$LL.logs.now()}</button>
+                {/if}
+              </div>
+            {:else if currentOperatorInfo?.requires === 'multi'}
+              <input
+                type="text"
+                bind:value={filterValuesMulti}
+                placeholder={$LL.logs.values_comma_separated()}
+                class="filter-input filter-input-multi"
+                onkeydown={(e) => e.key === 'Enter' && handleAddFilter()}
+                />
+                {/if}
+                
+                <button class="filter-button" onclick={handleAddFilter}>
+                  {$LL.logs.add_filter()}
+                </button>
+              </div>
+              {#if selectedField === 'created_at'}
+                <p class="filter-tip">{$LL.logs.time_format_tip()}</p>
+              {:else if selectedField === 'severity'}
+                <p class="filter-tip">{$LL.logs.severity_tip()}</p>
+              {/if}
           </div>
-        {/each}
-      </div>
-    {/if}
 
-    <div class="sse-status-container">
-      <span class="status-dot {isStreamConnected ? 'connected' : 'disconnected'}"></span>
-      <span class="status-text">{isStreamConnected ? $LL.logs.live_stream_connected() : $LL.logs.live_stream_disconnected()}</span>
-      {#if connectionAttempted && !isStreamConnected}
-        <button class="reconnect-button" onclick={setupLogStream} title={$LL.logs.reconnect_tip()}>
-          {$LL.logs.reconnect()}
-        </button>
+          {#if filters.length > 0}
+            <div class="active-filters">
+              {#each filters as filter, i}
+                {@const fieldLabel = FILTER_FIELDS.find(f => f.value === filter.field)?.label || filter.field}
+                {@const operatorLabel = FILTER_OPERATORS.find(op => op.value === filter.operator)?.label || filter.operator}
+                {@const valueDisplay = Array.isArray(filter.value) ? filter.value.join(', ') : filter.value}
+                <div class="filter-tag">
+                  <span>{fieldLabel} {operatorLabel} {valueDisplay}</span>
+                  <button class="remove-filter" onclick={() => removeFilter(i)}>×</button>
+                </div>
+              {/each}
+            </div>
+          {/if}
+
+          <div class="sse-status-container">
+            <span class="status-dot {isStreamConnected ? 'connected' : 'disconnected'}"></span>
+            <span class="status-text">{isStreamConnected ? $LL.logs.live_stream_connected() : $LL.logs.live_stream_disconnected()}</span>
+            {#if connectionAttempted && !isStreamConnected}
+              <button class="reconnect-button" onclick={setupLogStream} title={$LL.logs.reconnect_tip()}>
+                {$LL.logs.reconnect()}
+              </button>
+            {/if}
+          </div>
+        </div>
       {/if}
     </div>
 
     <div style="flex-grow: 1; min-height: 0; max-width: 100%; overflow-y: scroll;" class="scrollbar">
-      <table style="max-width: 100%;">
-        <thead>
-          <tr>
-            <th style="text-align: center;">{$LL.logs.fields.id()}</th>
-            <th style="text-align: center;"><i class="fa-solid fa-signal"></i></th>
-            <th style="text-align: center;">{$LL.logs.fields.timestamp()}</th>
-            <th style="text-align: left;">{$LL.logs.fields.message()}</th>
-            <th style="text-align: center;">{$LL.logs.fields.category()}</th>
-          </tr>
-        </thead>
-        <tbody>
-          {#key [model, JSON.stringify(filters)]}
-            {#each logs as log}
-              <tr
-                class="row {getSeverityClass(log.Severity)}"
-                in:fly={{ x: -50, duration: 300 }}
-                out:fade={{ duration: 200 }}
-              >
-                <td style="width: 1%;">{log.ID}</td>
-                <td style="width: 1%;">{getSeverityClass(log.Severity).toUpperCase()}</td>
-                <td style="width: 24ch; white-space: nowrap;">{moment(log.CreatedAt).format("DD-MM-YYYY HH:mm:ss.SSS")}</td>
-                <td style="width: 100%; word-break: break-all; text-align: left;">
-                  <MessageView message={log.Message} />
-                </td>
-                <td style="width: 1%; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">{log.Category}</td>
-              </tr>
-            {/each}
-          {/key}
-        </tbody>
-      </table>
+      <div class="logs-container">
+        <div class="logs-header">
+          <div class="log-cell id-cell">{$LL.logs.fields.id()}</div>
+          <div class="log-cell severity-cell"><i class="fa-solid fa-signal"></i></div>
+          <div class="log-cell timestamp-cell">{$LL.logs.fields.timestamp()}</div>
+          <div class="log-cell message-cell">{$LL.logs.fields.message()}</div>
+          <div class="log-cell category-cell">{$LL.logs.fields.category()}</div>
+        </div>
 
-      <div bind:this={observerTarget} class="loader">
-        {#if loading}
-          <div class="loading-spinner"></div>
-        {:else if !hasMore}
-          <p>No more logs</p>
-        {/if}
+        {#key [model, JSON.stringify(filters)]}
+          {#each logs as log}
+            <div
+              class="log-row {getSeverityClass(log.Severity)}"
+              in:fly={{ x: -50, duration: 300 }}
+              out:fade={{ duration: 200 }}
+            >
+              <div class="log-cell id-cell">{log.ID}</div>
+              <div class="log-cell severity-cell">{getSeverityClass(log.Severity).toUpperCase()}</div>
+              <div class="log-cell timestamp-cell">{moment(log.CreatedAt).format("DD-MM-YYYY HH:mm:ss.SSS")}</div>
+              <div class="log-cell message-cell">
+                <MessageView message={log.Message} />
+              </div>
+              <div class="log-cell category-cell">{log.Category}</div>
+            </div>
+          {/each}
+        {/key}
       </div>
+
+      {#if hasMore || loading}
+        <div bind:this={observerTarget} class="loader">
+          {#if loading}
+            <div class="loading-spinner"></div>
+          {:else if !hasMore}
+            <p>No more logs</p>
+          {/if}
+        </div>
+      {/if}
     </div>
   </div>
 </BaseView>
 
 <style>
   .filter-creator {
-    padding: 0 2rem 1rem 2rem;
+    padding: 0 2rem 0.5rem 2rem;
     display: flex;
     gap: 0.5rem;
     align-items: center;
@@ -420,135 +438,90 @@
 
   .filter-select,
   .filter-input {
-    padding: 0.5rem;
-    font-size: 1rem;
+    padding: 0.35rem 0.5rem;
+    font-size: 0.9rem;
     border: 1px solid var(--input-border);
     border-radius: 4px;
     box-sizing: border-box;
     background-color: var(--input-background);
     color: var(--input-text);
+    height: 32px;
   }
 
   .filter-select {
     min-width: 100px;
   }
 
-  option {
-    background-color: var(--input-background-opaque);
-  }
-
   .filter-input {
+    padding: 0.35rem 0.5rem;
+    font-size: 0.9rem;
+    border: 1px solid var(--input-border);
+    border-radius: 4px;
+    box-sizing: border-box;
+    background-color: var(--input-background);
+    color: var(--input-text);
+    height: 32px;
     flex-grow: 1;
   }
 
   .filter-input-range {
-     flex-grow: 0.5;
+    flex-grow: 0.5;
   }
 
   .filter-input-multi {
     min-width: 200px;
   }
 
-  .filter-select:focus,
-  .filter-input:focus {
-    outline: none;
-    border-color: var(--primary-color);
-    box-shadow: 0 0 3px var(--shadow-color);
+  .input-with-button {
+    display: flex;
+    align-items: center;
+    gap: 0.25rem;
+    flex-grow: 1;
   }
 
-  table {
+  .now-button {
+    padding: 0 0.4rem;
+    font-size: 0.8rem;
+    background-color: var(--input-background);
+    color: var(--text-color);
+    border: 1px solid var(--input-border);
+    border-radius: 4px;
+    cursor: pointer;
+    white-space: nowrap;
+    height: 32px;
+    line-height: 1;
+    flex-shrink: 0;
+    box-sizing: border-box;
+    display: flex;
+    align-items: center;
+  }
+
+  .filter-tip {
+    font-size: 0.75rem;
+    color: var(--text-secondary-color);
+    margin: 0.1rem 0 0 0;
     width: 100%;
-    border-collapse: collapse;
+    order: 3;
+    text-align: left;
+    padding-left: 0.5rem;
   }
 
-  th,
-  td {
-    padding: 0.5rem;
-    text-align: center;
-    vertical-align: text-top;
-    border-bottom: 1px solid var(--border-color);
-    color: var(--text-color);
-  }
-
-  th {
-    background-color: var(--card-background);
-    color: var(--text-color);
-    position: sticky;
-    top: 0;
-    z-index: 1;
-  }
-
-  .row.trace {
-    --row-bg: var(--row-trace-bg);
-    --row-striped-bg: var(--row-trace-striped-bg);
-  }
-
-  .row.log {
-    --row-bg: var(--row-log-bg);
-    --row-striped-bg: var(--row-log-striped-bg);
-  }
-
-  .row.info {
-    --row-bg: var(--row-info-bg);
-    --row-striped-bg: var(--row-info-striped-bg);
-  }
-
-  .row.warning {
-    --row-bg: var(--row-warning-bg);
-    --row-striped-bg: var(--row-warning-striped-bg);
-  }
-
-  .row.error {
-    --row-bg: var(--row-error-bg);
-    --row-striped-bg: var(--row-error-striped-bg);
-  }
-
-  .row.fatal {
-    --row-bg: var(--row-fatal-bg);
-    --row-striped-bg: var(--row-fatal-striped-bg);
-    font-weight: bold;
-  }
-
-  .row {
-    background-color: var(--row-bg);
-  }
-
-  .row:nth-child(odd) {
-    background-color: var(--row-striped-bg);
-  }
-
-  .loader {
-    padding: 2rem;
-    text-align: center;
-  }
-
-  .loading-spinner {
-    width: 40px;
-    height: 40px;
-    margin: 0 auto;
-    border: 3px solid var(--input-background);
-    border-top: 3px solid var(--primary-color);
-    border-radius: 50%;
-    animation: spin 1s linear infinite;
-  }
-
-  @keyframes spin {
-    0% {
-      transform: rotate(0deg);
-    }
-    100% {
-      transform: rotate(360deg);
-    }
+  .filter-selects-row {
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
+    width: 100%;
   }
 
   .filter-button {
-    padding: 0.5rem 1rem;
+    padding: 0.35rem 0.8rem;
     background-color: var(--primary-color);
     color: white;
     border: none;
     border-radius: 4px;
     cursor: pointer;
-    white-space: nowrap; /* Prevent button text wrapping */
+    white-space: nowrap;
+    height: 32px;
   }
 
   .filter-button:hover {
@@ -556,21 +529,22 @@
   }
 
   .active-filters {
-    padding: 0 2rem 1rem 2rem;
+    padding: 0 2rem 0.5rem 2rem;
     display: flex;
     flex-wrap: wrap;
-    gap: 0.5rem;
+    gap: 0.4rem;
   }
 
   .filter-tag {
     background-color: var(--input-background);
     color: var(--text-color);
-    padding: 0.3rem 0.6rem;
+    padding: 0.2rem 0.4rem;
     border-radius: 4px;
     display: flex;
     align-items: center;
-    gap: 0.5rem;
+    gap: 0.4rem;
     border: 1px solid var(--border-color);
+    font-size: 0.85rem;
   }
 
   .remove-filter {
@@ -587,42 +561,40 @@
     color: var(--text-color);
   }
 
-  .filter-tip {
-    font-size: 0.8rem;
+  .toggle-filters {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    padding: 0.5rem 2rem;
+    background: none;
+    border: none;
     color: var(--text-secondary-color);
-    margin: 0.2rem 0 0 0;
-    width: 100%;
-    order: 3;
-    text-align: left;
-    padding-left: 0.5rem;
-  }
-  
-  /* Now button */
-  .now-button {
-    padding: 0.4rem 0.6rem;
-    font-size: 0.9rem;
-    background-color: var(--input-background);
-    color: var(--text-color);
-    border: 1px solid var(--input-border);
-    border-radius: 4px;
     cursor: pointer;
-    margin-left: -5px;
-    z-index: 1;
-    white-space: nowrap;
+    font-size: 0.9rem;
+    width: 100%;
+    text-align: left;
   }
 
-  .now-button:hover {
-    background-color: var(--primary-color);
-    color: white;
+  .toggle-filters:hover {
+    color: var(--text-color);
+  }
+
+  .toggle-filters i {
+    font-size: 0.8rem;
+    transition: transform 0.2s ease;
+  }
+
+  .filters-panel {
+    border-bottom: 1px solid var(--border-color);
   }
 
   .sse-status-container {
     display: flex;
     align-items: center;
     gap: 0.75rem;
-    padding: 0.5rem 2rem 1rem 2rem;
-    border-bottom: 1px solid var(--border-color);
-    margin-bottom: 1rem;
+    padding: 0.5rem 2rem;
+    border-top: 1px solid var(--border-color);
+    margin-top: 0.5rem;
   }
 
   .status-text {
@@ -672,5 +644,239 @@
     display: flex;
     flex-direction: column;
     height: 100%;
+  }
+
+  .logs-container {
+    width: 100%;
+    display: flex;
+    flex-direction: column;
+  }
+
+  .logs-header {
+    display: flex;
+    background-color: var(--card-background);
+    color: var(--text-color);
+    position: sticky;
+    top: 0;
+    z-index: 1;
+    border-bottom: 1px solid var(--border-color);
+  }
+
+  .log-row {
+    display: flex;
+    border-bottom: 1px solid var(--border-color);
+  }
+
+  .log-cell {
+    padding: 0.5rem;
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
+
+  .id-cell {
+    width: 5%;
+    min-width: 60px;
+    text-align: center;
+  }
+
+  .severity-cell {
+    width: 5%;
+    min-width: 60px;
+    text-align: center;
+  }
+
+  .timestamp-cell {
+    width: 20%;
+    min-width: 200px;
+    white-space: nowrap;
+    text-align: center;
+  }
+
+  .message-cell {
+    flex: 1;
+    min-width: 200px;
+    word-break: break-all;
+    text-align: left;
+  }
+
+  .category-cell {
+    width: 10%;
+    min-width: 100px;
+    white-space: nowrap;
+    text-overflow: ellipsis;
+    text-align: center;
+  }
+
+  .log-row.trace {
+    --row-bg: var(--row-trace-bg);
+    --row-striped-bg: var(--row-trace-striped-bg);
+  }
+
+  .log-row.log {
+    --row-bg: var(--row-log-bg);
+    --row-striped-bg: var(--row-log-striped-bg);
+  }
+
+  .log-row.info {
+    --row-bg: var(--row-info-bg);
+    --row-striped-bg: var(--row-info-striped-bg);
+  }
+
+  .log-row.warning {
+    --row-bg: var(--row-warning-bg);
+    --row-striped-bg: var(--row-warning-striped-bg);
+  }
+
+  .log-row.error {
+    --row-bg: var(--row-error-bg);
+    --row-striped-bg: var(--row-error-striped-bg);
+  }
+
+  .log-row.fatal {
+    --row-bg: var(--row-fatal-bg);
+    --row-striped-bg: var(--row-fatal-striped-bg);
+    font-weight: bold;
+  }
+
+  .log-row {
+    background-color: var(--row-bg);
+  }
+
+  .log-row:nth-child(odd) {
+    background-color: var(--row-striped-bg);
+  }
+
+  @media (max-width: 768px) {
+    .filter-creator {
+      padding: 0 1rem 0.5rem 1rem;
+      flex-direction: column;
+      align-items: stretch;
+      gap: 0.4rem;
+    }
+
+    .filter-select,
+    .filter-input,
+    .filter-input-range,
+    .filter-input-multi {
+      width: 100%;
+      min-width: unset;
+    }
+
+    .filter-select {
+      width: auto;
+      flex: 1;
+    }
+
+    .filter-selects-row {
+      display: flex;
+      gap: 0.4rem;
+      width: 100%;
+    }
+
+    .input-with-button {
+      width: 100%;
+    }
+
+    .filter-button {
+      width: 100%;
+    }
+
+    .active-filters {
+      padding: 0 1rem 0.5rem 1rem;
+    }
+
+    .sse-status-container {
+      padding: 0.5rem 1rem;
+      flex-wrap: wrap;
+    }
+
+    .reconnect-button {
+      width: 100%;
+      margin-top: 0.3rem;
+    }
+
+    .logs-container {
+      min-width: 100%;
+    }
+
+    .logs-header {
+      display: none;
+    }
+
+    .log-row {
+      flex-direction: column;
+      padding: 0.5rem;
+      gap: 0.5rem;
+    }
+
+    .log-cell {
+      width: 100%;
+      min-width: 100%;
+      padding: 0.25rem 0;
+      text-align: left;
+    }
+
+    .log-cell::before {
+      content: attr(data-label);
+      font-weight: bold;
+      margin-right: 0.5rem;
+      color: var(--text-secondary-color);
+    }
+
+    .id-cell::before { content: "ID: "; }
+    .severity-cell::before { content: "Severity: "; }
+    .timestamp-cell::before { content: "Time: "; }
+    .message-cell::before { content: "Message: "; }
+    .category-cell::before { content: "Category: "; }
+
+    .log-row {
+      border: 1px solid var(--border-color);
+      border-radius: 4px;
+      margin-bottom: 0.5rem;
+    }
+
+    .toggle-filters {
+      padding: 0.5rem 1rem;
+    }
+
+    .filter-input {
+      flex: 1;
+    }
+
+    .filter-input-range {
+      flex: 1;
+    }
+
+    .filter-input-multi {
+      width: 100%;
+    }
+  }
+
+  .loader {
+    padding: 1rem;
+    text-align: center;
+    min-height: 60px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+
+  .loading-spinner {
+    width: 30px;
+    height: 30px;
+    margin: 0 auto;
+    border: 3px solid var(--input-background);
+    border-top: 3px solid var(--primary-color);
+    border-radius: 50%;
+    animation: spin 1s linear infinite;
+  }
+
+  @keyframes spin {
+    0% {
+      transform: rotate(0deg);
+    }
+    100% {
+      transform: rotate(360deg);
+    }
   }
 </style>

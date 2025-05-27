@@ -81,24 +81,30 @@
 		border: 1px solid var(--border-color);
 		font-size: 0.85rem;
     flex-wrap: nowrap;
+    max-width: 100%;
+    box-sizing: border-box;
 	}
+
 	.arg-type {
 		font-size: 0.75rem;
 		color: var(--text-secondary-color);
     white-space: nowrap;
+    flex-shrink: 0;
 	}
+
   .arg-type:nth-child(3) {
     font-size: 0.5rem;
   }
 
 	.arg-input {
-		flex-shrink: 0;
+		flex-shrink: 1;
+    min-width: 0;
 	}
 
 	.arg-label .input.arg-input,
   .arg-label .select.arg-input {
-		min-width: 50px;
-		max-width: 180px;
+		min-width: 0;
+		max-width: none;
 		flex-grow: 1;
 		background-color: var(--input-background);
     border: 1px solid var(--input-border);
@@ -107,21 +113,23 @@
     color: var(--input-text);
     line-height: 1.4;
     padding: 0.4rem 0.6rem;
+    box-sizing: border-box;
 	}
 
   input[type="text"].arg-input,
   input[type="number"].arg-input,
   input[type="datetime-local"].arg-input {
      padding: 0.4rem 0.6rem;
+     box-sizing: border-box;
   }
 
   .arg-label .select.arg-input {
     padding-right: 1.5rem;
-    min-width: 60px;
+    min-width: 0;
     flex-grow: 0;
     flex-basis: auto;
+    width: auto;
   }
-
 
 	.arg-label > .checkbox.arg-input {
 		margin: 0;
@@ -135,20 +143,52 @@
     gap: 0.2rem;
     flex-grow: 1;
     flex-shrink: 1;
-    min-width: 120px;
+    min-width: 0;
+    box-sizing: border-box;
   }
 
   .duration-input-group .duration-number {
     flex-grow: 1;
-    min-width: 40px;
+    min-width: 0;
   }
 
   .duration-input-group .duration-unit {
     flex-grow: 0;
+    flex-shrink: 0;
   }
 
   .arg-input:disabled {
     cursor: not-allowed;
     opacity: 0.6;
+  }
+
+  @media (max-width: 768px) {
+    .arg-label {
+      flex-direction: column;
+      align-items: stretch;
+      gap: 0.5rem;
+      flex-wrap: wrap;
+    }
+
+    .arg-label .select.arg-input {
+      width: 100%;
+    }
+
+    .duration-input-group {
+      flex-direction: column;
+      width: 100%;
+    }
+
+    .duration-input-group .duration-number,
+    .duration-input-group .duration-unit {
+      width: 100%;
+    }
+
+    .arg-label .input.arg-input,
+    input[type="text"].arg-input,
+    input[type="number"].arg-input,
+    input[type="datetime-local"].arg-input {
+      width: 100%;
+    }
   }
 </style>

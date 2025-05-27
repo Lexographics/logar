@@ -48,10 +48,6 @@
     background-color: var(--card-background);
   }
   
-  section {
-    margin-bottom: 30px;
-  }
-  
   h2 {
     font-size: 2rem;
     margin-bottom: 20px;

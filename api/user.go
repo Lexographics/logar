@@ -3,19 +3,10 @@ package api
 import (
 	"encoding/json"
 	"net/http"
-	"strings"
 )
 
 func (h *Handler) UpdateUser(w http.ResponseWriter, r *http.Request) {
-	authorization := r.Header.Get("Authorization")
-	if authorization == "" {
-		w.WriteHeader(401)
-		json.NewEncoder(w).Encode(NewResponse(StatusCode_InvalidRequest, "Missing authorization header"))
-		return
-	}
-
-	token := strings.TrimPrefix(authorization, "Bearer ")
-	session, err := h.logger.GetWebPanel().GetSession(token)
+	session, err := h.getSession(r)
 	if err != nil {
 		w.WriteHeader(401)
 		json.NewEncoder(w).Encode(NewResponse(StatusCode_InvalidRequest, "Missing authorization header"))
@@ -63,15 +54,7 @@ func (h *Handler) GetAllUsers(w http.ResponseWriter, r *http.Request) {
 }
 
 func (h *Handler) CreateUser(w http.ResponseWriter, r *http.Request) {
-	authorization := r.Header.Get("Authorization")
-	if authorization == "" {
-		w.WriteHeader(401)
-		json.NewEncoder(w).Encode(NewResponse(StatusCode_InvalidRequest, "Missing authorization header"))
-		return
-	}
-
-	token := strings.TrimPrefix(authorization, "Bearer ")
-	session, err := h.logger.GetWebPanel().GetSession(token)
+	session, err := h.getSession(r)
 	if err != nil {
 		w.WriteHeader(401)
 		json.NewEncoder(w).Encode(NewResponse(StatusCode_InvalidRequest, "Missing authorization header"))

@@ -231,4 +231,43 @@
       opacity: 1;
     }
   }
+
+  @media (max-width: 768px) {
+    .content {
+      padding: 0 1rem;
+    }
+
+    .card {
+      padding: 15px;
+    }
+
+    .item-list li {
+      flex-direction: column;
+      gap: 1rem;
+    }
+
+    .item-list li > div:first-child {
+      width: 100%;
+    }
+
+    .item-list li > div:last-child {
+      width: 100%;
+      display: flex;
+      justify-content: flex-start;
+    }
+
+    button {
+      width: 100%;
+      min-width: unset;
+    }
+
+    input {
+      width: 100%;
+    }
+
+    .avatar {
+      width: 2.5rem;
+      height: 2.5rem;
+    }
+  }
 </style>

@@ -450,4 +450,64 @@
     color: var(--text-color);
     font-style: italic;
   }
+
+  @media (max-width: 768px) {
+    .page {
+      padding: 16px;
+    }
+
+    .header-actions {
+      flex-direction: column;
+      gap: 16px;
+      align-items: stretch;
+    }
+
+    .title {
+      text-align: center;
+    }
+
+    .buttons-container {
+      justify-content: center;
+    }
+
+    .action-button {
+      width: 100%;
+    }
+
+    .flags-container {
+      grid-template-columns: 1fr;
+    }
+
+    .flag-card {
+      padding: 12px;
+    }
+
+    .flag-header {
+      flex-direction: column;
+      gap: 12px;
+      align-items: flex-start;
+    }
+
+    .flag-actions {
+      flex-direction: column;
+      width: 100%;
+    }
+
+    .action-button {
+      width: 100%;
+    }
+
+    .modal-actions {
+      flex-direction: column;
+    }
+
+    .modal-actions .action-button {
+      width: 100%;
+    }
+
+    .form-group input[type="text"],
+    .form-group textarea {
+      width: 100%;
+    }
+  }
 </style>

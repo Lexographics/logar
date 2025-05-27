@@ -106,6 +106,12 @@ func (w *WebPanelImpl) GetAllUsers() ([]models.User, error) {
 	if err != nil {
 		return nil, err
 	}
+	users = append(users, models.User{
+		ID:          0,
+		Username:    w.core.config.AdminUsername,
+		DisplayName: "System",
+		IsAdmin:     true,
+	})
 	return users, nil
 }
 

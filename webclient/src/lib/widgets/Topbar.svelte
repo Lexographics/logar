@@ -31,7 +31,7 @@
 <nav class="topbar">
   <div class="profile-section">
     <button class="profile-button" onclick={toggleDropdown}>
-      <div style="display: flex; flex-direction: column; align-items: center;">
+      <div style="display: flex; flex-direction: column; align-items: end;">
         <span class="username">{userStore.current.user?.display_name}</span>
         <span class="username" style="font-size: 0.75rem;">@{userStore.current.user?.username}</span>
       </div>

@@ -90,6 +90,9 @@
 	.actions-page {
 		margin: 3rem 0;
 		padding: 0 1rem;
+		max-width: 100%;
+		overflow-x: hidden;
+		box-sizing: border-box;
 	}
 
 	.page-title {
@@ -119,5 +122,30 @@
 		background-color: var(--card-background);
 		padding: 2rem;
 		border-radius: 0.5rem;
+		width: 100%;
+		box-sizing: border-box;
+		overflow-x: hidden;
+	}
+
+	@media (max-width: 768px) {
+		.actions-page {
+			margin: 1.5rem 0;
+			padding: 0 0.5rem;
+		}
+
+		.page-title {
+			font-size: 1.5rem;
+			margin-bottom: 0.75rem;
+		}
+
+		.actions-tree {
+			padding: 1rem;
+			border-radius: 0.25rem;
+		}
+
+		.status-message {
+			padding: 0.75rem 0;
+			font-size: 0.9rem;
+		}
 	}
 </style>
