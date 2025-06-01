@@ -1,0 +1,23 @@
+{
+  "name": "Logar Management",
+  "short_name": "Logar",
+  "description": "Logar is a tool for logging and monitoring your application.",
+  "start_url": "/logger",
+  "display": "standalone",
+  "background_color": "#ffffff",
+  "theme_color": "#0a111f",
+  "orientation": "portrait-primary",
+  "lang": "en-US",
+  "icons": [
+    {
+      "src": "/logger/icons/icon-192x192.png",
+      "sizes": "192x192",
+      "type": "image/png"
+    },
+    {
+      "src": "/logger/icons/icon-512x512.png",
+      "sizes": "512x512",
+      "type": "image/png"
+    }
+  ]
+}

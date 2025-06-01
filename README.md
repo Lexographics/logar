@@ -25,7 +25,7 @@ A lightweight, flexible management library for Go applications, providing loggin
 ## Installation
 
 ```bash
-go get github.com/Lexographics/logar
+go get sadk.dev/logar
 ```
 
 ## Quick Start
@@ -131,7 +131,7 @@ featureFlagManager := app.GetFeatureFlags()
 
 For detailed examples covering logging, the web UI, server actions, analytics, feature flags, and integrations with web frameworks like Echo, see the `examples/` directory in the GitHub repository.
 
-See the [documentation](https://godoc.org/github.com/Lexographics/logar) for more API details.
+See the [documentation](https://godoc.org/sadk.dev/logar) for more API details.
 
 ## License
 

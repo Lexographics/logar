@@ -16,8 +16,8 @@
       <h3>{$LL.help.integration_guide.title()}</h3>
       <p style="margin-bottom: 10px;">{$LL.help.integration_guide.content()}</p>
 
-      <a href="https://godoc.org/github.com/Lexographics/logar" target="_blank">
-        <img src="https://pkg.go.dev/badge/github.com/Lexographics/logar.svg" alt="Go Reference">
+      <a href="https://godoc.org/sadk.dev/logar" target="_blank">
+        <img src="https://pkg.go.dev/badge/sadk.dev/logar.svg" alt="Go Reference">
       </a>
     </section>
     
@@ -33,7 +33,7 @@
       <h3>{$LL.help.additional_resources.title()}</h3>
       <ul>
         <li><a href="https://github.com/Lexographics/logar" target="_blank">{$LL.help.additional_resources.github_repository()}</a></li>
-        <li><a href="https://godoc.org/github.com/Lexographics/logar" target="_blank">{$LL.help.additional_resources.api_docs()}</a></li>
+        <li><a href="https://godoc.org/sadk.dev/logar" target="_blank">{$LL.help.additional_resources.api_docs()}</a></li>
       </ul>
     </section>
   </div>

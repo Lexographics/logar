@@ -64,8 +64,8 @@
   <div class="sidebar {isMobile ? (isSidebarOpen ? 'locked' : '') : (navigationStore.current.isSidebarLocked || !loaded ? 'locked' : '')} {isMobile ? 'mobile' : ''} {isSidebarOpen ? 'open' : ''}">
     <div class="sidebar-header">
       <h2>
-        <a class="linktext" href={`${getBasePath()}/`}>
-          <i class="fas fa-truck"></i>
+        <a class="linktext" href={`${getBasePath()}/`} style="display: flex; align-items: center;">
+          <img src={`${getBasePath()}/favicon.png`} alt="Logar" style="width: 2rem; height: 2rem; margin-right: 8px;">
           <span class="text">Logar</span>
         </a>
       </h2>

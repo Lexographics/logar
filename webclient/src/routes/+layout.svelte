@@ -15,6 +15,23 @@
   let loaded = $state(false);
   
   onMount(async () => {
+    if (process.env.NODE_ENV === 'production') {
+      if ('serviceWorker' in navigator) {
+        const registration = await navigator.serviceWorker.ready;
+        registration.addEventListener('updatefound', () => {
+          const newWorker = registration.installing;
+          newWorker.addEventListener('statechange', () => {
+            if (newWorker.state === 'installed' && navigator.serviceWorker.controller && confirm('New version is available. Reload to update?')) {
+              newWorker.postMessage({
+                type: 'SKIP_WAITING',
+              });
+              window.location.reload();
+            }
+          });
+        });
+      }
+    }
+
     await loadAllLocalesAsync();
 
     if (settingsStore.current.selectedLanguage && locales.includes(settingsStore.current.selectedLanguage)) {
