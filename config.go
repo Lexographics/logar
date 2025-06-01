@@ -22,7 +22,7 @@ type Config struct {
 
 type LogModel struct {
 	DisplayName string `json:"displayName"`
-	Identifier  string `json:"identifier"`
+	Identifier  Model  `json:"identifier"`
 	Icon        string `json:"icon"` // FontAwesome icon name. default: "fa-solid fa-cube"
 }
 type LogModels []LogModel
@@ -57,7 +57,7 @@ func WithAuth(authFunc AuthFunc) ConfigOpt {
 	}
 }
 
-func AddModel(displayName, modelId string, icon ...string) ConfigOpt {
+func AddModel(displayName string, modelId Model, icon ...string) ConfigOpt {
 	return func(cfg *Config) {
 		ico := "fa-solid fa-cube"
 		if len(icon) > 0 {

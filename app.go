@@ -240,7 +240,7 @@ func (l *AppImpl) DeleteGlobal(key string) error {
 	return l.db.Model(&models.Global{}).Where("key = ?", key).Delete(&models.Global{}).Error
 }
 
-func (l *AppImpl) SetGlobal(key string, value any) error {
+func (l *AppImpl) SetGlobal(key string, value any, exported bool) error {
 	data, err := json.Marshal(value)
 	if err != nil {
 		return err
@@ -249,8 +249,9 @@ func (l *AppImpl) SetGlobal(key string, value any) error {
 	global, err := l.GetGlobal(key)
 	if err != nil {
 		global = models.Global{
-			Key:   key,
-			Value: string(data),
+			Key:      key,
+			Value:    string(data),
+			Exported: exported,
 		}
 		err = l.db.Create(&global).Error
 		if err != nil {
@@ -258,7 +259,10 @@ func (l *AppImpl) SetGlobal(key string, value any) error {
 		}
 	}
 
-	return l.db.Model(&models.Global{}).Where("id = ?", global.ID).Update("value", string(data)).Error
+	return l.db.Model(&models.Global{}).Where("id = ?", global.ID).Updates(map[string]any{
+		"value":    string(data),
+		"exported": exported,
+	}).Error
 }
 
 func (l *AppImpl) GetAllGlobals() ([]models.Global, error) {

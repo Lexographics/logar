@@ -10,6 +10,7 @@
   let newValue = $state('');
   let editingKey = $state<string | null>(null);
   let editingValue = $state('');
+  let editingExported = $state<boolean>(false);
 
   async function loadGlobals() {
     loading = true;
@@ -34,13 +35,14 @@
     }
     
     error = null;
-    const [data, err] = await globalsService.updateGlobal(newKey, newValue);
+    const [data, err] = await globalsService.updateGlobal(newKey, jsonData, false);
     if (err) {
       error = err.message;
     } else {
       globals.push({
         Key: newKey,
         Value: newValue,
+        Exported: false,
       });
       newKey = '';
       newValue = '';
@@ -56,15 +58,15 @@
       error = 'Invalid JSON';
       return;
     }
-    
     error = null;
-    const [data, err] = await globalsService.updateGlobal(key, jsonData);
+    const [data, err] = await globalsService.updateGlobal(key, jsonData, editingExported);
     if (err) {
       error = err.message;
     } else {
       await loadGlobals();
       editingKey = null;
       editingValue = '';
+      editingExported = false;
     }
   }
 
@@ -115,7 +117,7 @@
       <div class="loading">Loading...</div>
     {:else}
       <div class="globals">
-        {#each globals as global}
+        {#each globals as global (global.Key)}
           <div class="item">
             {#if editingKey === global.Key}
               <input
@@ -123,22 +125,32 @@
                 bind:value={editingValue}
                 class="input"
               />
+              <label class="export-label">
+                <input
+                  type="checkbox"
+                  bind:checked={editingExported}
+                />
+                Exported
+              </label>
               <button onclick={() => updateGlobal(global.Key)} class="save-button">
                 Save
               </button>
-              <button onclick={() => editingKey = null} class="cancel-button">
+              <button onclick={() => { editingKey = null; editingValue = ''; editingExported = false; }} class="cancel-button">
                 Cancel
               </button>
             {:else}
               <div class="content">
                 <span class="key">{global.Key}</span>
                 <span class="value">{global.Value}</span>
+                <div class="export-status">
+                  <span class="export-label">
+                    <input type="checkbox" checked={global.Exported} disabled />
+                    {global.Exported ? 'Exported' : 'Not Exported'}
+                  </span>
+                </div>
               </div>
               <div class="action-buttons">
-                <button onclick={() => {
-                  editingKey = global.Key;
-                  editingValue = global.Value;
-                }} class="edit-button">
+                <button onclick={() => { editingKey = global.Key; editingValue = global.Value; editingExported = global.Exported; }} class="edit-button">
                   Edit
                 </button>
                 <button onclick={() => deleteGlobal(global.Key)} class="delete-button">
@@ -296,6 +308,23 @@
 
   .cancel-button:hover {
     background-color: #7f8c8d;
+  }
+
+  .export-status {
+    margin-top: 0.5rem;
+  }
+
+  .export-label {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    color: var(--text-secondary-color);
+    font-size: 0.9rem;
+  }
+
+  .export-label input[type="checkbox"] {
+    width: 1rem;
+    height: 1rem;
   }
 
   @media (max-width: 768px) {

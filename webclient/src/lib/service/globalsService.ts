@@ -6,6 +6,7 @@ import type { Response } from "$lib/types/response";
 export type Global = {
   Key: string;
   Value: any;
+  Exported: boolean;
 }
 
 class GlobalsService {
@@ -26,9 +27,12 @@ class GlobalsService {
     }
   }
 
-  async updateGlobal(key: string, value: any): Promise<[Global, Error]> {
+  async updateGlobal(key: string, value: any, exported: boolean): Promise<[Global, Error]> {
     try {
-      const response = await this.axios.put<Response<Global>>(`${getApiUrl()}/globals?key=${key}`, value, {
+      const response = await this.axios.put<Response<Global>>(`${getApiUrl()}/globals?key=${key}`, {
+        value: value,
+        exported: exported,
+      }, {
         headers: { ...getAuthHeaders() },
       });
       return [response.data.data, null];

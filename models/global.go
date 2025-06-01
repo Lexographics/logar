@@ -11,8 +11,9 @@ type Global struct {
 	CreatedAt time.Time
 	UpdatedAt time.Time
 
-	Key   string `gorm:"unique"`
-	Value string // can be any JSON-serializable value
+	Key      string `gorm:"unique"`
+	Value    string // can be any JSON-serializable value
+	Exported bool   `gorm:"default:false"` // if true, this global will be exported to feature flags
 }
 
 func (Global) TableName() string {

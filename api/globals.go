@@ -24,14 +24,17 @@ func (h *Handler) UpdateGlobal(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	var data any
-	if err := json.NewDecoder(r.Body).Decode(&data); err != nil {
+	var request struct {
+		Value    any  `json:"value"`
+		Exported bool `json:"exported"`
+	}
+	if err := json.NewDecoder(r.Body).Decode(&request); err != nil {
 		w.WriteHeader(422)
 		json.NewEncoder(w).Encode(NewResponse(StatusCode_InvalidRequest, "Invalid request body"))
 		return
 	}
 
-	err := h.logger.SetGlobal(key, data)
+	err := h.logger.SetGlobal(key, request.Value, request.Exported)
 	if err != nil {
 		w.WriteHeader(500)
 		json.NewEncoder(w).Encode(NewResponse(StatusCode_Error, err.Error()))

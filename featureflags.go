@@ -2,6 +2,7 @@ package logar
 
 import (
 	"context"
+	"encoding/json"
 	"errors"
 	"fmt"
 	"time"
@@ -111,10 +112,24 @@ func (f *FeatureFlagsImpl) HasFeatureFlag(ctx context.Context, flag string) (boo
 		contextValues[k] = v
 	}
 
+	var globals []models.Global
+	f.core.db.Model(&models.Global{}).Where("exported = ?", true).Find(&globals)
+
+	globalMap := map[string]any{}
+	for _, global := range globals {
+		var value any
+		err := json.Unmarshal([]byte(global.Value), &value)
+		if err != nil {
+			continue
+		}
+		globalMap[global.Key] = value
+	}
+
 	env := map[string]any{
 		"context": contextValues,
-		"println": fmt.Println,
+		"print":   fmt.Println,
 		"ctx":     timeout,
+		"globals": globalMap,
 	}
 
 	program, err := expr.Compile(featureflag.Condition, expr.Env(env), expr.AsBool(), expr.WithContext("ctx"))
