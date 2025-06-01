@@ -5,7 +5,7 @@ import (
 	"net/http"
 	"strings"
 
-	"github.com/Lexographics/logar/models"
+	"sadk.dev/logar/models"
 )
 
 func (h *Handler) getSession(r *http.Request) (*models.Session, error) {

@@ -1,8 +1,8 @@
 package proxy
 
 import (
-	"github.com/Lexographics/logar/logfilter"
-	"github.com/Lexographics/logar/models"
+	"sadk.dev/logar/logfilter"
+	"sadk.dev/logar/models"
 )
 
 type ProxyTarget interface {

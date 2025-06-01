@@ -5,8 +5,8 @@ import (
 	"strings"
 	"time"
 
-	"github.com/Lexographics/logar/models"
-	"github.com/Lexographics/logar/proxy"
+	"sadk.dev/logar/models"
+	"sadk.dev/logar/proxy"
 )
 
 type consoleLogger struct {

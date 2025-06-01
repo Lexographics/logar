@@ -9,7 +9,7 @@
   let loaded = $state(false);
   
   onMount(() => {
-    if(!userStore.current.token) {
+    if(!userStore.current?.token) {
       goto(`${getBasePath()}/login`);
       return;
     }

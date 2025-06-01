@@ -3,8 +3,8 @@ package gormlogger
 import (
 	"fmt"
 
-	"github.com/Lexographics/logar"
-	"github.com/Lexographics/logar/models"
+	"sadk.dev/logar"
+	"sadk.dev/logar/models"
 )
 
 type writer struct {

@@ -1,6 +1,6 @@
 package models
 
-import "github.com/Lexographics/logar/internal/tableprefix"
+import "sadk.dev/logar/internal/tableprefix"
 
 type FeatureFlag struct {
 	ID uint `json:"id" gorm:"primary_key"`

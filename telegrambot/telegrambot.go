@@ -1,9 +1,9 @@
 package telegrambot
 
 import (
-	"github.com/Lexographics/logar/proxy"
-	"github.com/Lexographics/logar/proxy/telegramlogger"
 	tgbotapi "github.com/go-telegram-bot-api/telegram-bot-api/v5"
+	"sadk.dev/logar/proxy"
+	"sadk.dev/logar/proxy/telegramlogger"
 )
 
 type TelegramBot interface {

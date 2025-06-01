@@ -8,6 +8,7 @@
   import { onMount } from "svelte";
   import LL from "../../../i18n/i18n-svelte";
   import { setMomentLocale } from "$lib/moment";
+  import { getBasePath } from "$lib/utils";
 
   let myActiveSessions = $state([]);
   
@@ -35,7 +36,7 @@
       }
       await userService.logout();
       userStore.current = null;
-      goto("/login");
+      goto(`${getBasePath()}/login`);
       return;
     }
     

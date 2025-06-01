@@ -4,7 +4,7 @@ import (
 	"strings"
 	"time"
 
-	"github.com/Lexographics/logar/models"
+	"sadk.dev/logar/models"
 )
 
 type Filter struct {

@@ -5,7 +5,7 @@
   import { getBasePath } from '$lib/utils';
 
   onMount(() => {
-    if (userStore.current.token) {
+    if (userStore.current?.token) {
       goto(`${getBasePath()}/dashboard`);
     } else {
       goto(`${getBasePath()}/login`);

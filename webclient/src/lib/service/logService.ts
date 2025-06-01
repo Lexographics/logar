@@ -42,7 +42,7 @@ class LogService {
   }
 
   connectToLogStream(model: string, filters: LogFilter[], onLogsReceived: (logs: Log[]) => void, onError: (error: Error) => void, onCloseCallback: () => void) {
-    let url = `${getApiUrl()}/logs/${model}/sse?token=${userStore.current.token}`;
+    let url = `${getApiUrl()}/logs/${model}/sse?token=${userStore.current?.token}`;
     if (filters.length > 0) {
       url += `&filters=${JSON.stringify(filters)}`;
     }

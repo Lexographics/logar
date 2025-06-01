@@ -5,7 +5,7 @@ import (
 	"net/http"
 	"strconv"
 
-	"github.com/Lexographics/logar/models"
+	"sadk.dev/logar/models"
 )
 
 func (h *Handler) GetFeatureFlags(w http.ResponseWriter, r *http.Request) {

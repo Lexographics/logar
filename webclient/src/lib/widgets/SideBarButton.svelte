@@ -6,7 +6,7 @@
 </script>
 
 <li>
-  <a class="link {submenu ? 'submenu-item' : ''}" href={`${getBasePath()}${href}`} class:active={active === null ? $page.url.pathname.startsWith(`${getBasePath()}${href}`) : active} onclick={onclick}>
+  <a draggable={false} class="link {submenu ? 'submenu-item' : ''}" href={href ? `${getBasePath()}${href}` : null} class:active={active === null ? $page.url.pathname.startsWith(`${getBasePath()}${href}`) : active} onclick={onclick}>
     <i class={icon}></i>
     <span class="text">{text}</span>
     {#if tooltip}
@@ -44,6 +44,8 @@
     border-radius: 4px;
     transition: background-color 0.2s;
     white-space: nowrap;
+    cursor: pointer;
+    user-select: none;
   }
   
   .link:hover {

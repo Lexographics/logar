@@ -80,14 +80,14 @@
     <nav>
       <ul>
         <SideBarButton href={`/dashboard`} icon="fas fa-home" text={$LL.dashboard.title()}/>
-        <SideBarButton href={`javascript:void(0)`} icon="fas fa-list-alt" text={$LL.logs.title()} onclick={toggleLogs} active={$page.url.pathname.startsWith(`${getBasePath()}/logs`)}>
+        <SideBarButton icon="fas fa-list-alt" text={$LL.logs.title()} onclick={toggleLogs} active={$page.url.pathname.startsWith(`${getBasePath()}/logs`)}>
           {#snippet end()}
             <i class="fas {navigationStore.current.isLogsExpanded ? 'fa-chevron-down' : 'fa-chevron-right'} chevron"></i>
           {/snippet}
 
           <ul class="scrollbar submenu {navigationStore.current.isLogsExpanded ? 'expanded' : ''}">
             {#each models as model}
-              <SideBarButton href={`${getBasePath()}/logs?model=${model.identifier}`} icon={model.icon ? model.icon : 'fa-solid fa-cube'} text={model.displayName || model.identifier} active={$page.url.pathname.startsWith(`${getBasePath()}/logs`) && $page.url.searchParams.get('model') === model.identifier} />
+              <SideBarButton href={`/logs?model=${model.identifier}`} icon={model.icon ? model.icon : 'fa-solid fa-cube'} text={model.displayName || model.identifier} active={$page.url.pathname.startsWith(`${getBasePath()}/logs`) && $page.url.searchParams.get('model') === model.identifier} />
             {:else}
               <p style="color: var(--sidebar-text); text-align: center; font-size: 0.8rem; padding: 10px;">No models found</p>
             {/each}

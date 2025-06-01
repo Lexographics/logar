@@ -3,7 +3,7 @@ package models
 import (
 	"time"
 
-	"github.com/Lexographics/logar/internal/tableprefix"
+	"sadk.dev/logar/internal/tableprefix"
 )
 
 type Global struct {

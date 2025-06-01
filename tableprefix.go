@@ -1,6 +1,6 @@
 package logar
 
-import "github.com/Lexographics/logar/internal/tableprefix"
+import "sadk.dev/logar/internal/tableprefix"
 
 func SetTablePrefix(prefix string) {
 	tableprefix.Set(prefix)

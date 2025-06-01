@@ -5,7 +5,7 @@ import (
 	"fmt"
 	"net/http"
 
-	"github.com/Lexographics/logar"
+	"sadk.dev/logar"
 )
 
 func (h *Handler) ListActions(w http.ResponseWriter, r *http.Request) {

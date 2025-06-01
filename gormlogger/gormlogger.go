@@ -3,8 +3,8 @@ package gormlogger
 import (
 	"time"
 
-	"github.com/Lexographics/logar"
 	"gorm.io/gorm/logger"
+	"sadk.dev/logar"
 )
 
 func New(lg logar.App, model logar.Model, category string, stackTraceSkip int) logger.Interface {

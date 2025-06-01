@@ -4,12 +4,12 @@ import (
 	"log"
 	"net/http"
 
-	"github.com/Lexographics/logar"
-	logarweb "github.com/Lexographics/logar-web"
-	"github.com/Lexographics/logar/logfilter"
-	"github.com/Lexographics/logar/proxy"
-	"github.com/Lexographics/logar/proxy/consolelogger"
 	"github.com/google/uuid"
+	"sadk.dev/logar"
+	logarweb "sadk.dev/logar-web"
+	"sadk.dev/logar/logfilter"
+	"sadk.dev/logar/proxy"
+	"sadk.dev/logar/proxy/consolelogger"
 
 	"github.com/labstack/echo/v4"
 	"github.com/labstack/echo/v4/middleware"

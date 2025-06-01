@@ -5,8 +5,8 @@ import (
 	"slices"
 	"time"
 
-	"github.com/Lexographics/logar/models"
 	"gorm.io/gorm"
+	"sadk.dev/logar/models"
 )
 
 type PaginationStrategy int

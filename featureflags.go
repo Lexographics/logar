@@ -6,8 +6,8 @@ import (
 	"fmt"
 	"time"
 
-	"github.com/Lexographics/logar/models"
 	"github.com/expr-lang/expr"
+	"sadk.dev/logar/models"
 )
 
 type FeatureFlags interface {

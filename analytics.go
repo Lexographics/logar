@@ -4,7 +4,7 @@ import (
 	"sort"
 	"time"
 
-	"github.com/Lexographics/logar/models"
+	"sadk.dev/logar/models"
 )
 
 type AnalyticsSummary struct {

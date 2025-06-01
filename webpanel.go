@@ -5,9 +5,9 @@ import (
 	"net/http"
 	"time"
 
-	"github.com/Lexographics/logar/models"
 	"github.com/google/uuid"
 	"golang.org/x/crypto/bcrypt"
+	"sadk.dev/logar/models"
 )
 
 type WebPanel interface {

@@ -9,7 +9,7 @@ import (
 	"reflect"
 	"strconv"
 
-	"github.com/Lexographics/logar"
+	"sadk.dev/logar"
 )
 
 type HandlerConfig struct {

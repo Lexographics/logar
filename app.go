@@ -6,11 +6,11 @@ import (
 	"reflect"
 	"time"
 
-	"github.com/Lexographics/logar/models"
-	"github.com/Lexographics/logar/proxy"
 	"gorm.io/driver/sqlite"
 	"gorm.io/gorm"
 	"gorm.io/gorm/logger"
+	"sadk.dev/logar/models"
+	"sadk.dev/logar/proxy"
 )
 
 type Common interface {

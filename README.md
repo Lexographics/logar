@@ -36,9 +36,9 @@ Logar provides a suite of tools. Here's a basic logging example:
 package main
 
 import (
-  "github.com/Lexographics/logar"
+  "sadk.dev/logar"
   // Import other necessary logar sub-packages for specific features
-  // e.g., "github.com/Lexographics/logar/logarweb" for the web UI
+  // e.g., "sadk.dev/logar/logarweb" for the web UI
 )
 
 func main() {

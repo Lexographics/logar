@@ -6,8 +6,8 @@ import (
 	"reflect"
 	"time"
 
-	"github.com/Lexographics/logar"
-	logarweb "github.com/Lexographics/logar-web"
+	"sadk.dev/logar"
+	logarweb "sadk.dev/logar-web"
 
 	"github.com/labstack/echo/v4"
 	"github.com/labstack/echo/v4/middleware"

@@ -31,7 +31,7 @@
   const PROXIMITY_RADIUS = 500;
 
   onMount(() => {
-    if (userStore.current.token) {
+    if (userStore.current?.token) {
       goto(`${getBasePath()}/dashboard`);
     }
   });

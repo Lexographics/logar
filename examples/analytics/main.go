@@ -15,6 +15,9 @@ import (
 	"github.com/labstack/echo/v4"
 	"github.com/labstack/echo/v4/middleware"
 	"github.com/mileusna/useragent"
+	"sadk.dev/logar"
+	logarweb "sadk.dev/logar-web"
+	"sadk.dev/logar/models"
 )
 
 func main() {

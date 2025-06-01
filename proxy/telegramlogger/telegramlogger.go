@@ -4,7 +4,7 @@ import (
 	"fmt"
 	"strings"
 
-	"github.com/Lexographics/logar/models"
+	"sadk.dev/logar/models"
 )
 
 type MessageSender interface {

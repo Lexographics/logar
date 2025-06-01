@@ -39,6 +39,6 @@ export function createAxiosInstance() : AxiosInstance {
 
 export function getAuthHeaders(): Record<string, string> {
   return {
-    Authorization: `Bearer ${userStore.current.token}`,
+    Authorization: `Bearer ${userStore.current?.token}`,
   };
 }

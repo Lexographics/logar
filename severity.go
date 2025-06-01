@@ -1,6 +1,6 @@
 package logar
 
-import "github.com/Lexographics/logar/models"
+import "sadk.dev/logar/models"
 
 func Severity(severity int) models.Severity {
 	return models.Severity(severity)

@@ -3,8 +3,8 @@ package logar
 import (
 	"net/http"
 
-	"github.com/Lexographics/logar/proxy"
 	"gorm.io/gorm"
+	"sadk.dev/logar/proxy"
 )
 
 type Config struct {

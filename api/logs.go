@@ -6,8 +6,8 @@ import (
 	"net/http"
 	"time"
 
-	"github.com/Lexographics/logar"
-	"github.com/Lexographics/logar/models"
+	"sadk.dev/logar"
+	"sadk.dev/logar/models"
 )
 
 func (h *Handler) ListModels(w http.ResponseWriter, r *http.Request) {
