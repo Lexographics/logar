@@ -48,6 +48,15 @@ jobs:
           rm -rf logar-web/build/*
           cp -r webclient/build/* logar-web/build/
 
+      - name: Update version
+        uses: actions/setup-go@v5
+        with:
+          go-version: '1.23.3'
+        run: |
+          cd logar-web
+          go get sadk.dev/logar@latest && go mod tidy
+          git add go.mod go.sum
+
       - name: Commit and push to build repo
         run: |
           cd logar-web
