@@ -1,6 +1,7 @@
 package gormlogger
 
 import (
+	"context"
 	"fmt"
 
 	"sadk.dev/logar"
@@ -9,7 +10,6 @@ import (
 
 type writer struct {
 	lg       logar.App
-	severity models.Severity
 	model    logar.Model
 	category string
 }
@@ -17,18 +17,12 @@ type writer struct {
 func newWriter(logger logar.App, model logar.Model, category string) *writer {
 	return &writer{
 		lg:       logger,
-		severity: models.Severity_Info,
 		model:    model,
 		category: category,
 	}
 }
 
-func (w *writer) SetSeverity(severity models.Severity) {
-	w.severity = severity
-}
-
-func (w *writer) Printf(format string, args ...interface{}) {
-	msg := fmt.Sprintf("\n"+""+format+"\n", args...)
-
-	w.lg.GetLogger().Print(w.model, msg, w.category, w.severity)
+func (w *writer) Printf(ctx context.Context, severity models.Severity, format string, args ...interface{}) {
+	msg := fmt.Sprintf(format, args...)
+	w.lg.GetLogger().WithContext(ctx).Print(w.model, msg, w.category, severity)
 }

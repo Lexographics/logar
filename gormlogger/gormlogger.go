@@ -14,7 +14,7 @@ func New(lg logar.App, model logar.Model, category string, stackTraceSkip int) l
 			SlowThreshold:             200 * time.Millisecond,
 			LogLevel:                  logger.Warn,
 			IgnoreRecordNotFoundError: false,
-			Colorful:                  true,
+			Colorful:                  false,
 		}, stackTraceSkip,
 	)
 }

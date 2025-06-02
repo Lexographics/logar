@@ -9,12 +9,10 @@ import (
 	"strings"
 	"time"
 
-	"github.com/Lexographics/logar"
-	logarweb "github.com/Lexographics/logar-web"
-	"github.com/Lexographics/logar/models"
 	"github.com/labstack/echo/v4"
 	"github.com/labstack/echo/v4/middleware"
 	"github.com/mileusna/useragent"
+	"gorm.io/driver/sqlite"
 	"sadk.dev/logar"
 	logarweb "sadk.dev/logar-web"
 	"sadk.dev/logar/models"
@@ -23,6 +21,7 @@ import (
 func main() {
 	app, err := logar.New(
 		logar.WithAppName("analytics"),
+		logar.WithDatabase(sqlite.Open("logs.db")),
 		logar.WithAdminCredentials("admin", "admin"),
 	)
 	if err != nil {
