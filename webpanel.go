@@ -122,7 +122,7 @@ func (w *WebPanelImpl) UpdateUser(user models.User) error {
 func (w *WebPanelImpl) CreateSession(user models.User, device string) (string, error) {
 	session := models.Session{
 		UserID:    user.ID,
-		ExpiresAt: time.Now().Add(time.Hour * 24),
+		ExpiresAt: time.Now().Add(w.core.config.WebPanelConfig.SessionDuration),
 		Token:     uuid.New().String(),
 		Device:    device,
 	}
@@ -152,7 +152,7 @@ func (w *WebPanelImpl) GetSession(token string) (*models.Session, error) {
 
 	now := time.Now()
 	session.LastActivity = now
-	session.ExpiresAt = now.Add(time.Hour * 24)
+	session.ExpiresAt = now.Add(w.core.config.WebPanelConfig.SessionDuration)
 	err = w.core.db.Save(&session).Error
 	if err != nil {
 		return nil, err

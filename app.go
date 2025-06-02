@@ -52,6 +52,10 @@ type AppImpl struct {
 	typeKinds map[string]TypeKind
 }
 
+var defaultWebPanelConfig = WebPanelConfig{
+	SessionDuration: time.Hour * 24 * 7,
+}
+
 func New(opts ...ConfigOpt) (App, error) {
 	cfg := Config{
 		AppName:         "logger",
@@ -62,6 +66,7 @@ func New(opts ...ConfigOpt) (App, error) {
 		Proxies:         []proxy.Proxy{},
 		Actions:         Actions{},
 		DefaultLanguage: English,
+		WebPanelConfig:  defaultWebPanelConfig,
 	}
 
 	for _, opt := range opts {

@@ -131,7 +131,7 @@
     height: 60px;
     display: flex;
     align-items: center;
-    z-index: 12;
+    z-index: 9;
     background: transparent;
     border: none;
     color: var(--sidebar-text);

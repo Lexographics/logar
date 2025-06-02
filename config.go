@@ -2,6 +2,7 @@ package logar
 
 import (
 	"net/http"
+	"time"
 
 	"gorm.io/gorm"
 	"sadk.dev/logar/proxy"
@@ -18,6 +19,7 @@ type Config struct {
 	AdminUsername   string
 	AdminPassword   string
 	DefaultLanguage Language
+	WebPanelConfig  WebPanelConfig
 }
 
 type LogModel struct {
@@ -36,6 +38,29 @@ type Action struct {
 	Path        string
 	Func        interface{}
 	Description string
+}
+
+type WebPanelConfig struct {
+	SessionDuration time.Duration
+}
+
+type WebPanelConfigOpt func(*WebPanelConfig)
+
+func WithSessionDuration(duration time.Duration) WebPanelConfigOpt {
+	return func(cfg *WebPanelConfig) {
+		cfg.SessionDuration = duration
+	}
+}
+
+func WithWebPanelConfig(opts ...WebPanelConfigOpt) ConfigOpt {
+	return func(cfg *Config) {
+		webPanelConfig := defaultWebPanelConfig
+		for _, opt := range opts {
+			opt(&webPanelConfig)
+		}
+
+		cfg.WebPanelConfig = webPanelConfig
+	}
 }
 
 func WithAppName(appName string) ConfigOpt {
@@ -68,6 +93,12 @@ func AddModel(displayName string, modelId Model, icon ...string) ConfigOpt {
 			Identifier:  modelId,
 			Icon:        ico,
 		})
+	}
+}
+
+func SetModels(models LogModels) ConfigOpt {
+	return func(cfg *Config) {
+		cfg.Models = models
 	}
 }
 
