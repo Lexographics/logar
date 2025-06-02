@@ -79,7 +79,7 @@
 	<!-- Action -->
 	<div class="action-node">
 		<div class="action-header">
-			<div class="action-icon">♦</div>
+			<div class="action-icon"><i class="fa-solid fa-circle-notch"></i></div>
 			<span class="action-name">{name}</span>
 		</div>
 		{#if actionDetails.description}
@@ -119,7 +119,7 @@
 	<!-- Directory -->
 	<details class="directory-node" open={isOpen}>
 		<summary class="directory-summary list-item">
-			<span class="directory-icon"></span>
+			<span class="directory-icon"><i class="fa-solid fa-right-long"></i></span>
 			<span class="directory-name">{name}</span>
 		</summary>
 		<div class="directory-content">
@@ -134,7 +134,6 @@
 	.action-node,
 	.directory-node {
 		padding: 0.6rem 0;
-		border-top: 1px solid var(--border-color);
 		width: 100%;
 		box-sizing: border-box;
 		max-width: 100%;
@@ -142,7 +141,6 @@
 
 	:global(.actions-page > .action-node:first-child),
 	:global(.actions-page > .directory-node:first-child) {
-		border-top: none;
 		padding-top: 0.1rem; 
 	}
 
@@ -264,9 +262,7 @@
 		transition: transform 0.2s ease-in-out;
 		color: var(--text-secondary-color);
 	}
-	.directory-icon::before {
-		content: '➤';
-	}
+
 	.directory-node[open] > .directory-summary .directory-icon {
 		transform: rotate(90deg);
 	}
