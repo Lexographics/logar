@@ -62,7 +62,9 @@
     padding: 20px;
     border-radius: 5px;
     position: relative;
-    max-width: 60vw;
+    max-width: 90vw;
+    max-height: 90vh;
+    overflow-y: auto;
     transition: 0.3s;
     top: 50%;
     left: 50%;

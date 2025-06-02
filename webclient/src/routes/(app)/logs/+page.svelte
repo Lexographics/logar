@@ -13,7 +13,7 @@
 
   let model = $state("");
   let filters = $state([]);
-  let showFilters = $state(true);
+  let showFilters = $state(false);
   
   function ModelChanged() {
     model = $page.url.searchParams.get("model") || "";

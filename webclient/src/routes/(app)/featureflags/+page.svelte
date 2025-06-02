@@ -7,7 +7,12 @@
 
   let featureFlags = $state<FeatureFlag[]>([]);
   let flagModal = $state<any>(null);
-  let currentFlag = $state<FeatureFlag | null>(null);
+  let currentFlag = $state<FeatureFlag>({
+    id: 0,
+    name: "",
+    enabled: true,
+    condition: ""
+  });
   let isNewFlag = $state(false);
   let isLoading = $state(false);
   let error = $state<string | null>(null);
@@ -48,7 +53,6 @@
 
   function onModalClose() {
     error = null;
-    currentFlag = null;
     isNewFlag = false;
   }
 
@@ -141,50 +145,47 @@
   title={isNewFlag ? "Create New Flag" : "Edit Flag"} 
   onClose={onModalClose}
 >
-  {#if currentFlag}
-    <div class="modal-form">
-      <div class="form-group">
-        <label for="flag-name">Name</label>
-        <input 
-          type="text" 
-          id="flag-name"
-          bind:value={currentFlag.name} 
-          placeholder="Enter flag name"
-        />
-      </div>
-      
-      <div class="form-group">
-        <label class="switch-label">
-          <span>Enabled</span>
-          <label class="switch">
-            <input type="checkbox" bind:checked={currentFlag.enabled} />
-            <span class="slider round"></span>
-          </label>
+  <div class="modal-form">
+    <div class="form-group">
+      <label for="flag-name">Name</label>
+      <input 
+        type="text" 
+        id="flag-name"
+        bind:value={currentFlag.name} 
+        placeholder="Enter flag name"
+      />
+    </div>
+    
+    <div class="form-group">
+      <label class="switch-label">
+        <span>Enabled</span>
+        <label class="switch">
+          <input type="checkbox" bind:checked={currentFlag.enabled} />
+          <span class="slider round"></span>
         </label>
-      </div>
-
-      <div class="form-group">
-        <label for="flag-condition">Condition</label>
-        <textarea 
-          id="flag-condition"
-          bind:value={currentFlag.condition} 
-          rows="6"
-          placeholder="Enter condition expression"
-        ></textarea>
-      </div>
-
-
-    {#if error}
-      <p class="error-message">{error}</p>
-    {/if}
-
-      <div class="modal-actions">
-        <button class="action-button" onclick={() => flagModal?.closeModal()}>Cancel</button>
-        <button class="action-button success" onclick={saveFlag}>Save</button>
-      </div>
+      </label>
     </div>
 
+    <div class="form-group">
+      <label for="flag-condition">Condition</label>
+      <textarea 
+        id="flag-condition"
+        bind:value={currentFlag.condition} 
+        rows="6"
+        placeholder="Enter condition expression"
+      ></textarea>
+    </div>
+
+
+  {#if error}
+    <p class="error-message">{error}</p>
   {/if}
+
+    <div class="modal-actions">
+      <button class="action-button" onclick={() => flagModal?.closeModal()}>Cancel</button>
+      <button class="action-button success" onclick={saveFlag}>Save</button>
+    </div>
+  </div>
 </Modal>
 
 <style>
