@@ -71,8 +71,8 @@ func (h *Handler) GetActiveSessions(w http.ResponseWriter, r *http.Request) {
 	for _, s := range activeSessions {
 		sessionData = append(sessionData, SessionData{
 			Device:       s.Device,
-			LastActivity: s.LastActivity.Format(time.DateTime),
-			CreatedAt:    s.CreatedAt.Format(time.DateTime),
+			LastActivity: s.LastActivity.Format(time.RFC1123Z),
+			CreatedAt:    s.CreatedAt.Format(time.RFC1123Z),
 			IsCurrent:    s.Token == session.Token,
 			Token:        s.Token,
 		})
