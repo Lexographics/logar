@@ -17,13 +17,11 @@ const (
 	PaginationStatus_Offset
 )
 
-type QueryOptFunc func(*QueryOptions)
-
 type QueryOptions struct {
 	Model              string
 	Category           string
-	Filters            []string
-	FilterStructs      []models.Filter
+	MessageContains    []string
+	Filters            []models.Filter
 	Severity           models.Severity
 	PaginationStrategy PaginationStrategy
 	Limit              int
@@ -35,114 +33,94 @@ type QueryOptions struct {
 	IDGreaterThan      uint
 }
 
-func WithModel(model string) QueryOptFunc {
-	return func(o *QueryOptions) {
-		o.Model = model
+type Query struct {
+	Options *QueryOptions
+}
+
+func NewQuery() *Query {
+	return &Query{
+		Options: &QueryOptions{},
 	}
 }
 
-func WithCategory(category string) QueryOptFunc {
-	return func(o *QueryOptions) {
-		o.Category = category
-	}
+func (q *Query) WithModel(model string) *Query {
+	q.Options.Model = model
+	return q
 }
 
-func WithFilterStruct(filter models.Filter) QueryOptFunc {
-	return func(o *QueryOptions) {
-		o.FilterStructs = append(o.FilterStructs, filter)
-	}
+func (q *Query) WithCategory(category string) *Query {
+	q.Options.Category = category
+	return q
 }
 
-func WithFilter(filter string) QueryOptFunc {
-	return func(o *QueryOptions) {
-		o.Filters = append(o.Filters, filter)
-	}
+func (q *Query) WithFilter(filter models.Filter) *Query {
+	q.Options.Filters = append(q.Options.Filters, filter)
+	return q
 }
 
-func WithSeverity(severity models.Severity) QueryOptFunc {
-	return func(o *QueryOptions) {
-		o.Severity = severity
-	}
+func (q *Query) MessageContaints(text string) *Query {
+	q.Options.MessageContains = append(q.Options.MessageContains, text)
+	return q
 }
 
-func WithOffsetPagination(offset int, page int) QueryOptFunc {
-	return func(o *QueryOptions) {
-		o.PaginationStrategy = PaginationStatus_Offset
-		o.Page = page
-		o.Limit = page
-	}
+func (q *Query) WithSeverity(severity models.Severity) *Query {
+	q.Options.Severity = severity
+	return q
 }
 
-func WithCursorPagination(cursor int, limit int) QueryOptFunc {
-	return func(o *QueryOptions) {
-		o.PaginationStrategy = PaginationStatus_Cursor
-		o.Cursor = cursor
-		o.Limit = limit
-	}
+func (q *Query) WithOffsetPagination(offset int, page int) *Query {
+	q.Options.PaginationStrategy = PaginationStatus_Offset
+	q.Options.Page = page
+	q.Options.Limit = page
+	return q
 }
 
-func WithTimeRange(from time.Time, to time.Time) QueryOptFunc {
-	return func(o *QueryOptions) {
-		o.From = &from
-		o.To = &to
-	}
+func (q *Query) WithCursorPagination(cursor int, limit int) *Query {
+	q.Options.PaginationStrategy = PaginationStatus_Cursor
+	q.Options.Cursor = cursor
+	q.Options.Limit = limit
+	return q
 }
 
-func After(from time.Time) QueryOptFunc {
-	return func(o *QueryOptions) {
-		o.From = &from
-	}
+func (q *Query) WithTimeRange(from time.Time, to time.Time) *Query {
+	q.Options.From = &from
+	q.Options.To = &to
+	return q
 }
 
-func Before(to time.Time) QueryOptFunc {
-	return func(o *QueryOptions) {
-		o.To = &to
-	}
+func (q *Query) After(from time.Time) *Query {
+	q.Options.From = &from
+	return q
 }
 
-func WithIDs(ids ...uint) QueryOptFunc {
-	return func(o *QueryOptions) {
-		o.IDs = ids
-	}
+func (q *Query) Before(to time.Time) *Query {
+	q.Options.To = &to
+	return q
 }
 
-func WithIDGreaterThan(id uint) QueryOptFunc {
-	return func(o *QueryOptions) {
-		o.IDGreaterThan = id
-	}
+func (q *Query) WithIDs(ids ...uint) *Query {
+	q.Options.IDs = ids
+	return q
 }
 
-func (l *AppImpl) GetLogs(opts ...QueryOptFunc) ([]models.Log, error) {
+func (q *Query) WithIDGreaterThan(id uint) *Query {
+	q.Options.IDGreaterThan = id
+	return q
+}
+
+func (l *AppImpl) GetLogs(q *Query) ([]models.Log, error) {
 	var logs []models.Log
-	query := l.prepareQuery(opts...)
+	query := l.prepareQuery(q.Options)
 	err := query.Find(&logs).Error
 	return logs, err
 }
 
-func (l *AppImpl) DeleteLogs(opts ...QueryOptFunc) error {
-	query := l.prepareQuery(opts...)
+func (l *AppImpl) DeleteLogs(q *Query) error {
+	query := l.prepareQuery(q.Options)
 	return query.Delete(&models.Log{}).Error
 }
 
-func (l *AppImpl) prepareQuery(opts ...QueryOptFunc) *gorm.DB {
-	options := &QueryOptions{
-		Model:              "",
-		Category:           "",
-		Filters:            []string{},
-		Severity:           models.Severity_None,
-		PaginationStrategy: PaginationStatus_None,
-		Limit:              0,
-		Page:               0,
-		Cursor:             0,
-		From:               nil,
-		To:                 nil,
-		IDs:                nil,
-		IDGreaterThan:      0,
-	}
-	for _, opt := range opts {
-		opt(options)
-	}
-
+func (l *AppImpl) prepareQuery(options *QueryOptions) *gorm.DB {
 	query := l.db
 	if options.Model != "" {
 		query = query.Where("`model` = ?", options.Model)
@@ -150,8 +128,8 @@ func (l *AppImpl) prepareQuery(opts ...QueryOptFunc) *gorm.DB {
 	if options.Category != "" {
 		query = query.Where("category = ?", options.Category)
 	}
-	if len(options.Filters) > 0 {
-		for _, filter := range options.Filters {
+	if len(options.MessageContains) > 0 {
+		for _, filter := range options.MessageContains {
 			query = query.Where("message LIKE ?", "%"+filter+"%")
 		}
 	}
@@ -186,8 +164,8 @@ func (l *AppImpl) prepareQuery(opts ...QueryOptFunc) *gorm.DB {
 		query = query.Where("id > ?", options.IDGreaterThan)
 	}
 
-	if len(options.FilterStructs) > 0 {
-		for _, filter := range options.FilterStructs {
+	if len(options.Filters) > 0 {
+		for _, filter := range options.Filters {
 			if !slices.Contains(models.Log{}.FieldNames(), filter.Field) {
 				continue
 			}

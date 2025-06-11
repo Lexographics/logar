@@ -24,17 +24,16 @@ func (h *Handler) GetLogs(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	opts := []logar.QueryOptFunc{
-		logar.WithCursorPagination(cursor, count),
-		logar.WithModel(model),
-		logar.WithSeverity(models.Severity(severity)),
-	}
+	query := logar.NewQuery().
+		WithCursorPagination(cursor, count).
+		WithModel(model).
+		WithSeverity(models.Severity(severity))
 
 	for _, filter := range filters {
-		opts = append(opts, logar.WithFilterStruct(filter))
+		query.WithFilter(filter)
 	}
 
-	logs, err := h.logger.GetLogs(opts...)
+	logs, err := h.logger.GetLogs(query)
 	if err != nil {
 		w.WriteHeader(500)
 		json.NewEncoder(w).Encode(NewResponse(StatusCode_Error, err.Error()))
@@ -68,8 +67,10 @@ func (h *Handler) GetLogsSSE(w http.ResponseWriter, r *http.Request) {
 	}
 
 	lastLog, err := h.logger.GetLogs(
-		func(qo *logar.QueryOptions) {
-			qo.Limit = 1
+		&logar.Query{
+			Options: &logar.QueryOptions{
+				Limit: 1,
+			},
 		},
 	)
 	if err != nil {
@@ -100,22 +101,19 @@ func (h *Handler) GetLogsSSE(w http.ResponseWriter, r *http.Request) {
 		select {
 		case <-ticker.C:
 
-			opts := []logar.QueryOptFunc{
-				logar.WithModel(model),
-				logar.WithSeverity(models.Severity(severity)),
-			}
+			query := logar.NewQuery().
+				WithModel(model).
+				WithSeverity(models.Severity(severity))
 
 			for _, filter := range filters {
-				opts = append(opts, logar.WithFilterStruct(filter))
+				query.WithFilter(filter)
 			}
 
-			opts = append(opts, logar.WithIDGreaterThan(uint(lastId)))
-			opts = append(opts, func(o *logar.QueryOptions) {
-				o.Limit = count
-				o.PaginationStrategy = logar.PaginationStatus_None
-			})
+			query.WithIDGreaterThan(uint(lastId))
+			query.Options.Limit = count
+			query.Options.PaginationStrategy = logar.PaginationStatus_None
 
-			logs, err := h.logger.GetLogs(opts...)
+			logs, err := h.logger.GetLogs(query)
 			if err != nil {
 				h.logger.GetLogger().Error("logar-errors", "Error fetching logs for SSE: "+err.Error(), "sse")
 				continue

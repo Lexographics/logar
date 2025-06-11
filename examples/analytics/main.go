@@ -33,7 +33,7 @@ func main() {
 	e.Use(middleware.Recover())
 	e.Use(func(next echo.HandlerFunc) echo.HandlerFunc {
 		return func(c echo.Context) error {
-			if strings.HasPrefix(c.Request().URL.Path, "/logger") || strings.HasSuffix(c.Request().URL.Path, "/sse") {
+			if strings.HasPrefix(c.Request().URL.Path, "/logger") || strings.HasSuffix(c.Request().URL.Path, "/sse") || strings.HasSuffix(c.Request().URL.Path, "/favicon.ico") {
 				return next(c)
 			}
 
@@ -113,6 +113,10 @@ func main() {
 `, i))
 		})
 	}
+
+	e.GET("/*", func(c echo.Context) error {
+		return c.String(http.StatusOK, "Timer test!")
+	})
 
 	err = e.Start(":3000")
 	if err != nil && err != http.ErrServerClosed {

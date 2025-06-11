@@ -3,13 +3,13 @@ module sadk.dev/logar
 go 1.23.3
 
 require (
-	sadk.dev/logar-web v0.0.0-00010101000000-000000000000
 	github.com/expr-lang/expr v1.17.2
 	github.com/google/uuid v1.6.0
 	github.com/labstack/echo/v4 v4.13.3
 	golang.org/x/crypto v0.36.0
 	gorm.io/driver/sqlite v1.5.7
 	gorm.io/gorm v1.25.12
+	sadk.dev/logar-web v0.0.0-00010101000000-000000000000
 )
 
 replace sadk.dev/logar-web => ../logar-web
