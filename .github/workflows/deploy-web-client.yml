@@ -13,18 +13,24 @@ jobs:
       - name: Checkout code
         uses: actions/checkout@v3
 
+      - name: Install pnpm
+        uses: pnpm/action-setup@v4
+        with:
+          version: 10.11.1
+
       - name: Set up Node.js
-        uses: actions/setup-node@v3
+        uses: actions/setup-node@v4
         with:
           node-version: 22
+          cache: 'pnpm'
 
       - name: Install dependencies
         working-directory: webclient
-        run: npm ci
+        run: pnpm install
 
       - name: Build web client
         working-directory: webclient
-        run: npm run build
+        run: pnpm run build
 
       - name: Get version
         id: vars
