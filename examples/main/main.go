@@ -2,7 +2,6 @@ package main
 
 import (
 	"fmt"
-	"math"
 	"net/http"
 	"strings"
 	"time"
@@ -24,61 +23,35 @@ import (
 var name string = "Example application"
 
 func main() {
-	needAuth := false
-
 	app, err := logar.New(
 		logar.WithAppName(name),
 		logar.WithDatabase(sqlite.Open("logs.db")),
 		logar.WithDefaultLanguage(logar.English),
-		logar.AddModel("System Logs", "system-logs"),
-		logar.AddModel("User Trace", "user-trace"),
-		logar.AddModel("Test Logs", "test-logs"),
-		logar.AddModel("Test1", "test1"),
-		logar.AddModel("Test2", "test2"),
-		logar.AddModel("Test3", "test3"),
-		logar.AddModel("Test4", "test4"),
-		logar.AddModel("All Logs", "__all__"),
 
-		logar.WithAdminCredentials("username", "password"),
+		logar.WithAdminCredentials("admin", "password"),
+
+		logar.AddModel("User Logs", "user-trace", "fa-solid fa-user"),
+		logar.AddModel("System Logs", "system-logs", "fa-solid fa-gear"),
+		logar.AddModel("All Logs", "__all__", "fa-solid fa-file-lines"),
 
 		// Example Actions
-		logar.WithAction("Server/Test", "Test action", func() (string, int, string) {
-			return "test value 1", 123, "test value 3"
+		logar.WithAction("Server/Status", "Get server status", func() map[string]interface{} {
+			return map[string]interface{}{
+				"status":    "healthy",
+				"timestamp": time.Now().Format(time.RFC3339),
+				"uptime":    time.Since(time.Now().Add(-time.Second * 10)).String(),
+			}
 		}),
-		logar.WithAction("Server/Time", "Get current time", func() string {
-			return time.Now().Format(time.RFC3339)
-		}),
-		logar.WithAction("Server/Ping", "Ping the server", func() string {
-			return "pong"
-		}),
-		logar.WithAction("Math/Add", "Add two numbers", func(a, b float64) float64 {
-			return a + b
-		}),
-		logar.WithAction("Math/Sub", "Subtract two numbers", func(a, b float64) float64 {
-			return a - b
-		}),
-		logar.WithAction("Math/Mul", "Multiply two numbers", func(a, b float64) float64 {
-			return a * b
-		}),
-		logar.WithAction("Math/Div", "Divide two numbers", func(a, b float64) float64 {
-			return a / b
-		}),
-		logar.WithAction("Math/Advanced/Pow", "Power of two numbers", func(a, b float64) float64 {
-			return math.Pow(a, b)
-		}),
-		logar.WithAction("Math/Advanced/Sqrt", "Square root of a number", func(a float64) float64 {
-			return math.Sqrt(a)
+		logar.WithAction("Server/Info", "Get server information", func() map[string]interface{} {
+			return map[string]interface{}{
+				"name":      name,
+				"version":   "1.0.0",
+				"startTime": time.Now().Add(-time.Second * 10).Format(time.RFC3339),
+			}
 		}),
 
-		logar.WithAction("Greet", "Greet a user", func(name string) string {
-			return fmt.Sprintf("Hello, %s!", name)
-		}),
-		logar.WithAction("Concat", "Concatenate strings", func(args []any) string {
-			str := ""
-			for _, arg := range args {
-				str += fmt.Sprintf("%v", arg)
-			}
-			return str
+		logar.WithAction("Notification/Send", "Send a notification to all users", func(message string) string {
+			return "Notification sent: " + message
 		}),
 
 		logar.AddProxy(proxy.NewProxy(
@@ -89,42 +62,10 @@ func main() {
 				),
 			),
 		)),
-
-		logar.If(needAuth,
-			logar.WithAuth(func(r *http.Request) bool {
-				username, password, ok := r.BasicAuth()
-				if ok && username == "admin" && password == "password" {
-					return true
-				}
-
-				return false
-			}),
-		),
 	)
 	if err != nil {
 		panic(err)
 	}
-
-	res, err := app.GetActionManager().InvokeAction("Math/Div", 4.0, 3.0)
-	if err != nil {
-		panic(err)
-	}
-
-	fmt.Printf("add res: %v\n", res)
-
-	res, err = app.GetActionManager().InvokeAction("Server/Ping")
-	if err != nil {
-		panic(err)
-	}
-
-	fmt.Printf("ping res: %v\n", res)
-
-	res, err = app.GetActionManager().InvokeAction("Greet", "John")
-	if err != nil {
-		panic(err)
-	}
-
-	fmt.Printf("greet res: %v\n", res)
 
 	db, err := gorm.Open(sqlite.Open("app.db"), &gorm.Config{
 		Logger: gormlogger.New(app, "user-trace", "db-log", 1),
