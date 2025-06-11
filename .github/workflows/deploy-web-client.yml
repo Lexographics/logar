@@ -48,10 +48,12 @@ jobs:
           rm -rf logar-web/build/*
           cp -r webclient/build/* logar-web/build/
 
-      - name: Update version
+      - name: Setup Go
         uses: actions/setup-go@v5
         with:
           go-version: '1.23.3'
+
+      - name: Update version
         run: |
           cd logar-web
           go get sadk.dev/logar@latest && go mod tidy
