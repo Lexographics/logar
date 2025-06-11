@@ -102,6 +102,7 @@
     visibility: hidden;
     transform: translateY(-10px);
     transition: all 0.2s ease-in-out;
+    z-index: 10;
   }
 
   .dropdown-menu.active {
