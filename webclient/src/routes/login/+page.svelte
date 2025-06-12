@@ -162,7 +162,7 @@
   .auth-card {
     background-color: var(--card-background);
     padding: 2rem 3rem;
-    border-radius: 8px;
+    border-radius: 2rem;
     box-shadow: 0 0 15px var(--shadow-color);
     width: 100%;
     max-width: 400px;
@@ -231,7 +231,7 @@
     color: white;
     background-color: var(--primary-color);
     border: none;
-    border-radius: 4px;
+    border-radius: 4rem;
     cursor: pointer;
     transition: background-color 0.2s, transform 0.2s, box-shadow 0.2s;
     margin-top: 1rem;

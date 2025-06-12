@@ -121,10 +121,11 @@ func (w *WebPanelImpl) UpdateUser(user models.User) error {
 
 func (w *WebPanelImpl) CreateSession(user models.User, device string) (string, error) {
 	session := models.Session{
-		UserID:    user.ID,
-		ExpiresAt: time.Now().Add(w.core.config.WebPanelConfig.SessionDuration),
-		Token:     uuid.New().String(),
-		Device:    device,
+		UserID:       user.ID,
+		ExpiresAt:    time.Now().Add(w.core.config.WebPanelConfig.SessionDuration),
+		Token:        uuid.New().String(),
+		Device:       device,
+		LastActivity: time.Now(),
 	}
 
 	err := w.core.db.Create(&session).Error
