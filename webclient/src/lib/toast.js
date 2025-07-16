@@ -3,7 +3,7 @@
 export function showToast(message) {
   Toastify({
     text: message,
-    duration: 5000,
+    duration: 3000,
     gravity: "top",
     close: true,
     position: "center",
@@ -18,6 +18,7 @@ export function showToast(message) {
       border: "3px solid var(--border-color)",
       display: "flex",
       gap: "4rem",
+      borderLeft: "3px solid var(--primary-color)",
     }
   }).showToast();
 }

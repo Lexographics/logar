@@ -22,6 +22,7 @@ const (
 	StatusCode_Error StatusCode = iota + 1000
 	StatusCode_SessionExpired
 	StatusCode_InvalidRequest
+	StatusCode_InvalidCredentials
 )
 
 type Status int

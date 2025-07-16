@@ -5,6 +5,8 @@
   import { userStore } from '$lib/store';
   import { onMount } from 'svelte';
   import LL from '../../i18n/i18n-svelte';
+  import { showToast } from '$lib/toast';
+  import { StatusCode } from '$lib/types/response';
 
   let username = $state("");
   let password = $state("");
@@ -14,7 +16,11 @@
     
     const [data, error] = await userService.login(username, password);
     if (error) {
-      console.error('Login error:', error);
+      if(error.response?.data?.status_code === StatusCode.InvalidCredentials) {
+        showToast("Invalid username or password");
+      } else {
+        showToast(error.message);
+      }
     } else {
       userStore.current = data;
       goto(`${getBasePath()}/dashboard`);

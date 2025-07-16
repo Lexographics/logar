@@ -19,8 +19,8 @@ func (h *Handler) Login(w http.ResponseWriter, r *http.Request) {
 
 	user, err := h.logger.GetWebPanel().LoginUser(username, password)
 	if err != nil {
-		w.WriteHeader(500)
-		json.NewEncoder(w).Encode(NewResponse(StatusCode_Error, err.Error()))
+		w.WriteHeader(401)
+		json.NewEncoder(w).Encode(NewResponse(StatusCode_InvalidCredentials, err.Error()))
 		return
 	}
 

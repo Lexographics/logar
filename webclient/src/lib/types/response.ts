@@ -11,6 +11,8 @@ export const StatusCode = {
   // Error values
 	Error: 1000,
 	SessionExpired: 1001,
+	InvalidRequest: 1002,
+	InvalidCredentials: 1003,
 }
 
 export type Response<T> = {
