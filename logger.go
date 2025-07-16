@@ -81,6 +81,11 @@ func (l *LoggerImpl) Print(model Model, message any, category string, severity m
 		Category:  category,
 		Severity:  severity,
 	}
+
+	if !l.core.config.MainFilter.Evaluate(logEntry) {
+		return nil
+	}
+
 	err := l.core.db.Create(&logEntry).Error
 	if err != nil {
 		return err

@@ -5,6 +5,7 @@ import (
 	"time"
 
 	"gorm.io/gorm"
+	"sadk.dev/logar/logfilter"
 	"sadk.dev/logar/proxy"
 )
 
@@ -14,6 +15,7 @@ type Config struct {
 	RequireAuth     bool
 	AuthFunc        AuthFunc
 	Models          LogModels
+	MainFilter      logfilter.Filter
 	Proxies         []proxy.Proxy
 	Actions         Actions
 	AdminUsername   string
@@ -100,6 +102,12 @@ func AddModel(displayName string, modelId Model, icon ...string) ConfigOpt {
 func SetModels(models LogModels) ConfigOpt {
 	return func(cfg *Config) {
 		cfg.Models = models
+	}
+}
+
+func WithMainFilter(filter logfilter.Filter) ConfigOpt {
+	return func(cfg *Config) {
+		cfg.MainFilter = filter
 	}
 }
 

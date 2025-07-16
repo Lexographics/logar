@@ -70,6 +70,7 @@ func New(opts ...ConfigOpt) (App, error) {
 		DefaultLanguage: English,
 		WebPanelConfig:  defaultWebPanelConfig,
 		SSEEnabled:      true,
+		MainFilter:      logfilter.NewFilter(),
 	}
 
 	for _, opt := range opts {
