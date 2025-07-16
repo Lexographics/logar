@@ -12,3 +12,7 @@ const (
 	TypeKind_Time     TypeKind = "time"
 	TypeKind_Duration TypeKind = "duration"
 )
+
+const (
+	Logs Model = "logar.logs"
+)

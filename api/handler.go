@@ -16,6 +16,7 @@ type HandlerConfig struct {
 	BasePath       string
 	ApiURL         string
 	WebClientFiles fs.FS
+	SSEEnabled     bool
 }
 
 type InvokeActionRequest struct {

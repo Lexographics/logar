@@ -20,6 +20,7 @@ type Config struct {
 	AdminPassword   string
 	DefaultLanguage Language
 	WebPanelConfig  WebPanelConfig
+	SSEEnabled      bool
 }
 
 type LogModel struct {
@@ -128,6 +129,12 @@ func WithAdminCredentials(username, password string) ConfigOpt {
 func WithDefaultLanguage(language Language) ConfigOpt {
 	return func(cfg *Config) {
 		cfg.DefaultLanguage = language
+	}
+}
+
+func WithSSEEnabled(enabled bool) ConfigOpt {
+	return func(cfg *Config) {
+		cfg.SSEEnabled = enabled
 	}
 }
 

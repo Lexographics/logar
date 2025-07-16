@@ -54,6 +54,12 @@ func (h *Handler) GetLogs(w http.ResponseWriter, r *http.Request) {
 }
 
 func (h *Handler) GetLogsSSE(w http.ResponseWriter, r *http.Request) {
+	if !h.cfg.SSEEnabled {
+		w.WriteHeader(404)
+		json.NewEncoder(w).Encode(NewResponse(StatusCode_Error, "SSE is not enabled"))
+		return
+	}
+
 	w.Header().Set("Content-Type", "text/event-stream")
 	w.Header().Set("Cache-Control", "no-cache")
 	w.Header().Set("Connection", "keep-alive")
@@ -116,7 +122,7 @@ func (h *Handler) GetLogsSSE(w http.ResponseWriter, r *http.Request) {
 			logs, err := h.logger.GetLogs(query)
 			if err != nil {
 				h.logger.GetLogger().Error("logar-errors", "Error fetching logs for SSE: "+err.Error(), "sse")
-				continue
+				return
 			}
 
 			for _, log := range logs {
@@ -134,7 +140,7 @@ func (h *Handler) GetLogsSSE(w http.ResponseWriter, r *http.Request) {
 
 				if err != nil {
 					h.logger.GetLogger().Error("logar-errors", "Error marshaling logs for SSE: "+err.Error(), "sse")
-					continue
+					return
 				}
 
 				fmt.Fprintf(w, "event: logs\ndata: %s\n\n", data)

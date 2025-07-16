@@ -36,6 +36,8 @@ type App interface {
 	GetContextValues(ctx context.Context) (Map, bool)
 	GetFromContext(ctx context.Context, key string) (any, bool)
 	AddContextValue(ctx context.Context, key string, value any) App
+
+	IsSSEEnabled() bool
 }
 
 type AppImpl struct {
@@ -67,6 +69,7 @@ func New(opts ...ConfigOpt) (App, error) {
 		Actions:         Actions{},
 		DefaultLanguage: English,
 		WebPanelConfig:  defaultWebPanelConfig,
+		SSEEnabled:      true,
 	}
 
 	for _, opt := range opts {
@@ -335,4 +338,8 @@ func (l *AppImpl) GetGlobalBool(key string) (bool, error) {
 		return false, err
 	}
 	return value, nil
+}
+
+func (l *AppImpl) IsSSEEnabled() bool {
+	return l.config.SSEEnabled
 }
