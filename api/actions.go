@@ -15,7 +15,7 @@ func (h *Handler) ListActions(w http.ResponseWriter, r *http.Request) {
 	for _, action := range actionsMap {
 		argTypes, err := h.logger.GetActionManager().GetActionArgTypes(action.Path)
 		if err != nil {
-			h.logger.GetLogger().Error("logar-errors", fmt.Sprintf("Error getting arg types for action %s: %v", action.Path, err), "api")
+			h.logger.GetLogger().Error(logar.LogarLogs, fmt.Sprintf("Error getting arg types for action %s: %v", action.Path, err), "api")
 			continue
 		}
 

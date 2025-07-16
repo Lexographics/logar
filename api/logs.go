@@ -121,7 +121,7 @@ func (h *Handler) GetLogsSSE(w http.ResponseWriter, r *http.Request) {
 
 			logs, err := h.logger.GetLogs(query)
 			if err != nil {
-				h.logger.GetLogger().Error("logar-errors", "Error fetching logs for SSE: "+err.Error(), "sse")
+				h.logger.GetLogger().Error(logar.LogarLogs, "Error fetching logs for SSE: "+err.Error(), "sse")
 				return
 			}
 
@@ -139,7 +139,7 @@ func (h *Handler) GetLogsSSE(w http.ResponseWriter, r *http.Request) {
 				})
 
 				if err != nil {
-					h.logger.GetLogger().Error("logar-errors", "Error marshaling logs for SSE: "+err.Error(), "sse")
+					h.logger.GetLogger().Error(logar.LogarLogs, "Error marshaling logs for SSE: "+err.Error(), "sse")
 					return
 				}
 

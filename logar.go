@@ -14,5 +14,5 @@ const (
 )
 
 const (
-	Logs Model = "logar.logs"
+	LogarLogs Model = "logar.logs"
 )

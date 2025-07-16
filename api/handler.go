@@ -82,7 +82,7 @@ func (h *Handler) Router(mux *http.ServeMux) {
 	if h.cfg.WebClientFiles != nil && !dev {
 		sub, err := fs.Sub(h.cfg.WebClientFiles, "build")
 		if err != nil {
-			h.logger.GetLogger().Error("logar-errors", fmt.Sprintf("Failed to create subdirectory: %v", err), "api")
+			h.logger.GetLogger().Error(logar.LogarLogs, fmt.Sprintf("Failed to create subdirectory: %v", err), "api")
 			return
 		}
 		mux.Handle("/", h.SetMetadataMiddleware(http.FileServer(http.FS(sub))))
