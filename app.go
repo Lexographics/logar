@@ -9,6 +9,7 @@ import (
 	"gorm.io/driver/sqlite"
 	"gorm.io/gorm"
 	"gorm.io/gorm/logger"
+	"sadk.dev/logar/logfilter"
 	"sadk.dev/logar/models"
 	"sadk.dev/logar/proxy"
 )
