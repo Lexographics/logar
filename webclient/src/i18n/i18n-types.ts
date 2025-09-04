@@ -154,6 +154,22 @@ type RootTranslation = {
 		 */
 		add_filter: string
 		/**
+		 * F​i​l​t​e​r​s
+		 */
+		filters: string
+		/**
+		 * L​o​a​d​ ​M​o​r​e
+		 */
+		load_more: string
+		/**
+		 * L​o​a​d​i​n​g​.​.​.
+		 */
+		loading: string
+		/**
+		 * N​o​ ​m​o​r​e​ ​l​o​g​s​ ​t​o​ ​d​i​s​p​l​a​y
+		 */
+		no_more_logs: string
+		/**
 		 * T​i​p​:​ ​U​s​e​ ​f​o​r​m​a​t​ ​D​D​-​M​M​-​Y​Y​Y​Y​ ​H​H​:​m​m​:​s​s​.​S​S​S
 		 */
 		time_format_tip: string
@@ -717,6 +733,22 @@ export type TranslationFunctions = {
 		 * Add Filter
 		 */
 		add_filter: () => LocalizedString
+		/**
+		 * Filters
+		 */
+		filters: () => LocalizedString
+		/**
+		 * Load More
+		 */
+		load_more: () => LocalizedString
+		/**
+		 * Loading...
+		 */
+		loading: () => LocalizedString
+		/**
+		 * No more logs to display
+		 */
+		no_more_logs: () => LocalizedString
 		/**
 		 * Tip: Use format DD-MM-YYYY HH:mm:ss.SSS
 		 */
