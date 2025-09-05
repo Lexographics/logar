@@ -251,23 +251,8 @@
     connectionAttempted = false;
   }
 
-  let observerTarget = $state(null);
   onMount(() => {
-    const observer = new IntersectionObserver(
-      (entries) => {
-        if (entries[0].isIntersecting) {
-          loadMore();
-        }
-      },
-      { threshold: 0.1 },
-    );
-
-    if (observerTarget) {
-      observer.observe(observerTarget);
-    }
-
     return () => {
-      observer.disconnect();
       disconnectLogStream();
     };
   });
@@ -414,13 +399,20 @@
         {/key}
       </div>
 
-      {#if hasMore || loading}
-        <div bind:this={observerTarget} class="loader">
-          {#if loading}
-            <div class="loading-spinner"></div>
-          {:else if !hasMore}
-            <p>No more logs</p>
-          {/if}
+      {#if hasMore}
+        <div class="load-more-container">
+          <button class="load-more-button" onclick={loadMore} disabled={loading}>
+            {#if loading}
+              <div class="loading-spinner-small"></div>
+              {$LL.logs.loading()}
+            {:else}
+              {$LL.logs.load_more()}
+            {/if}
+          </button>
+        </div>
+      {:else}
+        <div class="no-more-logs">
+          <p>{$LL.logs.no_more_logs()}</p>
         </div>
       {/if}
     </div>
@@ -850,6 +842,55 @@
     .filter-input-multi {
       width: 100%;
     }
+  }
+
+  .load-more-container {
+    padding: 2rem;
+    text-align: center;
+    display: flex;
+    justify-content: center;
+  }
+
+  .load-more-button {
+    padding: 0.75rem 2rem;
+    background-color: var(--primary-color);
+    color: white;
+    border: none;
+    border-radius: 6px;
+    cursor: pointer;
+    font-size: 0.95rem;
+    font-weight: 500;
+    transition: background-color 0.2s ease;
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    min-width: 120px;
+    justify-content: center;
+  }
+
+  .load-more-button:hover:not(:disabled) {
+    background-color: var(--primary-hover-color);
+  }
+
+  .load-more-button:disabled {
+    opacity: 0.6;
+    cursor: not-allowed;
+  }
+
+  .no-more-logs {
+    padding: 2rem;
+    text-align: center;
+    color: var(--text-secondary-color);
+    font-style: italic;
+  }
+
+  .loading-spinner-small {
+    width: 16px;
+    height: 16px;
+    border: 2px solid rgba(255, 255, 255, 0.3);
+    border-top: 2px solid white;
+    border-radius: 50%;
+    animation: spin 1s linear infinite;
   }
 
   .loader {

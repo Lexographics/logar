@@ -46,6 +46,10 @@ const tr = {
 		from: 'Başlangıç',
 		to: 'Bitiş',
 		add_filter: 'Filtre Ekle',
+		filters: 'Filtreler',
+		load_more: 'Daha Fazla Yükle',
+		loading: 'Yükleniyor...',
+		no_more_logs: 'Gösterilecek daha fazla kayıt yok',
 		time_format_tip: 'İpucu: DD-MM-YYYY HH:mm:ss.SSS formatını kullanın',
 		severity_tip: 'Ciddiyetler: 1 (Trace), 2 (Log), 3 (Info), 4 (Warn), 5 (Error), 6 (Fatal)'
 	},

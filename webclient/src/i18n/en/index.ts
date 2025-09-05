@@ -43,6 +43,10 @@ const en = {
 		from: 'From',
 		to: 'To',
 		add_filter: 'Add Filter',
+		filters: 'Filters',
+		load_more: 'Load More',
+		loading: 'Loading...',
+		no_more_logs: 'No more logs to display',
 		time_format_tip: 'Tip: Use format DD-MM-YYYY HH:mm:ss.SSS',
 		severity_tip: 'Severities: 1 (Trace), 2 (Log), 3 (Info), 4 (Warn), 5 (Error), 6 (Fatal)'
 	},

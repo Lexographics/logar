@@ -46,6 +46,10 @@ const az = {
 		from: 'Kimdən',
 		to: 'Kimə',
 		add_filter: 'Filtr əlavə et',
+		filters: 'Filtrlər',
+		load_more: 'Daha çox yüklə',
+		loading: 'Yüklənir...',
+		no_more_logs: 'Göstəriləcək daha çox jurnal yoxdur',
 		time_format_tip: 'İpucu: DD-MM-YYYY HH:mm:ss.SSS formatından istifadə edin',
 		severity_tip: 'Ciddiliklər: 1 (İz), 2 (Jurnal), 3 (Məlumat), 4 (Xəbərdarlıq), 5 (Xəta), 6 (Kritik)'
 	},

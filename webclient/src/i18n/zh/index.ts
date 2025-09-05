@@ -46,6 +46,10 @@ const zh = {
 		from: '从',
 		to: '到',
 		add_filter: '添加过滤器',
+		filters: '过滤器',
+		load_more: '加载更多',
+		loading: '加载中...',
+		no_more_logs: '没有更多日志可显示',
 		time_format_tip: '提示：使用格式 DD-MM-YYYY HH:mm:ss.SSS',
 		severity_tip: '严重等级：1（追踪）、2（日志）、3（信息）、4（警告）、5（错误）、6（致命）'
 	},
